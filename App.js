@@ -1,20 +1,19 @@
-import React from "react";
-import { StyleSheet, View, Button } from "react-native";
-import Header from "./components/Header";
-import StartGamesScreen from "./screens/StartGamesScreen";
+import React from 'react';
+import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 
 export default function App() {
   return (
-    <View style={styles.screen}>
-      <Button title="Add"></Button>
-      <Header title="Guess a Number"></Header>
-      <StartGamesScreen></StartGamesScreen>
+    <View style={{ padding: 50 }}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+        <TextInput
+          placeholder="Course Goal"
+          style={{ width: '80%', borderColor: 'black', borderWidth: 1, padding: 10 }}
+        />
+        <Button title="ADD" />
+      </View>
+      <View />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-});
+const styles = StyleSheet.create({});

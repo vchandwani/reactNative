@@ -1,17 +1,17 @@
-import { rest } from "lodash";
 import React, { useState } from "react";
 import {
   View,
   Text,
-  Button,
   StyleSheet,
+  Button,
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
 } from "react-native";
+
 import Card from "../components/Card";
 import Input from "../components/Input";
-
+import NumberContainer from "../components/NumberContainer";
 import Colors from "../constants/colors";
 
 const StartGameScreen = (props) => {
@@ -22,27 +22,41 @@ const StartGameScreen = (props) => {
   const numberInputHandler = (inputText) => {
     setEnteredValue(inputText.replace(/[^0-9]/g, ""));
   };
+
   const resetInputHandler = () => {
     setEnteredValue("");
+    setConfirmed(false);
   };
+
   const confirmInputHandler = () => {
-    const choosenNumber = parseInt(enteredValue);
-    if (isNaN(choosenNumber) || choosenNumber <= 0 || choosenNumber > 99) {
+    const chosenNumber = parseInt(enteredValue);
+    if (isNaN(chosenNumber) || chosenNumber <= 0 || chosenNumber > 99) {
       Alert.alert(
-        "Invalid number",
-        "Number has to be a number between 1 and 99",
+        "Invalid number!",
+        "Number has to be a number between 1 and 99.",
         [{ text: "Okay", style: "destructive", onPress: resetInputHandler }]
       );
       return;
     }
     setConfirmed(true);
-    setSelectedNumber(choosenNumber);
+    setSelectedNumber(chosenNumber);
     setEnteredValue("");
+    Keyboard.dismiss();
   };
 
   let confirmedOutput;
+
   if (confirmed) {
-    confirmedOutput = <Text>Choosen Number : {selectedNumber}</Text>;
+    confirmedOutput = (
+      <Card style={styles.summaryContainer}>
+        <Text>You selected</Text>
+        <NumberContainer>{selectedNumber}</NumberContainer>
+        <Button
+          title="START GAME"
+          onPress={() => props.onStartGame(selectedNumber)}
+        />
+      </Card>
+    );
   }
 
   return (
@@ -52,9 +66,9 @@ const StartGameScreen = (props) => {
       }}
     >
       <View style={styles.screen}>
-        <Text style={styles.title}>Games Screen!</Text>
+        <Text style={styles.title}>Start a New Game!</Text>
         <Card style={styles.inputContainer}>
-          <Text>Select a number</Text>
+          <Text>Select a Number</Text>
           <Input
             style={styles.input}
             blurOnSubmit
@@ -93,7 +107,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     alignItems: "center",
-    justifyContent: "center",
   },
   title: {
     fontSize: 20,
@@ -111,11 +124,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   button: {
-    width: 80,
+    width: 100,
   },
   input: {
     width: 50,
     textAlign: "center",
+  },
+  summaryContainer: {
+    marginTop: 20,
+    alignItems: "center",
   },
 });
 

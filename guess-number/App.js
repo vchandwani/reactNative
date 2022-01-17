@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import * as Font from 'expo-font';
-import { AppLoading } from 'expo';
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import * as Font from "expo-font";
+import AppLoading from "expo-app-loading";
 
-import Header from './components/Header';
-import StartGameScreen from './screens/StartGameScreen';
-import GameScreen from './screens/GameScreen';
-import GameOverScreen from './screens/GameOverScreen';
+import Header from "./components/Header";
+import StartGameScreen from "./screens/StartGameScreen";
+import GameScreen from "./screens/GameScreen";
+import GameOverScreen from "./screens/GameOverScreen";
 
 const fetchFonts = () => {
   return Font.loadAsync({
-    'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
-    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
+    "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
+    "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
   });
 };
 
@@ -25,7 +25,7 @@ export default function App() {
       <AppLoading
         startAsync={fetchFonts}
         onFinish={() => setDataLoaded(true)}
-        onError={err => console.log(err)}
+        onError={(err) => console.log(err)}
       />
     );
   }
@@ -35,22 +35,16 @@ export default function App() {
     setUserNumber(null);
   };
 
-  const startGameHandler = selectedNumber => {
+  const startGameHandler = (selectedNumber) => {
     setUserNumber(selectedNumber);
   };
 
-  const gameOverHandler = numOfRounds => {
+  const gameOverHandler = (numOfRounds) => {
     setGuessRounds(numOfRounds);
   };
 
   let content = <StartGameScreen onStartGame={startGameHandler} />;
-  content = (
-    <GameOverScreen
-      roundsNumber={1}
-      userNumber={1}
-      onRestart={configureNewGameHandler}
-    />
-  );
+
   if (userNumber && guessRounds <= 0) {
     content = (
       <GameScreen userChoice={userNumber} onGameOver={gameOverHandler} />
@@ -75,6 +69,6 @@ export default function App() {
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1
-  }
+    flex: 1,
+  },
 });

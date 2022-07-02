@@ -1,17 +1,15 @@
-import { StyleSheet, View, Text, Pressable, Modal } from "react-native";
+import { StyleSheet, View, Text, Pressable } from "react-native";
 function GoalItem(props) {
   return (
-    <Modal visible={props.visible} animationType="slide">
-      <View style={styles.goalItem}>
-        <Pressable
-          android_ripple={{ color: "#210664" }}
-          onPress={props.onDeleteItem.bind(this, props.id)}
-          style={(pressed) => pressed && styles.pressedItem}
-        >
-          <Text style={styles.goalText}>{props.text}</Text>
-        </Pressable>
-      </View>
-    </Modal>
+    <View style={styles.goalItem}>
+      <Pressable
+        android_ripple={{ color: "#210664" }}
+        onPress={props.onDeleteItem.bind(this, props.id)}
+        style={(pressed) => pressed && styles.pressedItem}
+      >
+        <Text style={styles.goalText}>{props.text}</Text>
+      </Pressable>
+    </View>
   );
 }
 

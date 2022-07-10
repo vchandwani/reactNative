@@ -14,8 +14,8 @@ export default function App() {
   const [gameIsOver, setGameIsOver] = useState(true);
 
   const [fontsLoaded] = useFonts({
-    openSans: require("./assets/fonts/OpenSans-Regular.ttf"),
-    openSansBold: require("./assets/fonts/OpenSans-Bold.ttf"),
+    openSans: require("./assets/font/OpenSans-Regular.ttf"),
+    openSansBold: require("./assets/font/OpenSans-Bold.ttf"),
   });
 
   function pickedNumberHandler(pickedNumber) {
@@ -49,7 +49,7 @@ export default function App() {
       style={styles.rootScreen}
     >
       <ImageBackground
-        source={require("./assets/images/background.png")}
+        source={require("./assets/img/background.png")}
         resizeMode="cover"
         style={styles.rootScreen}
         imageStyle={styles.backgroundImage}

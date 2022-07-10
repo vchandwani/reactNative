@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: Colors.primary800,
     overflow: "hidden",
+    margin: 24,
   },
   image: {
     height: "100%",

@@ -75,7 +75,7 @@ function GameScreen({ userNumber, onGameOver }) {
 
   const guessRoundsListLength = guessRounds.length;
   let content = (
-    <React.Fragment>
+    <>
       <NumberContainer>{currentGuess}</NumberContainer>
       <Card>
         <InstructionText style={styles.instructionText}>
@@ -94,11 +94,11 @@ function GameScreen({ userNumber, onGameOver }) {
           </View>
         </View>
       </Card>
-    </React.Fragment>
+    </>
   );
   if (width > 500) {
     content = (
-      <React.Fragment>
+      <>
         <InstructionText style={styles.instructionText}>
           Higher or lower?
         </InstructionText>
@@ -116,7 +116,7 @@ function GameScreen({ userNumber, onGameOver }) {
             </PrimaryButton>
           </View>
         </View>
-      </React.Fragment>
+      </>
     );
   }
   return (

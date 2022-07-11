@@ -15,9 +15,13 @@ export default function App() {
   const [guessRounds, setGuessRounds] = useState(0);
 
   const [fontsLoaded] = useFonts({
-    openSans: require("./assets/font/OpenSans-Regular.ttf"),
-    openSansBold: require("./assets/font/OpenSans-Bold.ttf"),
+    "open-sans": require("./assets/font/OpenSans-Regular.ttf"),
+    "open-sans-bold": require("./assets/font/OpenSans-Bold.ttf"),
   });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
 
   function pickedNumberHandler(pickedNumber) {
     setUserNumber(pickedNumber);
@@ -28,12 +32,10 @@ export default function App() {
     setGameIsOver(true);
     setGuessRounds(numberOfRounds);
   }
+
   function startNewGameHandler() {
     setUserNumber(null);
     setGuessRounds(0);
-  }
-  if (!fontsLoaded) {
-    return <AppLoading />;
   }
 
   let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />;

@@ -5,8 +5,8 @@ import MealItem from "../components/MealItem";
 import { MEALS, CATEGORIES } from "../data/dummy-data";
 
 function MealsOverviewScreen({ route, navigation }) {
-  // Get params from navigate
   const catId = route.params.categoryId;
+
   const displayedMeals = MEALS.filter((mealItem) => {
     return mealItem.categoryIds.indexOf(catId) >= 0;
   });
@@ -23,6 +23,7 @@ function MealsOverviewScreen({ route, navigation }) {
 
   function renderMealItem(itemData) {
     const item = itemData.item;
+
     const mealItemProps = {
       id: item.id,
       title: item.title,
@@ -33,13 +34,14 @@ function MealsOverviewScreen({ route, navigation }) {
     };
     return <MealItem {...mealItemProps} />;
   }
+
   return (
     <View style={styles.container}>
       <FlatList
         data={displayedMeals}
         keyExtractor={(item) => item.id}
         renderItem={renderMealItem}
-      ></FlatList>
+      />
     </View>
   );
 }

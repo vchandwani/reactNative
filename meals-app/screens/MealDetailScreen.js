@@ -1,18 +1,21 @@
 import { useLayoutEffect } from "react";
 import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
-import { MEALS } from "../data/dummy-data";
-import MealDetails from "../components/MealDetails";
-import Subtitle from "../components/MealDetail/Subtitle";
-import List from "../components/MealDetail/List";
-import IconButton from "../components/IconButton";
 
-function MealsDetailsScreen({ route, navigation }) {
+import IconButton from "../components/IconButton";
+import List from "../components/MealDetail/List";
+import Subtitle from "../components/MealDetail/Subtitle";
+import MealDetails from "../components/MealDetails";
+import { MEALS } from "../data/dummy-data";
+
+function MealDetailScreen({ route, navigation }) {
   const mealId = route.params.mealId;
 
   const selectedMeal = MEALS.find((meal) => meal.id === mealId);
+
   function headerButtonPressHandler() {
-    console.log("pressed");
+    console.log("Pressed!");
   }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => {
@@ -49,15 +52,15 @@ function MealsDetailsScreen({ route, navigation }) {
   );
 }
 
-export default MealsDetailsScreen;
+export default MealDetailScreen;
 
 const styles = StyleSheet.create({
   rootContainer: {
     marginBottom: 32,
   },
   image: {
-    height: 350,
     width: "100%",
+    height: 350,
   },
   title: {
     fontWeight: "bold",

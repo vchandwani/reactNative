@@ -1,11 +1,9 @@
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 function List({ data }) {
   return data.map((dataPoint) => (
-    <View style={styles.listItem}>
-      <Text style={styles.itemText} key={dataPoint}>
-        {dataPoint}
-      </Text>
+    <View key={dataPoint} style={styles.listItem}>
+      <Text style={styles.itemText}>{dataPoint}</Text>
     </View>
   ));
 }
@@ -17,7 +15,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    marginVertical: 8,
+    marginVertical: 4,
     marginHorizontal: 12,
     backgroundColor: "#e2b497",
   },

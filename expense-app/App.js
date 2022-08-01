@@ -7,8 +7,9 @@ import { Ionicons } from "@expo/vector-icons";
 import ManageExpense from "./screens/ManageExpense";
 import RecentExpenses from "./screens/RecentExpenses";
 import AllExpenses from "./screens/AllExpenses";
+
+import { GlobalStyles } from "./constants/styles";
 import IconButton from "./components/UI/IconButton";
-import { GlobalStyles } from "./constants/style";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -23,7 +24,7 @@ function ExpensesOverview() {
         tabBarActiveTintColor: GlobalStyles.colors.accent500,
         headerRight: ({ tintColor }) => (
           <IconButton
-            name="add"
+            icon="add"
             size={24}
             color={tintColor}
             onPress={() => {
@@ -49,7 +50,7 @@ function ExpensesOverview() {
         component={AllExpenses}
         options={{
           title: "All Expenses",
-          tabBarLabel: "All",
+          tabBarLabel: "All Expenses",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar" size={size} color={color} />
           ),

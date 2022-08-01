@@ -2,7 +2,7 @@ import { View, StyleSheet } from "react-native";
 
 import ExpensesSummary from "./ExpensesSummary";
 import ExpensesList from "./ExpensesList";
-import { GlobalStyles } from "../../constants/style";
+import { GlobalStyles } from "../../constants/styles";
 
 const DUMMY_EXPENSES = [
   {

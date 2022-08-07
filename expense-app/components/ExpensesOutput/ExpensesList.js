@@ -1,14 +1,16 @@
-import { FlatList, Text } from "react-native";
-import ExpensesItem from "./ExpenseItem";
+import { FlatList } from "react-native";
 
-function renderExpnsesItem(itemData) {
-  return <ExpensesItem {...itemData.item} />;
+import ExpenseItem from "./ExpenseItem";
+
+function renderExpenseItem(itemData) {
+  return <ExpenseItem {...itemData.item} />;
 }
+
 function ExpensesList({ expenses }) {
   return (
     <FlatList
       data={expenses}
-      renderItem={renderExpnsesItem}
+      renderItem={renderExpenseItem}
       keyExtractor={(item) => item.id}
     />
   );

@@ -10,9 +10,7 @@ import { ExpensesContext } from "../store/expenses-context";
 function ManageExpense({ route, navigation }) {
   const expensesCtx = useContext(ExpensesContext);
 
-  const editedExpenseId = route.params.expenseId
-    ? route.params.expenseId
-    : null;
+  const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
 
   const selectedExpense = expensesCtx.expenses.find(

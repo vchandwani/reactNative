@@ -1,4 +1,4 @@
-import { createContext, useReducer } from "react";
+import { createContext, useReducer, useState } from "react";
 
 export const ExpensesContext = createContext({
   expenses: [],
@@ -6,6 +6,10 @@ export const ExpensesContext = createContext({
   setExpenses: (expenses) => {},
   deleteExpense: (id) => {},
   updateExpense: (id, { description, amount, date }) => {},
+  token: "",
+  isAuthenticated: false,
+  authenticate: (token) => {},
+  logout: () => {},
 });
 
 function expensesReducer(state, action) {
@@ -34,6 +38,16 @@ function expensesReducer(state, action) {
 function ExpensesContextProvider({ children }) {
   const [expensesState, dispatch] = useReducer(expensesReducer, []);
 
+  const [authToken, setAuthToken] = useState();
+
+  function authenticate(token) {
+    setAuthToken(token);
+  }
+
+  function logout() {
+    setAuthToken(null);
+  }
+
   function addExpense(expenseData) {
     dispatch({ type: "ADD", payload: expenseData });
   }
@@ -56,6 +70,10 @@ function ExpensesContextProvider({ children }) {
     addExpense: addExpense,
     deleteExpense: deleteExpense,
     updateExpense: updateExpense,
+    token: authToken,
+    isAuthenticated: !!authToken,
+    authenticate: authenticate,
+    logout: logout,
   };
 
   return (

@@ -13,7 +13,12 @@ import WelcomeScreen from "./screens/WelcomeScreen";
 
 import { GlobalStyles } from "./constants/styles";
 import IconButton from "./components/UI/IconButton";
-import ExpensesContextProvider from "./store/expenses-context";
+import ExpensesContextProvider, {
+  ExpensesContext,
+} from "./store/expenses-context";
+import { useContext, useState, useEffect } from "react";
+import AppLoading from "expo-app-loading";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -80,6 +85,7 @@ function AuthStack() {
 }
 
 function AuthenticatedStack() {
+  const expCtx = useContext(ExpensesContext);
   return (
     <Stack.Navigator
       screenOptions={{
@@ -88,7 +94,20 @@ function AuthenticatedStack() {
         contentStyle: { backgroundColor: GlobalStyles.colors.primary100 },
       }}
     >
-      <Stack.Screen name="Welcome" component={WelcomeScreen} />
+      <Stack.Screen
+        name="Welcome"
+        component={WelcomeScreen}
+        options={{
+          headerRight: ({ tintColor }) => (
+            <IconButton
+              name="exit"
+              color={tintColor}
+              size="24"
+              onPress={expCtx.logout}
+            />
+          ),
+        }}
+      />
       <Stack.Screen
         name="ExpensesOverview"
         component={ExpensesOverview}
@@ -105,14 +124,48 @@ function AuthenticatedStack() {
   );
 }
 
+function Navigation() {
+  const expCtx = useContext(ExpensesContext);
+  return (
+    <NavigationContainer>
+      {!expCtx.isAuthenticated && <AuthStack />}
+      {expCtx.isAuthenticated && <AuthenticatedStack />}
+    </NavigationContainer>
+  );
+}
+
+function Root() {
+  const [isTryingLogin, setIsTryingLogin] = useState(true);
+
+  const expCtx = useContext(ExpensesContext);
+
+  useEffect(() => {
+    async function fetchToken() {
+      const storedToken = await AsyncStorage.getItem("token");
+
+      if (storedToken) {
+        expCtx.authenticate(storedToken);
+      }
+
+      setIsTryingLogin(false);
+    }
+
+    fetchToken();
+  }, []);
+
+  if (isTryingLogin) {
+    return <AppLoading />;
+  }
+
+  return <Navigation />;
+}
+
 export default function App() {
   return (
     <>
       <StatusBar style="light" />
       <ExpensesContextProvider>
-        <NavigationContainer>
-          <AuthStack />
-        </NavigationContainer>
+        <Root />
       </ExpensesContextProvider>
     </>
   );

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import ButtonAuth from "../UI/ButtonAuth";
+import Button from "../UI/Button";
 import Input from "./Input";
 function AuthForm({ isLogin, onSubmit, credentialsInvalid }) {
   const [enteredEmail, setEnteredEmail] = useState("");
@@ -81,9 +81,9 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid }) {
           />
         )}
         <View style={styles.buttons}>
-          <ButtonAuth onPress={submitHandler}>
+          <Button onPress={submitHandler}>
             {isLogin ? "Log In" : "Sign Up"}
-          </ButtonAuth>
+          </Button>
         </View>
       </View>
     </View>

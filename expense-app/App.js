@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
+import { View } from "react-native";
 
 import ManageExpense from "./screens/ManageExpense";
 import RecentExpenses from "./screens/RecentExpenses";
@@ -24,6 +25,8 @@ const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 function ExpensesOverview() {
+  const expCtx = useContext(ExpensesContext);
+
   return (
     <BottomTabs.Navigator
       screenOptions={({ navigation }) => ({
@@ -32,14 +35,28 @@ function ExpensesOverview() {
         tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         tabBarActiveTintColor: GlobalStyles.colors.accent500,
         headerRight: ({ tintColor }) => (
-          <IconButton
-            icon="add"
-            size={24}
-            color={tintColor}
-            onPress={() => {
-              navigation.navigate("ManageExpense");
+          <View
+            style={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexDirection: "row",
             }}
-          />
+          >
+            <IconButton
+              icon="add"
+              size={24}
+              color={tintColor}
+              onPress={() => {
+                navigation.navigate("ManageExpense");
+              }}
+            />
+            <IconButton
+              icon="exit"
+              color={tintColor}
+              size={24}
+              onPress={expCtx.logout}
+            />
+          </View>
         ),
       })}
     >
@@ -85,7 +102,6 @@ function AuthStack() {
 }
 
 function AuthenticatedStack() {
-  const expCtx = useContext(ExpensesContext);
   return (
     <Stack.Navigator
       screenOptions={{
@@ -95,23 +111,11 @@ function AuthenticatedStack() {
       }}
     >
       <Stack.Screen
-        name="Welcome"
-        component={WelcomeScreen}
-        options={{
-          headerRight: ({ tintColor }) => (
-            <IconButton
-              icon="exit"
-              color={tintColor}
-              size={24}
-              onPress={expCtx.logout}
-            />
-          ),
-        }}
-      />
-      <Stack.Screen
         name="ExpensesOverview"
         component={ExpensesOverview}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="ManageExpense"

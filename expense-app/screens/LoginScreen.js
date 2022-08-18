@@ -1,7 +1,7 @@
 import { Alert } from "react-native";
 import AuthContent from "../components/Auth/AuthContent";
 import { useContext, useState } from "react";
-import LoadingOverlayAuth from "../components/UI/LoadingOverlayAuth";
+import LoadingOverlay from "../components/UI/LoadingOverlay";
 import { login } from "../util/auth";
 import { ExpensesContext } from "../store/expenses-context";
 
@@ -24,7 +24,7 @@ function LoginScreen() {
   }
 
   if (isAuthenticating) {
-    return <LoadingOverlayAuth message="Logging user..." />;
+    return <LoadingOverlay message="Logging user..." />;
   }
 
   return <AuthContent isLogin onAuthenticate={loginHandler} />;

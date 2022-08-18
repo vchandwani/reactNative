@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { Alert } from "react-native";
 
 import AuthContent from "../components/Auth/AuthContent";
-import LoadingOverlayAuth from "../components/UI/LoadingOverlayAuth";
+import LoadingOverlay from "../components/UI/LoadingOverlay";
 import { ExpensesContext } from "../store/expenses-context";
 import { createUser } from "../util/auth";
 
@@ -26,7 +26,7 @@ function SignupScreen() {
   }
 
   if (isAuthenticating) {
-    return <LoadingOverlayAuth message="Creating user..." />;
+    return <LoadingOverlay message="Creating user..." />;
   }
 
   return <AuthContent onAuthenticate={signupHandler} />;

@@ -3,13 +3,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const ExpensesContext = createContext({
   expenses: [],
-  addExpense: ({ description, amount, date }) => {},
+  addExpense: ({ description, amount, date, email }) => {},
   setExpenses: (expenses) => {},
   deleteExpense: (id) => {},
-  updateExpense: (id, { description, amount, date }) => {},
+  updateExpense: (id, { description, amount, date, email }) => {},
   token: "",
+  email: "",
   isAuthenticated: false,
-  authenticate: (token) => {},
+  authenticate: (token, email) => {},
   logout: () => {},
 });
 
@@ -40,15 +41,20 @@ function ExpensesContextProvider({ children }) {
   const [expensesState, dispatch] = useReducer(expensesReducer, []);
 
   const [authToken, setAuthToken] = useState();
+  const [email, setEmail] = useState();
 
-  function authenticate(token) {
+  function authenticate(token, email = "") {
     setAuthToken(token);
+    setEmail(email);
     AsyncStorage.setItem("token", token);
+    AsyncStorage.setItem("email", email);
   }
 
   function logout() {
     setAuthToken(null);
+    setEmail(null);
     AsyncStorage.removeItem("token");
+    AsyncStorage.removeItem("email");
   }
 
   function addExpense(expenseData) {
@@ -74,6 +80,7 @@ function ExpensesContextProvider({ children }) {
     deleteExpense: deleteExpense,
     updateExpense: updateExpense,
     token: authToken,
+    email: email,
     isAuthenticated: !!authToken,
     authenticate: authenticate,
     logout: logout,

@@ -146,9 +146,10 @@ function Root() {
   useEffect(() => {
     async function fetchToken() {
       const storedToken = await AsyncStorage.getItem("token");
+      const storedEmail = await AsyncStorage.getItem("email");
 
       if (storedToken) {
-        expCtx.authenticate(storedToken);
+        expCtx.authenticate(storedToken, storedEmail);
       }
 
       setIsTryingLogin(false);

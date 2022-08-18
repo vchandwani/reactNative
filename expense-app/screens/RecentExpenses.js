@@ -17,7 +17,9 @@ function RecentExpenses() {
     async function getExpenses() {
       setIsFetching(true);
       try {
-        const expenses = await fetchExpenses();
+        const token = expensesCtx.token;
+        const email = expensesCtx.email;
+        const expenses = await fetchExpenses("auth=" + token, email);
         expensesCtx.setExpenses(expenses);
       } catch (error) {
         setError("Could not fetch");

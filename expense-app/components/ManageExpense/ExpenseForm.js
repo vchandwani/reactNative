@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import Input from "./Input";
 import Button from "../UI/Button";
 import { getFormattedDate } from "../../util/date";
 import { GlobalStyles } from "../../constants/styles";
+import { ExpensesContext } from "../../store/expenses-context";
 
 function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
+  const expCtx = useContext(ExpensesContext);
   const [inputs, setInputs] = useState({
     amount: {
       value: defaultValues ? defaultValues.amount.toString() : "",
@@ -18,6 +20,10 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
     },
     description: {
       value: defaultValues ? defaultValues.description : "",
+      isValid: true,
+    },
+    email: {
+      value: defaultValues ? defaultValues.email : expCtx.email,
       isValid: true,
     },
   });
@@ -36,6 +42,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
       amount: +inputs.amount.value,
       date: new Date(inputs.date.value),
       description: inputs.description.value,
+      email: inputs.email.value,
     };
 
     const amountIsValid = !isNaN(expenseData.amount) && expenseData.amount > 0;

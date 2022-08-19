@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable } from "react-native";
+import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 
 function PlaceItem({ place }) {
   return (

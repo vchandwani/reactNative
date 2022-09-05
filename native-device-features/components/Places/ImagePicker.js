@@ -1,17 +1,21 @@
-import { Alert, Button, View, Image, Text, StyleSheet } from "react-native";
+import { Alert, View, Image, Text, StyleSheet } from "react-native";
 import {
   launchCameraAsync,
   useCameraPermissions,
   PermissionStatus,
 } from "expo-image-picker";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Colors } from "../../constants/colors";
 import OutlinedButton from "../UI/OutlinedButton";
 
-function ImagePicker() {
+function ImagePicker({ onTakeImage }) {
   const [pickedImage, setPickedImage] = useState();
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions();
+
+  useEffect(() => {
+    onTakeImage(pickedImage);
+  }, [pickedImage, onTakeImage]);
 
   async function verifyPermissions() {
     if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {

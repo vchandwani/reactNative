@@ -1,14 +1,22 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { GlobalStyles } from '../../constants/styles';
 
-function Input({ label, invalid, style, textInputConfig }) {
+function Date({ label, invalid, style, textInputConfig }) {
     const inputStyles = [styles.input];
 
-    if (textInputConfig && textInputConfig.multiline) {
-        inputStyles.push(styles.inputMultiline);
-    }
+    const [date, setDate] = useState(new Date(textInputConfig?.value));
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
 
+    const onChange = (event, selectedDate) => {
+        const currentDate = selectedDate;
+        setShow(false);
+        textInputConfig.onChangedate = currentDate;
+        setDate(currentDate);
+    };
     if (invalid) {
         inputStyles.push(styles.invalidInput);
     }
@@ -18,12 +26,18 @@ function Input({ label, invalid, style, textInputConfig }) {
             <Text style={[styles.label, invalid && styles.invalidLabel]}>
                 {label}
             </Text>
-            <TextInput style={inputStyles} {...textInputConfig} />
+            <DateTimePicker
+                testID='dateTimePicker'
+                value={date}
+                mode={mode}
+                is24Hour={true}
+                onChange={onChange}
+            />
         </View>
     );
 }
 
-export default Input;
+export default Date;
 
 const styles = StyleSheet.create({
     inputContainer: {
@@ -41,10 +55,6 @@ const styles = StyleSheet.create({
         padding: 6,
         borderRadius: 6,
         fontSize: 18,
-    },
-    inputMultiline: {
-        minHeight: 100,
-        textAlignVertical: 'top',
     },
     invalidLabel: {
         color: GlobalStyles.colors.error500,

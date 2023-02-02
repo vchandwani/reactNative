@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 
 import { StyleSheet, Text, View } from 'react-native';
 import { ExpensesContext } from '../store/expenses-context';
+import { GlobalStyles } from '../constants/styles';
 
 function WelcomeScreen() {
     const [fetchedMessage, setFetchedMesssage] = useState('');
@@ -24,8 +25,10 @@ function WelcomeScreen() {
     return (
         <View style={styles.rootContainer}>
             <Text style={styles.title}>Welcome!</Text>
-            <Text>You authenticated successfully!</Text>
-            <Text>{fetchedMessage}</Text>
+            <Text style={styles.description}>
+                You authenticated successfully!
+            </Text>
+            <Text style={styles.description}>{fetchedMessage}</Text>
         </View>
     );
 }
@@ -43,5 +46,11 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 8,
+        color: GlobalStyles.colors.font,
+    },
+    description: {
+        fontSize: 16,
+        marginBottom: 8,
+        color: GlobalStyles.colors.font,
     },
 });

@@ -6,7 +6,7 @@ import FlatButton from '../UI/FlatButton';
 import AuthForm from './AuthForm';
 import { GlobalStyles } from '../../constants/styles';
 
-function AuthContent({ isLogin, onAuthenticate }) {
+function AuthContent({ isLogin, onAuthenticate, error }) {
     const navigation = useNavigation();
 
     const [credentialsInvalid, setCredentialsInvalid] = useState({
@@ -61,6 +61,7 @@ function AuthContent({ isLogin, onAuthenticate }) {
                 isLogin={isLogin}
                 onSubmit={submitHandler}
                 credentialsInvalid={credentialsInvalid}
+                error={error}
             />
             <View style={styles.buttons}>
                 <FlatButton onPress={switchAuthModeHandler}>

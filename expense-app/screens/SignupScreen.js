@@ -1,5 +1,4 @@
 import { useContext, useState } from 'react';
-import { Alert } from 'react-native';
 
 import AuthContent from '../components/Auth/AuthContent';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
@@ -8,6 +7,7 @@ import { createUser } from '../util/auth';
 
 function SignupScreen() {
     const [isAuthenticating, setIsAuthenticating] = useState(false);
+    const [error, setError] = useState(null);
 
     const expCtx = useContext(ExpensesContext);
 
@@ -17,10 +17,11 @@ function SignupScreen() {
             const userData = await createUser(email, password);
             expCtx.authenticate(userData.token, userData.email);
         } catch (error) {
-            Alert.alert(
-                'Authentication Failed',
-                'Could not create user. Please check your input or try again later!'
-            );
+            setError({
+                title: 'Authentication Failed',
+                message:
+                    'Could not create user. Please check your input or try again later!',
+            });
             setIsAuthenticating(false);
         }
     }
@@ -29,7 +30,7 @@ function SignupScreen() {
         return <LoadingOverlay message='Creating user...' />;
     }
 
-    return <AuthContent onAuthenticate={signupHandler} />;
+    return <AuthContent onAuthenticate={signupHandler} error={error} />;
 }
 
 export default SignupScreen;

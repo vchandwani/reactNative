@@ -10,6 +10,7 @@ import { fetchExpenses } from '../util/http';
 function RecentExpenses() {
     const [isFetching, setIsFetching] = useState(true);
     const [error, setError] = useState();
+    const [recentExpenses, setRecentExpenses] = useState();
 
     const expensesCtx = useContext(ExpensesContext);
 
@@ -28,6 +29,16 @@ function RecentExpenses() {
         }
         getExpenses();
     }, []);
+    useEffect(() => {
+        setRecentExpenses(
+            expensesCtx.expenses.filter((expense) => {
+                const today = new Date();
+                const date14DaysAgo = getDateMinusDays(today, 14);
+
+                return expense.date >= date14DaysAgo && expense.date <= today;
+            })
+        );
+    }, [expensesCtx.expenses]);
     function errorHandler() {
         setError(null);
     }
@@ -37,12 +48,6 @@ function RecentExpenses() {
     if (isFetching) {
         return <LoadingOverlay />;
     }
-    const recentExpenses = expensesCtx.expenses.filter((expense) => {
-        const today = new Date();
-        const date14DaysAgo = getDateMinusDays(today, 14);
-
-        return expense.date >= date14DaysAgo && expense.date <= today;
-    });
 
     return (
         <ExpensesOutput

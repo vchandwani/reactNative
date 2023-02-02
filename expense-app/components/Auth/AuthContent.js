@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import FlatButton from '../UI/FlatButton';
@@ -40,10 +40,6 @@ function AuthContent({ isLogin, onAuthenticate, error }) {
             !passwordIsValid ||
             (!isLogin && (!emailsAreEqual || !passwordsAreEqual))
         ) {
-            Alert.alert(
-                'Invalid input',
-                'Please check your entered credentials.'
-            );
             setCredentialsInvalid({
                 email: !emailIsValid,
                 confirmEmail: !emailIsValid || !emailsAreEqual,

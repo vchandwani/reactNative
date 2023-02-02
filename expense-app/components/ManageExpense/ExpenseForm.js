@@ -63,7 +63,6 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
         const descriptionIsValid = expenseData.description.trim().length > 0;
 
         if (!amountIsValid || !dateIsValid || !descriptionIsValid) {
-            // Alert.alert('Invalid input', 'Please check your input values');
             setInputs((curInputs) => {
                 return {
                     amount: {

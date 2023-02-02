@@ -39,16 +39,16 @@ function RecentExpenses() {
     }
     const recentExpenses = expensesCtx.expenses.filter((expense) => {
         const today = new Date();
-        const date7DaysAgo = getDateMinusDays(today, 7);
+        const date14DaysAgo = getDateMinusDays(today, 14);
 
-        return expense.date >= date7DaysAgo && expense.date <= today;
+        return expense.date >= date14DaysAgo && expense.date <= today;
     });
 
     return (
         <ExpensesOutput
             expenses={recentExpenses}
-            expensesPeriod='Last 7 Days'
-            fallbackText='No expenses registered for the last 7 days.'
+            expensesPeriod='Last 14 Days'
+            fallbackText='No transaction registered for the last 14 days.'
         />
     );
 }

@@ -1,7 +1,7 @@
 {
     "expo": {
-        "name": "Expense App",
-        "slug": "ExpenseApp",
+        "name": "Budget App",
+        "slug": "BudgetApp",
         "version": "1.0.0",
         "orientation": "portrait",
         "icon": "./assets/icon.png",

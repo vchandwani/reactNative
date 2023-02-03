@@ -6,7 +6,7 @@ import FlatButton from '../UI/FlatButton';
 import AuthForm from './AuthForm';
 import { GlobalStyles } from '../../constants/styles';
 
-function AuthContent({ isLogin, onAuthenticate, error }) {
+function AuthContent({ isLogin, onAuthenticate, error, notification }) {
     const navigation = useNavigation();
 
     const [credentialsInvalid, setCredentialsInvalid] = useState({
@@ -25,30 +25,41 @@ function AuthContent({ isLogin, onAuthenticate, error }) {
     }
 
     function submitHandler(credentials) {
-        let { email, confirmEmail, password, confirmPassword } = credentials;
-
+        let { email, confirmEmail, password, confirmPassword, resetPassword } =
+            credentials;
         email = email.trim();
-        password = password.trim();
-
         const emailIsValid = email.includes('@');
-        const passwordIsValid = password.length > 6;
-        const emailsAreEqual = email === confirmEmail;
-        const passwordsAreEqual = password === confirmPassword;
 
-        if (
-            !emailIsValid ||
-            !passwordIsValid ||
-            (!isLogin && (!emailsAreEqual || !passwordsAreEqual))
-        ) {
-            setCredentialsInvalid({
-                email: !emailIsValid,
-                confirmEmail: !emailIsValid || !emailsAreEqual,
-                password: !passwordIsValid,
-                confirmPassword: !passwordIsValid || !passwordsAreEqual,
-            });
-            return;
+        if (!resetPassword) {
+            password = password.trim();
+
+            const passwordIsValid = password.length > 6;
+            const emailsAreEqual = email === confirmEmail;
+            const passwordsAreEqual = password === confirmPassword;
+
+            if (
+                !emailIsValid ||
+                !passwordIsValid ||
+                (!isLogin && (!emailsAreEqual || !passwordsAreEqual))
+            ) {
+                setCredentialsInvalid({
+                    email: !emailIsValid,
+                    confirmEmail: !emailIsValid || !emailsAreEqual,
+                    password: !passwordIsValid,
+                    confirmPassword: !passwordIsValid || !passwordsAreEqual,
+                });
+                return;
+            }
+        } else {
+            if (!emailIsValid) {
+                setCredentialsInvalid({
+                    email: !emailIsValid,
+                });
+                return;
+            }
         }
-        onAuthenticate({ email, password });
+
+        onAuthenticate({ email, password, resetPassword });
     }
 
     return (
@@ -58,6 +69,7 @@ function AuthContent({ isLogin, onAuthenticate, error }) {
                 onSubmit={submitHandler}
                 credentialsInvalid={credentialsInvalid}
                 error={error}
+                notification={notification}
             />
             <View style={styles.buttons}>
                 <FlatButton onPress={switchAuthModeHandler}>

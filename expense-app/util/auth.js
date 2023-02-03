@@ -12,11 +12,26 @@ async function authenticate(mode, email, password) {
     });
 
     const userData = response.data;
+
     return { token: userData.idToken, email: userData.email };
+}
+
+async function resetPassword(mode, email) {
+    const url = BACKEND_URL + `${mode}?key=` + API_KEY;
+    const response = await axios.post(url, {
+        email: email,
+        requestType: 'PASSWORD_RESET',
+    });
+
+    const userData = response.data;
+    return { email: userData.email };
 }
 export function createUser(email, password) {
     return authenticate('signUp', email, password);
 }
 export function login(email, password) {
     return authenticate('signInWithPassword', email, password);
+}
+export function passwordReset(email) {
+    return resetPassword('sendOobCode', email);
 }

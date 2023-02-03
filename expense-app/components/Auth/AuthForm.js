@@ -1,10 +1,17 @@
-import { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { GlobalStyles } from '../../constants/styles';
 
 import Button from '../UI/Button';
 import Input from './Input';
-function AuthForm({ isLogin, onSubmit, credentialsInvalid, error }) {
+function AuthForm({
+    isLogin,
+    onSubmit,
+    credentialsInvalid,
+    error,
+    notification,
+}) {
+    const [notificationMsg, setNotificationMsg] = useState(notification);
     const [enteredEmail, setEnteredEmail] = useState('');
     const [enteredConfirmEmail, setEnteredConfirmEmail] = useState('');
     const [enteredPassword, setEnteredPassword] = useState('');
@@ -16,7 +23,9 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid, error }) {
         password: passwordIsInvalid,
         confirmPassword: passwordsDontMatch,
     } = credentialsInvalid;
-
+    useEffect(() => {
+        setNotificationMsg(notification);
+    }, [notification]);
     function updateInputValueHandler(inputType, enteredValue) {
         switch (inputType) {
             case 'email':
@@ -33,7 +42,12 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid, error }) {
                 break;
         }
     }
-
+    function resetHandler() {
+        onSubmit({
+            resetPassword: true,
+            email: enteredEmail,
+        });
+    }
     function submitHandler() {
         onSubmit({
             email: enteredEmail,
@@ -41,6 +55,9 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid, error }) {
             password: enteredPassword,
             confirmPassword: enteredConfirmPassword,
         });
+    }
+    function closeNotification() {
+        setNotificationMsg(null);
     }
 
     return (
@@ -54,6 +71,15 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid, error }) {
                         <Text style={styles.errorLabel}>{error.message}</Text>
                     )}
                 </View>
+            )}
+            {notificationMsg && (
+                <Pressable onPress={closeNotification}>
+                    <View>
+                        <Text style={styles.notificationLabel}>
+                            {notificationMsg}
+                        </Text>
+                    </View>
+                </Pressable>
             )}
             <View>
                 <Input
@@ -102,6 +128,11 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid, error }) {
                         {isLogin ? 'Log In' : 'Sign Up'}
                     </Button>
                 </View>
+                {isLogin && (
+                    <View style={styles.buttons}>
+                        <Button onPress={resetHandler}>Reset Password</Button>
+                    </View>
+                )}
             </View>
         </View>
     );
@@ -118,5 +149,16 @@ const styles = StyleSheet.create({
         marginBottom: 4,
         textAlign: 'center',
         fontWeight: 'bold',
+    },
+    notificationLabel: {
+        color: GlobalStyles.colors.font,
+        backgroundColor: GlobalStyles.colors.primary100,
+        marginBottom: 4,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        minHeight: '20px',
+        height: 'auto',
+        borderRadius: '10px',
+        justifyContent: 'center',
     },
 });

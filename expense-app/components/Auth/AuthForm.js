@@ -130,7 +130,13 @@ function AuthForm({
                 </View>
                 {isLogin && (
                     <View style={styles.buttons}>
-                        <Button onPress={resetHandler}>Reset Password</Button>
+                        <Button
+                            style={styles.resetButton}
+                            mode={'flat'}
+                            onPress={resetHandler}
+                        >
+                            Reset Password
+                        </Button>
                     </View>
                 )}
             </View>
@@ -141,6 +147,9 @@ function AuthForm({
 export default AuthForm;
 
 const styles = StyleSheet.create({
+    resetButton: {
+        backgroundColor: GlobalStyles.colors.primary100,
+    },
     buttons: {
         marginTop: 12,
     },
@@ -152,7 +161,7 @@ const styles = StyleSheet.create({
     },
     notificationLabel: {
         color: GlobalStyles.colors.font,
-        backgroundColor: GlobalStyles.colors.primary100,
+        backgroundColor: GlobalStyles.colors.green700,
         marginBottom: 4,
         textAlign: 'center',
         fontWeight: 'bold',

@@ -35,11 +35,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     buttonText: {
-        color: 'white',
+        color: GlobalStyles.colors.font,
         textAlign: 'center',
     },
     flatText: {
-        color: GlobalStyles.colors.primary200,
+        color: GlobalStyles.colors.font,
     },
     pressed: {
         opacity: 0.75,

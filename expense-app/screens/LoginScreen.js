@@ -2,11 +2,11 @@ import AuthContent from '../components/Auth/AuthContent';
 import { useContext, useState } from 'react';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import { login, passwordReset } from '../util/auth';
-import { ExpensesContext } from '../store/expenses-context';
+import { BudgetsContext } from '../store/budgets-context';
 
 function LoginScreen() {
     const [isAuthenticating, setIsAuthenticating] = useState(false);
-    const expCtx = useContext(ExpensesContext);
+    const budgetCtx = useContext(BudgetsContext);
     const [error, setError] = useState(null);
     const [notification, setNotification] = useState(null);
 
@@ -21,7 +21,7 @@ function LoginScreen() {
                 setNotification('Reset link sent to ' + userData.email);
             } else {
                 const userData = await login(email, password);
-                expCtx.authenticate(userData.token, userData.email);
+                budgetCtx.authenticate(userData.token, userData.email);
             }
         } catch (error) {
             setIsAuthenticating(false);

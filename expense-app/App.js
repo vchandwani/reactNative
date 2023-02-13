@@ -14,9 +14,11 @@ import WelcomeScreen from './screens/WelcomeScreen';
 
 import { GlobalStyles } from './constants/styles';
 import IconButton from './components/UI/IconButton';
-import ExpensesContextProvider, {
-    ExpensesContext,
-} from './store/expenses-context';
+
+import BudgetsContextProvider, {
+    BudgetsContext,
+} from './store/budgets-context';
+import ExpensesContextProvider from './store/expenses-context';
 import { useContext, useState, useEffect } from 'react';
 import AppLoading from 'expo-app-loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,7 +27,7 @@ const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 function ExpensesOverview() {
-    const expCtx = useContext(ExpensesContext);
+    const budgetCtx = useContext(BudgetsContext);
 
     return (
         <BottomTabs.Navigator
@@ -66,7 +68,7 @@ function ExpensesOverview() {
                             icon='exit'
                             color={tintColor}
                             size={24}
-                            onPress={expCtx.logout}
+                            onPress={budgetCtx.logout}
                         />
                     </View>
                 ),
@@ -150,11 +152,11 @@ function AuthenticatedStack() {
 }
 
 function Navigation() {
-    const expCtx = useContext(ExpensesContext);
+    const budgetCtx = useContext(BudgetsContext);
     return (
         <NavigationContainer>
-            {!expCtx.isAuthenticated && <AuthStack />}
-            {expCtx.isAuthenticated && <AuthenticatedStack />}
+            {!budgetCtx.isAuthenticated && <AuthStack />}
+            {budgetCtx.isAuthenticated && <AuthenticatedStack />}
         </NavigationContainer>
     );
 }
@@ -162,7 +164,7 @@ function Navigation() {
 function Root() {
     const [isTryingLogin, setIsTryingLogin] = useState(true);
 
-    const expCtx = useContext(ExpensesContext);
+    const budgetCtx = useContext(BudgetsContext);
 
     useEffect(() => {
         async function fetchToken() {
@@ -170,7 +172,7 @@ function Root() {
             const storedEmail = await AsyncStorage.getItem('email');
 
             if (storedToken) {
-                expCtx.authenticate(storedToken, storedEmail);
+                budgetCtx.authenticate(storedToken, storedEmail);
             }
 
             setIsTryingLogin(false);
@@ -190,9 +192,11 @@ export default function App() {
     return (
         <>
             <StatusBar style='light' />
-            <ExpensesContextProvider>
-                <Root />
-            </ExpensesContextProvider>
+            <BudgetsContextProvider>
+                <ExpensesContextProvider>
+                    <Root />
+                </ExpensesContextProvider>
+            </BudgetsContextProvider>
         </>
     );
 }

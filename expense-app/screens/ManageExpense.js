@@ -6,6 +6,7 @@ import ErrorOverlay from '../components/UI/ErrorOverlay';
 import IconButton from '../components/UI/IconButton';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import { GlobalStyles } from '../constants/styles';
+import { BudgetsContext } from '../store/budgets-context';
 import { ExpensesContext } from '../store/expenses-context';
 import { storeExpense, updateExpense, deleteExpense } from '../util/http';
 
@@ -13,6 +14,7 @@ function ManageExpense({ route, navigation }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState();
 
+    const budgetCtx = useContext(BudgetsContext);
     const expensesCtx = useContext(ExpensesContext);
 
     const editedExpenseId = route.params?.expenseId;
@@ -31,7 +33,7 @@ function ManageExpense({ route, navigation }) {
     async function deleteExpenseHandler() {
         setIsSubmitting(true);
         try {
-            await deleteExpense(editedExpenseId, 'auth=' + expensesCtx.token);
+            await deleteExpense(editedExpenseId, 'auth=' + budgetCtx.token);
             expensesCtx.deleteExpense(editedExpenseId);
             navigation.goBack();
         } catch (error) {
@@ -54,12 +56,12 @@ function ManageExpense({ route, navigation }) {
                 await updateExpense(
                     editedExpenseId,
                     expenseData,
-                    'auth=' + expensesCtx.token
+                    'auth=' + budgetCtx.token
                 );
             } else {
                 const id = await storeExpense(
                     expenseData,
-                    'auth=' + expensesCtx.token
+                    'auth=' + budgetCtx.token
                 );
                 expensesCtx.addExpense({ ...expenseData, id: id });
             }

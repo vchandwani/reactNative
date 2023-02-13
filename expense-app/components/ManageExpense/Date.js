@@ -1,46 +1,69 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { GlobalStyles } from '../../constants/styles';
 
-function Date({ label, invalid, style, textInputConfig }) {
-    const inputStyles = [styles.input];
-
-    const [date, setDate] = useState(new Date(textInputConfig?.value));
+const DateComponent = ({ label, invalid, style, textInputConfig }) => {
+    console.log('textInputConfig');
+    console.log(textInputConfig);
+    const [date, setDate] = useState(
+        textInputConfig.value ? new Date(textInputConfig.value) : new Date()
+    );
+    console.log('date');
+    console.log(date);
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
-
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate;
         setShow(false);
-        textInputConfig.onChangedate = currentDate;
         setDate(currentDate);
     };
-    if (invalid) {
-        inputStyles.push(styles.invalidInput);
-    }
+    const showMode = (currentMode) => {
+        if (Platform.OS === 'android') {
+            setShow(false);
+            // for iOS, add a button that closes the picker
+        }
+        setMode(currentMode);
+    };
+
+    const showDatepicker = () => {
+        showMode('date');
+    };
 
     return (
-        <View style={[styles.inputContainer, style]}>
-            <Text style={[styles.label, invalid && styles.invalidLabel]}>
-                {label}
-            </Text>
-            <DateTimePicker
-                testID='dateTimePicker'
-                value={date}
-                mode={mode}
-                is24Hour={true}
-                onChange={onChange}
+        <View style={[styles.dateContainer, style]}>
+            <Button
+                style={styles.rowInput}
+                onPress={showDatepicker}
+                title={label}
             />
+            {date && (
+                <Text style={[styles.rowInput, styles.input]}>
+                    Date: {date.toDateString()}
+                </Text>
+            )}
+            {show && (
+                <DateTimePicker
+                    style={styles.rowInput}
+                    testID='dateTimePicker'
+                    value={date}
+                    mode={'date'}
+                    is24Hour={true}
+                    onChange={onChange}
+                />
+            )}
         </View>
     );
-}
+};
 
-export default Date;
+export default DateComponent;
 
 const styles = StyleSheet.create({
-    inputContainer: {
+    rowInput: {
+        flex: 1,
+    },
+    dateContainer: {
         marginHorizontal: 4,
         marginVertical: 8,
     },
@@ -50,7 +73,6 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     input: {
-        backgroundColor: GlobalStyles.colors.primary100,
         color: GlobalStyles.colors.font,
         padding: 6,
         borderRadius: 6,

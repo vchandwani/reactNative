@@ -2,20 +2,20 @@ import { useContext, useState } from 'react';
 
 import AuthContent from '../components/Auth/AuthContent';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
-import { ExpensesContext } from '../store/expenses-context';
+import { BudgetsContext } from '../store/budgets-context';
 import { createUser } from '../util/auth';
 
 function SignupScreen() {
     const [isAuthenticating, setIsAuthenticating] = useState(false);
     const [error, setError] = useState(null);
 
-    const expCtx = useContext(ExpensesContext);
+    const budgetCtx = useContext(BudgetsContext);
 
     async function signupHandler({ email, password }) {
         setIsAuthenticating(true);
         try {
             const userData = await createUser(email, password);
-            expCtx.authenticate(userData.token, userData.email);
+            budgetCtx.authenticate(userData.token, userData.email);
         } catch (error) {
             setError({
                 title: 'Authentication Failed',

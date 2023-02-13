@@ -7,11 +7,6 @@ export const ExpensesContext = createContext({
     setExpenses: (expenses) => {},
     deleteExpense: (id) => {},
     updateExpense: (id, { description, amount, date, email }) => {},
-    token: '',
-    email: '',
-    isAuthenticated: false,
-    authenticate: (token, email) => {},
-    logout: () => {},
 });
 
 function expensesReducer(state, action) {
@@ -40,23 +35,6 @@ function expensesReducer(state, action) {
 function ExpensesContextProvider({ children }) {
     const [expensesState, dispatch] = useReducer(expensesReducer, []);
 
-    const [authToken, setAuthToken] = useState();
-    const [email, setEmail] = useState();
-
-    function authenticate(token, email = '') {
-        setAuthToken(token);
-        setEmail(email);
-        AsyncStorage.setItem('token', token);
-        AsyncStorage.setItem('email', email);
-    }
-
-    function logout() {
-        setAuthToken(null);
-        setEmail(null);
-        AsyncStorage.removeItem('token');
-        AsyncStorage.removeItem('email');
-    }
-
     function addExpense(expenseData) {
         dispatch({ type: 'ADD', payload: expenseData });
     }
@@ -79,11 +57,6 @@ function ExpensesContextProvider({ children }) {
         addExpense: addExpense,
         deleteExpense: deleteExpense,
         updateExpense: updateExpense,
-        token: authToken,
-        email: email,
-        isAuthenticated: !!authToken,
-        authenticate: authenticate,
-        logout: logout,
     }));
 
     return (

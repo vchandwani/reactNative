@@ -4,6 +4,7 @@ import ExpensesOutput from '../components/ExpensesOutput/ExpensesOutput';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import { ExpensesContext } from '../store/expenses-context';
+import { BudgetsContext } from '../store/budgets-context';
 import { getDateMinusDays } from '../util/date';
 import { fetchExpenses } from '../util/http';
 
@@ -12,16 +13,17 @@ function RecentExpenses() {
     const [error, setError] = useState();
     const [recentExpenses, setRecentExpenses] = useState();
 
-    const expensesCtx = useContext(ExpensesContext);
+    const expCtx = useContext(ExpensesContext);
+    const budgetCtx = useContext(BudgetsContext);
 
     useEffect(() => {
         async function getExpenses() {
             setIsFetching(true);
             try {
-                const token = expensesCtx.token;
-                const email = expensesCtx.email;
+                const token = budgetCtx.token;
+                const email = budgetCtx.email;
                 const expenses = await fetchExpenses('auth=' + token, email);
-                expensesCtx.setExpenses(expenses);
+                expCtx.setExpenses(expenses);
             } catch (error) {
                 setError('Could not fetch');
             }
@@ -31,14 +33,14 @@ function RecentExpenses() {
     }, []);
     useEffect(() => {
         setRecentExpenses(
-            expensesCtx.expenses.filter((expense) => {
+            expCtx.expenses.filter((expense) => {
                 const today = new Date();
                 const date14DaysAgo = getDateMinusDays(today, 14);
 
                 return expense.date >= date14DaysAgo && expense.date <= today;
             })
         );
-    }, [expensesCtx.expenses]);
+    }, [expCtx.expenses]);
     function errorHandler() {
         setError(null);
     }

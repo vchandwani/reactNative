@@ -2,14 +2,14 @@ import { useContext, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Input from './Input';
-import Date from './Date';
+import DateComponent from './Date';
 import Button from '../UI/Button';
 import { getFormattedDate } from '../../util/date';
 import { GlobalStyles } from '../../constants/styles';
-import { ExpensesContext } from '../../store/expenses-context';
+import { BudgetsContext } from '../../store/budgets-context';
 
 function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
-    const expCtx = useContext(ExpensesContext);
+    const budgetCtx = useContext(BudgetsContext);
     const [inputs, setInputs] = useState({
         amount: {
             value: defaultValues ? defaultValues.amount.toString() : '',
@@ -24,7 +24,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
             isValid: true,
         },
         email: {
-            value: defaultValues ? defaultValues.email : expCtx.email,
+            value: defaultValues ? defaultValues.email : budgetCtx.email,
             isValid: true,
         },
     });
@@ -37,12 +37,12 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
             };
         });
     }
-    function dateChangedHandler(inputIdentifier, enteredValue) {
+    function dateChangedHandler(dateIdentifier, enteredValue) {
         setInputs((curInputs) => {
             return {
                 ...curInputs,
-                [inputIdentifier]: {
-                    value: new Date(enteredValue),
+                [dateIdentifier]: {
+                    value: enteredValue,
                     isValid: true,
                 },
             };
@@ -90,27 +90,26 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
     return (
         <View style={styles.form}>
             <Text style={styles.title}>Your Expense</Text>
-            <View style={styles.inputsRow}>
-                <Input
-                    style={styles.rowInput}
-                    label='Amount'
-                    invalid={!inputs.amount.isValid}
-                    textInputConfig={{
-                        keyboardType: 'decimal-pad',
-                        onChangeText: inputChangedHandler.bind(this, 'amount'),
-                        value: inputs.amount.value,
-                    }}
-                />
-                <Date
-                    style={styles.rowInput}
-                    label='Date'
-                    invalid={!inputs.date.isValid}
-                    textInputConfig={{
-                        onChangedate: dateChangedHandler.bind(this, 'date'),
-                        value: inputs.date.value,
-                    }}
-                />
-            </View>
+            <Input
+                style={styles.rowInput}
+                label='Amount'
+                invalid={!inputs.amount.isValid}
+                textInputConfig={{
+                    keyboardType: 'decimal-pad',
+                    onChangeText: inputChangedHandler.bind(this, 'amount'),
+                    value: inputs.amount.value,
+                }}
+            />
+            <DateComponent
+                style={styles.rowInput}
+                label='Date'
+                invalid={!inputs.date.isValid}
+                textInputConfig={{
+                    onChangedate: dateChangedHandler.bind(this, 'date'),
+                    value: inputs.date.value,
+                }}
+            />
+
             <Input
                 label='Description'
                 invalid={!inputs.description.isValid}

@@ -1,30 +1,22 @@
-import { useContext, useEffect, useState } from 'react';
-import {
-    StyleSheet,
-    Text,
-    View,
-    CheckBox,
-    useWindowDimensions,
-    TouchableOpacity,
-    Animated,
-    StatusBar,
-    Dimensions,
-} from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, View, CheckBox, StatusBar } from 'react-native';
 
 import Select from './Select';
 import Input from './Input';
 import Button from '../UI/Button';
 import { GlobalStyles } from '../../constants/styles';
-import { BudgetsContext } from '../../store/budgets-context';
 import { EXPENSETYPE } from '../../util/constants';
 
-function BudgetForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
-    const [budgetInfo, setBudgetInfo] = useState({});
-
-    const budgetCtx = useContext(BudgetsContext);
+function BudgetForm({
+    submitButtonLabel,
+    onCancel,
+    onSubmit,
+    defaultValues,
+    budgetInfo,
+}) {
     const [inputs, setInputs] = useState({
         amount: {
-            value: defaultValues ? defaultValues.amount.toString() : '',
+            value: defaultValues ? defaultValues?.amount?.toString() : '',
             isValid: true,
         },
         name: {
@@ -36,21 +28,15 @@ function BudgetForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
             isValid: true,
         },
         category: {
-            value: defaultValues ? defaultValues.category : EXPENSETYPE.expense,
+            value: defaultValues ? defaultValues?.category : EXPENSETYPE[0].id,
             isValid: true,
         },
     });
 
-    useEffect(() => {
-        setBudgetInfo(budgetCtx.budgets[0]);
-    }, [budgetCtx.budgets]);
-
     function inputChangedHandler(inputIdentifier, enteredValue) {
-        setInputs((curInputs) => {
-            return {
-                ...curInputs,
-                [inputIdentifier]: { value: enteredValue, isValid: true },
-            };
+        setInputs({
+            ...inputs,
+            [inputIdentifier]: { value: enteredValue, isValid: true },
         });
     }
 
@@ -96,79 +82,98 @@ function BudgetForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
         !inputs.category.isValid;
 
     return (
-        <View style={styles.form}>
+        <View style={styles.container}>
             {budgetInfo && <Text style={styles.title}>{budgetInfo.name}</Text>}
-            <View style={styles.fieldContainer}>
-                <Input
-                    style={styles.container}
-                    label='Name'
-                    invalid={!inputs.name.isValid}
-                    textInputConfig={{
-                        onChangeText: inputChangedHandler.bind(this, 'name'),
-                        value: inputs.name.value,
-                    }}
-                />
-                {!inputs.name.isValid && (
-                    <Text style={styles.errorText}>Please enter value</Text>
-                )}
-            </View>
-            <View style={styles.fieldContainer}>
-                <Input
-                    style={styles.container}
-                    label='Amount'
-                    invalid={!inputs.amount.isValid}
-                    textInputConfig={{
-                        keyboardType: 'decimal-pad',
-                        onChangeText: inputChangedHandler.bind(this, 'amount'),
-                        value: inputs.amount.value,
-                    }}
-                />
-                {!inputs.amount.isValid && (
-                    <Text style={styles.errorText}>Please enter value</Text>
-                )}
-            </View>
-            <View style={styles.fieldContainer}>
-                <Select
-                    style={styles.container}
-                    label='Category'
-                    invalid={!inputs.category.isValid}
-                    textInputConfig={{
-                        onChangeText: inputChangedHandler.bind(
+            <View style={styles.form}>
+                <View style={styles.fieldContainer}>
+                    <Input
+                        style={styles.container}
+                        label='Name'
+                        invalid={!inputs.name.isValid}
+                        textInputConfig={{
+                            onChangeText: inputChangedHandler.bind(
+                                this,
+                                'name'
+                            ),
+                            value: inputs.name.value,
+                        }}
+                    />
+                    {!inputs.name.isValid && (
+                        <Text style={styles.errorText}>Please enter value</Text>
+                    )}
+                </View>
+                <View style={styles.fieldContainer}>
+                    <Input
+                        style={styles.container}
+                        label='Amount'
+                        invalid={!inputs.amount.isValid}
+                        textInputConfig={{
+                            keyboardType: 'decimal-pad',
+                            onChangeText: inputChangedHandler.bind(
+                                this,
+                                'amount'
+                            ),
+                            value: inputs.amount.value,
+                        }}
+                    />
+                    {!inputs.amount.isValid && (
+                        <Text style={styles.errorText}>Please enter value</Text>
+                    )}
+                </View>
+                <View style={styles.fieldContainer}>
+                    <Select
+                        style={styles.container}
+                        label='Category'
+                        invalid={!inputs.category.isValid}
+                        textInputConfig={{
+                            onChangeText: inputChangedHandler.bind(
+                                this,
+                                'category'
+                            ),
+                            value: inputs.category.value,
+                        }}
+                        data={EXPENSETYPE}
+                    />
+                    {!inputs.category.isValid && (
+                        <Text style={styles.errorText}>
+                            Please select value
+                        </Text>
+                    )}
+                </View>
+                <View style={styles.fieldContainer}>
+                    <CheckBox
+                        style={styles.checkbox}
+                        value={inputs.recurring.value}
+                        onValueChange={inputChangedHandler.bind(
                             this,
-                            'category'
-                        ),
-                        value: inputs.category.value,
-                    }}
-                    data={EXPENSETYPE}
-                />
-                {!inputs.category.isValid && (
-                    <Text style={styles.errorText}>Please select value</Text>
-                )}
-            </View>
-            <View style={styles.fieldContainer}>
-                <CheckBox
-                    style={styles.checkbox}
-                    value={inputs.recurring.value}
-                    onValueChange={inputChangedHandler.bind(this, 'recurring')}
-                />
-                <Text style={styles.label}>Recurring?</Text>
+                            'recurring'
+                        )}
+                    />
+                    <Text style={styles.label}>Recurring?</Text>
 
-                {!inputs.recurring.isValid && (
-                    <Text style={styles.errorText}>Please select value</Text>
+                    {!inputs.recurring.isValid && (
+                        <Text style={styles.errorText}>
+                            Please select value
+                        </Text>
+                    )}
+                </View>
+                {formIsInvalid && (
+                    <Text style={styles.errorText}>
+                        Invalid input values - please check your entered data!
+                    </Text>
                 )}
-            </View>
-            {formIsInvalid && (
-                <Text style={styles.errorText}>
-                    Invalid input values - please check your entered data!
-                </Text>
-            )}
-            <View style={styles.buttons}>
-                <Button style={styles.button} mode='flat' onPress={onCancel}>
-                    Cancel
-                </Button>
-                <Button style={styles.button} onPress={submitHandler}>
-                    {submitButtonLabel}
-                </Button>
+                <View style={styles.buttons}>
+                    <Button
+                        style={styles.button}
+                        mode='flat'
+                        onPress={onCancel}
+                    >
+                        Cancel
+                    </Button>
+                    <Button style={styles.button} onPress={submitHandler}>
+                        {submitButtonLabel}
+                    </Button>
+                </View>
             </View>
         </View>
     );
@@ -178,7 +183,7 @@ export default BudgetForm;
 
 const styles = StyleSheet.create({
     form: {
-        marginTop: 40,
+        marginTop: 10,
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -187,7 +192,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         color: GlobalStyles.colors.font,
-        marginVertical: 24,
+        margin: 10,
         textAlign: 'center',
     },
     inputsRow: {
@@ -230,13 +235,13 @@ const styles = StyleSheet.create({
         paddingTop: StatusBar.currentHeight,
         color: 'black',
         backgroundColor: 'white',
-        font: '20px',
+        fontSize: 20,
     },
     tabItem: {
         flex: 1,
         alignItems: 'center',
         padding: 16,
         color: 'red',
-        font: '20px',
+        fontSize: 20,
     },
 });

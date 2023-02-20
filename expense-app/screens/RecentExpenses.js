@@ -26,6 +26,9 @@ function RecentExpenses() {
                 expCtx.setExpenses(expenses);
             } catch (error) {
                 setError('Could not fetch');
+                if (error.response.status === 401) {
+                    budgetCtx.logout();
+                }
             }
             setIsFetching(false);
         }

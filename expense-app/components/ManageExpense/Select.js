@@ -1,7 +1,6 @@
 import { StyleSheet, View, Text, Picker } from 'react-native';
 
 import { GlobalStyles } from '../../constants/styles';
-import { EXPENSETYPE } from '../../util/constants';
 
 function Select({ label, invalid, style, textInputConfig, data }) {
     const inputStyles = [styles.input];
@@ -24,8 +23,15 @@ function Select({ label, invalid, style, textInputConfig, data }) {
                     textInputConfig.onChangeText(itemValue)
                 }
             >
-                <Picker.Item label={EXPENSETYPE[0]} value={EXPENSETYPE[0]} />
-                <Picker.Item label={EXPENSETYPE[1]} value={EXPENSETYPE[1]} />
+                {data.map((val) => {
+                    return (
+                        <Picker.Item
+                            label={val.label}
+                            value={val.id}
+                            key={val.id}
+                        />
+                    );
+                })}
             </Picker>
         </View>
     );

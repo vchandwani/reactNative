@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const BudgetsContext = createContext({
     budgets: [],
-    addBudget: ({ name, amount, category, recurring }) => {},
+    addBudgetEntry: ({ name, amount, category, recurring }, budgetId) => {},
     setBudgets: (budgets) => {},
     deleteBudget: (id) => {},
     updateBudget: (id, { name, amount, category, recurring }) => {},
@@ -16,8 +16,15 @@ export const BudgetsContext = createContext({
 
 function budgetsReducer(state, action) {
     switch (action.type) {
-        case 'ADD':
-            return [action.payload, ...state];
+        case 'ADDENTRY':
+            let selectedBudgetStateIndex = state.findIndex(
+                (el) => el.id === action.budgetId
+            );
+
+            state[selectedBudgetStateIndex].entries[action.payload.id] =
+                action.payload;
+
+            return state;
         case 'SET':
             const inverted = action.payload.reverse();
             return inverted;
@@ -57,8 +64,8 @@ function BudgetsContextProvider({ children }) {
         AsyncStorage.removeItem('email');
     }
 
-    function addBudget(budgetData) {
-        dispatch({ type: 'ADD', payload: budgetData });
+    function addBudgetEntry(budgetData, budgetId) {
+        dispatch({ type: 'ADDENTRY', payload: budgetData, budgetId: budgetId });
     }
 
     function setBudgets(budgets) {
@@ -76,7 +83,7 @@ function BudgetsContextProvider({ children }) {
     const value = useMemo(() => ({
         budgets: budgetsState,
         setBudgets: setBudgets,
-        addBudget: addBudget,
+        addBudgetEntry: addBudgetEntry,
         deleteBudget: deleteBudget,
         updateBudget: updateBudget,
         token: authToken,

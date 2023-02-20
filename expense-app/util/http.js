@@ -39,9 +39,9 @@ export function deleteExpense(id, auth) {
     return axios.delete(BACKEND_URL + `expenses/${id}.json?` + auth);
 }
 
-export async function storeBudget(budgetData, auth) {
+export async function storeBudgetEntry(budgetId, budgetData, auth) {
     const response = await axios.post(
-        BACKEND_URL + 'budget.json?' + auth,
+        BACKEND_URL + 'budget/' + budgetId + '/entries.json?' + auth,
         budgetData
     );
     //TODO: check

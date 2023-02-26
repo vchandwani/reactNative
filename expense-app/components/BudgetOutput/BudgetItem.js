@@ -7,8 +7,9 @@ function BudgetItem({ id, name, amount, category, recurring }) {
     const navigation = useNavigation();
 
     function budgetPressHandler() {
-        navigation.navigate('ManageBudget', {
-            budgetId: id,
+        navigation.navigate('WelcomeScreen', {
+            entriesId: id,
+            index: 1,
         });
     }
 
@@ -19,16 +20,24 @@ function BudgetItem({ id, name, amount, category, recurring }) {
         >
             <View style={styles.item}>
                 <View>
-                    <Text style={[styles.textBase, styles.description]}>
-                        {name}
-                    </Text>
-                    <Text style={[styles.textBase, styles.smallDescription]}>
-                        {recurring && 'Recurring '.concat(category)}
-                    </Text>
+                    {name && (
+                        <Text style={[styles.textBase, styles.description]}>
+                            {name}
+                        </Text>
+                    )}
+                    {category && (
+                        <Text
+                            style={[styles.textBase, styles.smallDescription]}
+                        >
+                            {recurring && 'Recurring '.concat(category)}
+                        </Text>
+                    )}
                 </View>
-                <View style={styles.amountContainer}>
-                    <Text style={styles.amount}>{amount.toFixed(2)}</Text>
-                </View>
+                {amount && (
+                    <View style={styles.amountContainer}>
+                        <Text style={styles.amount}>{amount.toFixed(2)}</Text>
+                    </View>
+                )}
             </View>
         </Pressable>
     );

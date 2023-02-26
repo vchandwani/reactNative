@@ -5,13 +5,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { GlobalStyles } from '../../constants/styles';
 
 const DateComponent = ({ label, invalid, style, textInputConfig }) => {
-    console.log('textInputConfig');
-    console.log(textInputConfig);
     const [date, setDate] = useState(
         textInputConfig.value ? new Date(textInputConfig.value) : new Date()
     );
-    console.log('date');
-    console.log(date);
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const onChange = (event, selectedDate) => {

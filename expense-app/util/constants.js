@@ -1,6 +1,6 @@
 export const EXPENSETYPE = [
-    { id: 'Expense', label: EXPENSE },
-    { id: 'Income', label: INCOME },
+    { id: 'Expense', label: 'Expense' },
+    { id: 'Income', label: 'Income' },
 ];
 
 export const EXPENSE = 'Expense';

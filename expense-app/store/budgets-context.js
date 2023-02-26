@@ -5,8 +5,12 @@ export const BudgetsContext = createContext({
     budgets: [],
     addBudgetEntry: ({ name, amount, category, recurring }, budgetId) => {},
     setBudgets: (budgets) => {},
-    deleteBudget: (id) => {},
-    updateBudget: (id, { name, amount, category, recurring }) => {},
+    deleteBudgetEntry: (id, budgetId) => {},
+    updateBudgetEntry: (
+        id,
+        { name, amount, category, recurring },
+        budgetId
+    ) => {},
     token: '',
     email: '',
     isAuthenticated: false,
@@ -28,17 +32,19 @@ function budgetsReducer(state, action) {
         case 'SET':
             const inverted = action.payload.reverse();
             return inverted;
-        case 'UPDATE':
+        case 'UPDATEENTRY':
             const updatableBudgetIndex = state.findIndex(
-                (budget) => budget.id === action.payload.id
+                (budget) => budget.id === action.budgetId
             );
-            const updatableBudget = state[updatableBudgetIndex];
-            const updatedItem = { ...updatableBudget, ...action.payload.data };
-            const updatedBudgets = [...state];
-            updatedBudgets[updatableBudgetIndex] = updatedItem;
-            return updatedBudgets;
-        case 'DELETE':
-            return state.filter((budget) => budget.id !== action.payload);
+            state[updatableBudgetIndex].entries[action.payload.id] =
+                action.payload.data;
+            return state;
+        case 'DELETEENTRY':
+            const budgetIndex = state.findIndex(
+                (budget) => budget.id === action.budgetId
+            );
+            delete state[budgetIndex]['entries'][action.payload];
+            return state;
         default:
             return state;
     }
@@ -72,20 +78,24 @@ function BudgetsContextProvider({ children }) {
         dispatch({ type: 'SET', payload: budgets });
     }
 
-    function deleteBudget(id) {
-        dispatch({ type: 'DELETE', payload: id });
+    function deleteBudgetEntry(id, budgetId) {
+        dispatch({ type: 'DELETEENTRY', payload: id, budgetId: budgetId });
     }
 
-    function updateBudget(id, budgetData) {
-        dispatch({ type: 'UPDATE', payload: { id: id, data: budgetData } });
+    function updateBudgetEntry(id, entryData, budgetId) {
+        dispatch({
+            type: 'UPDATEENTRY',
+            payload: { id: id, data: entryData },
+            budgetId: budgetId,
+        });
     }
 
     const value = useMemo(() => ({
         budgets: budgetsState,
         setBudgets: setBudgets,
         addBudgetEntry: addBudgetEntry,
-        deleteBudget: deleteBudget,
-        updateBudget: updateBudget,
+        deleteBudgetEntry: deleteBudgetEntry,
+        updateBudgetEntry: updateBudgetEntry,
         token: authToken,
         email: email,
         isAuthenticated: !!authToken,

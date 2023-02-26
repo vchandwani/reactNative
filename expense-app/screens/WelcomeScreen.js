@@ -13,15 +13,16 @@ import { GlobalStyles } from '../constants/styles';
 import BudgetForm from '../components/ManageExpense/BudgetForm';
 import {
     storeBudgetEntry,
-    updateBudget,
-    deleteBudget,
+    updateBudgetEntry,
     fetchBudget,
+    deleteBudgetEntry,
 } from '../util/http';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Select from '../components/ManageExpense/Select';
 import BudgetOutput from '../components/BudgetOutput/BudgetOutput';
+import IconButton from '../components/UI/IconButton';
 
 function WelcomeScreen({ route, navigation }) {
     const [fetchedMessage, setFetchedMesssage] = useState('');
@@ -37,9 +38,11 @@ function WelcomeScreen({ route, navigation }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState();
 
-    const editedBudgetId = route.params?.budgetId;
-    const isEditing = !!editedBudgetId;
-
+    const editedEntriesId = route.params?.entriesId;
+    const isEditing = !!editedEntriesId;
+    const selectedEntry = editedEntriesId
+        ? budgetInfo?.entries[editedEntriesId]
+        : null;
     const layout = useWindowDimensions();
 
     const [index, setIndex] = useState(0);
@@ -68,9 +71,19 @@ function WelcomeScreen({ route, navigation }) {
                     submitButtonLabel={isEditing ? 'Update' : 'Add'}
                     onSubmit={confirmHandler}
                     onCancel={cancelHandler}
-                    defaultValues={null} //TODO:
+                    defaultValues={selectedEntry}
                     budgetInfo={budgetInfo}
                 />
+                {isEditing && (
+                    <View style={styles.deleteContainer}>
+                        <IconButton
+                            icon='trash'
+                            color={GlobalStyles.colors.error500}
+                            size={36}
+                            onPress={deleteBudgetHandler}
+                        />
+                    </View>
+                )}
             </View>
         ),
     });
@@ -86,6 +99,10 @@ function WelcomeScreen({ route, navigation }) {
             });
         fetchBudgets();
     }, [token]);
+
+    useEffect(() => {
+        isEditing && setIndex(route?.params?.index);
+    }, [route?.params?.index, isEditing]);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -113,8 +130,6 @@ function WelcomeScreen({ route, navigation }) {
         setBudgetInfo(
             budgetCtx.budgets.find((el) => el.id === selectedBudgetId)
         );
-        console.log('budgetInfo');
-        console.log(budgetInfo);
     }, [selectedBudgetId]);
 
     async function fetchBudgets() {
@@ -131,11 +146,16 @@ function WelcomeScreen({ route, navigation }) {
     async function deleteBudgetHandler() {
         setIsSubmitting(true);
         try {
-            await deleteBudget(editedBudgetId, 'auth=' + budgetCtx.token);
-            budgetCtx.deleteBudget(editedBudgetId);
-            navigation.goBack();
+            await deleteBudgetEntry(
+                editedEntriesId,
+                budgetInfo.id,
+                'auth=' + budgetCtx.token
+            );
+            budgetCtx.deleteBudgetEntry(editedEntriesId, budgetInfo.id);
+            setIndex(0);
+            setIsSubmitting(false);
         } catch (error) {
-            setError('Could not delete budget - please try again later!');
+            setError('Could not delete entry - please try again later!');
             setIsSubmitting(false);
         }
     }
@@ -144,24 +164,29 @@ function WelcomeScreen({ route, navigation }) {
         navigation.goBack();
     }
 
-    async function confirmHandler(budgetData) {
+    async function confirmHandler(entryData) {
         setIsSubmitting(true);
         try {
             if (isEditing) {
-                budgetCtx.updateBudget(editedBudgetId, budgetData);
-                await updateBudget(
-                    editedBudgetId,
-                    budgetData,
+                await updateBudgetEntry(
+                    editedEntriesId,
+                    entryData,
+                    budgetInfo.id,
                     'auth=' + budgetCtx.token
+                );
+                budgetCtx.updateBudgetEntry(
+                    editedEntriesId,
+                    entryData,
+                    budgetInfo.id
                 );
             } else {
                 const id = await storeBudgetEntry(
                     budgetInfo.id,
-                    budgetData,
+                    entryData,
                     'auth=' + budgetCtx.token
                 );
                 budgetCtx.addBudgetEntry(
-                    { ...budgetData, id: id },
+                    { ...entryData, id: id },
                     budgetInfo.id
                 );
             }
@@ -173,6 +198,7 @@ function WelcomeScreen({ route, navigation }) {
             setIsSubmitting(false);
         }
     }
+
     function errorHandler() {
         setError(null);
     }

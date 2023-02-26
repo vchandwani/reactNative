@@ -39,16 +39,6 @@ export function deleteExpense(id, auth) {
     return axios.delete(BACKEND_URL + `expenses/${id}.json?` + auth);
 }
 
-export async function storeBudgetEntry(budgetId, budgetData, auth) {
-    const response = await axios.post(
-        BACKEND_URL + 'budget/' + budgetId + '/entries.json?' + auth,
-        budgetData
-    );
-    //TODO: check
-    const id = response.data.name;
-    return id;
-}
-
 export async function fetchBudget(auth, email) {
     const response = await axios.get(BACKEND_URL + 'budget.json?' + auth);
     const budget = [];
@@ -70,10 +60,23 @@ export async function fetchBudget(auth, email) {
     return budget;
 }
 
-export function updateBudget(id, budgetData, auth) {
-    return axios.put(BACKEND_URL + `budget/${id}.json?` + auth, budgetData);
+export async function storeBudgetEntry(budgetId, entryData, auth) {
+    const response = await axios.post(
+        BACKEND_URL + `budget/${budgetId}/entries.json?` + auth,
+        entryData
+    );
+    const id = response.data.name;
+    return id;
+}
+export function updateBudgetEntry(id, entryData, budgetId, auth) {
+    return axios.put(
+        BACKEND_URL + `budget/${budgetId}/entries/${id}.json?` + auth,
+        entryData
+    );
 }
 
-export function deleteBudget(id, auth) {
-    return axios.delete(BACKEND_URL + `budget/${id}.json?` + auth);
+export function deleteBudgetEntry(id, budgetId, auth) {
+    return axios.delete(
+        BACKEND_URL + `budget/${budgetId}/entries/${id}.json?` + auth
+    );
 }

@@ -23,22 +23,28 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Select from '../components/ManageExpense/Select';
 import BudgetOutput from '../components/BudgetOutput/BudgetOutput';
 import IconButton from '../components/UI/IconButton';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+import { ExpensesOverview } from '../App';
 
-function WelcomeScreen({ route, navigation }) {
+const BottomTabs = createBottomTabNavigator();
+
+function BudgetData({ route, navigation }) {
     const [fetchedMessage, setFetchedMesssage] = useState('');
     const [budgetInfo, setBudgetInfo] = useState({});
     const [allBudgets, setAllBudgets] = useState({});
-    const [selectedBudgetId, setSelectedBudgetId] = useState({});
     const [budgetOptions, setBudgetOptions] = useState([]);
     const [notification, setNotification] = useState(null);
 
     const budgetCtx = useContext(BudgetsContext);
     const token = budgetCtx.token;
+    const selectedBudgetId = budgetCtx.selectedBudgetId;
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState();
 
     const editedEntriesId = route.params?.entriesId;
+
     const isEditing = !!editedEntriesId;
     const selectedEntry = editedEntriesId
         ? budgetInfo?.entries[editedEntriesId]
@@ -96,6 +102,11 @@ function WelcomeScreen({ route, navigation }) {
             )
             .then((response) => {
                 setFetchedMesssage(response.data);
+            })
+            .catch((error) => {
+                if (error.response.status === 401) {
+                    budgetCtx.logout();
+                }
             });
         fetchBudgets();
     }, [token]);
@@ -106,7 +117,7 @@ function WelcomeScreen({ route, navigation }) {
 
     useLayoutEffect(() => {
         navigation.setOptions({
-            title: 'Budget Management',
+            title: '',
         });
     }, [navigation]);
 
@@ -116,7 +127,7 @@ function WelcomeScreen({ route, navigation }) {
 
     useEffect(() => {
         if (allBudgets.length > 0) {
-            setSelectedBudgetId(allBudgets[0].id);
+            budgetCtx.setSelectedBudgetId(allBudgets[0].id);
             budgetCtx.setBudgets(allBudgets);
             const budgetsOptionsArr = [];
             allBudgets.map((val) => {
@@ -148,10 +159,10 @@ function WelcomeScreen({ route, navigation }) {
         try {
             await deleteBudgetEntry(
                 editedEntriesId,
-                budgetInfo.id,
+                selectedBudgetId,
                 'auth=' + budgetCtx.token
             );
-            budgetCtx.deleteBudgetEntry(editedEntriesId, budgetInfo.id);
+            budgetCtx.deleteBudgetEntry(editedEntriesId, selectedBudgetId);
             setIndex(0);
             setIsSubmitting(false);
         } catch (error) {
@@ -161,7 +172,8 @@ function WelcomeScreen({ route, navigation }) {
     }
 
     function cancelHandler() {
-        navigation.goBack();
+        setIndex(0);
+        navigation.navigate('WelcomeScreen', {});
     }
 
     async function confirmHandler(entryData) {
@@ -171,28 +183,32 @@ function WelcomeScreen({ route, navigation }) {
                 await updateBudgetEntry(
                     editedEntriesId,
                     entryData,
-                    budgetInfo.id,
+                    selectedBudgetId,
                     'auth=' + budgetCtx.token
                 );
                 budgetCtx.updateBudgetEntry(
                     editedEntriesId,
                     entryData,
-                    budgetInfo.id
+                    selectedBudgetId
                 );
             } else {
                 const id = await storeBudgetEntry(
-                    budgetInfo.id,
+                    selectedBudgetId,
                     entryData,
                     'auth=' + budgetCtx.token
                 );
                 budgetCtx.addBudgetEntry(
                     { ...entryData, id: id },
-                    budgetInfo.id
+                    selectedBudgetId
                 );
             }
-            setIndex(0);
+            navigation.navigate('WelcomeScreen', {
+                index: 0,
+            });
             setIsSubmitting(false);
-            setNotification('Entry successfully added');
+            setNotification(
+                'Entry successfully '.concat(+isEditing ? 'Updated' : 'Added')
+            );
         } catch (error) {
             setError('Could not save data - please try again later');
             setIsSubmitting(false);
@@ -210,7 +226,7 @@ function WelcomeScreen({ route, navigation }) {
         return <LoadingOverlay />;
     }
     function inputChangedHandler(field, enteredValue) {
-        setSelectedBudgetId(enteredValue);
+        budgetCtx.setSelectedBudgetId(enteredValue);
     }
 
     return (
@@ -257,12 +273,96 @@ function WelcomeScreen({ route, navigation }) {
         </View>
     );
 }
+function WelcomeScreen({ route, navigation }) {
+    const budgetCtx = useContext(BudgetsContext);
+
+    return (
+        <BottomTabs.Navigator
+            screenOptions={({ navigation }) => ({
+                headerStyle: {
+                    backgroundColor: GlobalStyles.colors.primary500,
+                },
+                headerTintColor: 'white',
+                tabBarStyle: {
+                    backgroundColor: GlobalStyles.colors.primary500,
+                },
+                tabBarActiveTintColor: GlobalStyles.colors.accent500,
+                headerTitle: 'Budget App',
+                headerRight: ({ tintColor }) => (
+                    <View
+                        style={{
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            flexDirection: 'row',
+                        }}
+                    >
+                        <IconButton
+                            icon='home'
+                            size={24}
+                            color={tintColor}
+                            onPress={() => {
+                                navigation.navigate('WelcomeScreen');
+                            }}
+                        />
+                        <IconButton
+                            icon='add'
+                            size={24}
+                            color={tintColor}
+                            onPress={() => {
+                                navigation.navigate('ManageExpense');
+                            }}
+                        />
+                        <IconButton
+                            icon='cash'
+                            size={24}
+                            color={tintColor}
+                            onPress={() => {
+                                navigation.navigate('ExpensesOverview');
+                            }}
+                        />
+
+                        <IconButton
+                            icon='exit'
+                            color={tintColor}
+                            size={24}
+                            onPress={budgetCtx.logout}
+                        />
+                    </View>
+                ),
+            })}
+        >
+            <BottomTabs.Screen
+                name='WelcomeScreen'
+                component={BudgetData}
+                options={{
+                    title: 'Budget',
+                    tabBarLabel: 'Budget Info',
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name='hourglass' size={size} color={color} />
+                    ),
+                }}
+            />
+            <BottomTabs.Screen
+                name='ExpensesOverview'
+                component={ExpensesOverview}
+                options={{
+                    title: 'Expenses Overview',
+                    tabBarLabel: 'Expenses Overview',
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name='calendar' size={size} color={color} />
+                    ),
+                }}
+            />
+        </BottomTabs.Navigator>
+    );
+}
 
 export default WelcomeScreen;
 
 const styles = StyleSheet.create({
     rootContainer: {
         flex: 1,
+        backgroundColor: GlobalStyles.colors.primary800,
     },
     title: {
         fontSize: 20,
@@ -281,10 +381,9 @@ const styles = StyleSheet.create({
         backgroundColor: GlobalStyles.colors.primary800,
     },
     budgetInfo: {
-        justifyContent: 'center',
-        alignContent: 'center',
-        padding: 24,
+        backgroundColor: GlobalStyles.colors.primary800,
         flex: 1,
+        padding: 24,
         backgroundColor: GlobalStyles.colors.primary800,
     },
     notificationLabel: {
@@ -297,5 +396,12 @@ const styles = StyleSheet.create({
         height: 'auto',
         borderRadius: '10px',
         justifyContent: 'center',
+    },
+    deleteContainer: {
+        marginTop: 16,
+        paddingTop: 8,
+        borderTopWidth: 2,
+        borderTopColor: GlobalStyles.colors.primary200,
+        alignItems: 'center',
     },
 });

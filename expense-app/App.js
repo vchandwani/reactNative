@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
 
 import ManageExpense from './screens/ManageExpense';
 import RecentExpenses from './screens/RecentExpenses';
@@ -13,7 +12,6 @@ import SignupScreen from './screens/SignupScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 
 import { GlobalStyles } from './constants/styles';
-import IconButton from './components/UI/IconButton';
 
 import BudgetsContextProvider, {
     BudgetsContext,
@@ -26,9 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
-function ExpensesOverview() {
-    const budgetCtx = useContext(BudgetsContext);
-
+export function ExpensesOverview() {
     return (
         <BottomTabs.Navigator
             screenOptions={({ navigation }) => ({
@@ -40,38 +36,6 @@ function ExpensesOverview() {
                     backgroundColor: GlobalStyles.colors.primary500,
                 },
                 tabBarActiveTintColor: GlobalStyles.colors.accent500,
-                headerRight: ({ tintColor }) => (
-                    <View
-                        style={{
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            flexDirection: 'row',
-                        }}
-                    >
-                        <IconButton
-                            icon='home'
-                            size={24}
-                            color={tintColor}
-                            onPress={() => {
-                                navigation.navigate('WelcomeScreen');
-                            }}
-                        />
-                        <IconButton
-                            icon='add'
-                            size={24}
-                            color={tintColor}
-                            onPress={() => {
-                                navigation.navigate('ManageExpense');
-                            }}
-                        />
-                        <IconButton
-                            icon='exit'
-                            color={tintColor}
-                            size={24}
-                            onPress={budgetCtx.logout}
-                        />
-                    </View>
-                ),
             })}
         >
             <BottomTabs.Screen
@@ -133,6 +97,14 @@ function AuthenticatedStack() {
             }}
         >
             <Stack.Screen
+                name='Welcome Screen'
+                component={WelcomeScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+
+            <Stack.Screen
                 name='ExpensesOverview'
                 component={ExpensesOverview}
                 options={{
@@ -146,7 +118,6 @@ function AuthenticatedStack() {
                     presentation: 'modal',
                 }}
             />
-            <Stack.Screen name='WelcomeScreen' component={WelcomeScreen} />
         </Stack.Navigator>
     );
 }

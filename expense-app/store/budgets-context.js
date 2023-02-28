@@ -5,6 +5,8 @@ export const BudgetsContext = createContext({
     budgets: [],
     addBudgetEntry: ({ name, amount, category, recurring }, budgetId) => {},
     setBudgets: (budgets) => {},
+    selectedBudgetId: '',
+    setSelectedBudgetId: (id) => {},
     deleteBudgetEntry: (id, budgetId) => {},
     updateBudgetEntry: (
         id,
@@ -56,6 +58,8 @@ function BudgetsContextProvider({ children }) {
     const [authToken, setAuthToken] = useState();
     const [email, setEmail] = useState();
 
+    const [budgetId, setBudgetId] = useState();
+
     function authenticate(token, email = '') {
         setAuthToken(token);
         setEmail(email);
@@ -78,6 +82,10 @@ function BudgetsContextProvider({ children }) {
         dispatch({ type: 'SET', payload: budgets });
     }
 
+    function setSelectedBudgetId(id) {
+        setBudgetId(id);
+    }
+
     function deleteBudgetEntry(id, budgetId) {
         dispatch({ type: 'DELETEENTRY', payload: id, budgetId: budgetId });
     }
@@ -93,6 +101,8 @@ function BudgetsContextProvider({ children }) {
     const value = useMemo(() => ({
         budgets: budgetsState,
         setBudgets: setBudgets,
+        selectedBudgetId: budgetId,
+        setSelectedBudgetId: setSelectedBudgetId,
         addBudgetEntry: addBudgetEntry,
         deleteBudgetEntry: deleteBudgetEntry,
         updateBudgetEntry: updateBudgetEntry,

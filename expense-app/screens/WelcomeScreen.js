@@ -17,6 +17,7 @@ import {
     fetchBudget,
     deleteBudgetEntry,
 } from '../util/http';
+import { formatBudgetData } from '../util/data';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -31,8 +32,8 @@ const BottomTabs = createBottomTabNavigator();
 
 function BudgetData({ route, navigation }) {
     const [fetchedMessage, setFetchedMesssage] = useState('');
+    const [budgets, setBudgets] = useState([]);
     const [budgetInfo, setBudgetInfo] = useState({});
-    const [allBudgets, setAllBudgets] = useState({});
     const [budgetOptions, setBudgetOptions] = useState([]);
     const [notification, setNotification] = useState(null);
 
@@ -95,6 +96,7 @@ function BudgetData({ route, navigation }) {
     });
 
     useEffect(() => {
+        setIsSubmitting(true);
         axios
             .get(
                 'https://react-native-course-624d6-default-rtdb.firebaseio.com/message.json?auth=' +
@@ -108,8 +110,12 @@ function BudgetData({ route, navigation }) {
                     budgetCtx.logout();
                 }
             });
-        fetchBudgets();
+        setIsSubmitting(false);
     }, [token]);
+
+    useEffect(() => {
+        fetchBudgets();
+    }, [budgetCtx.email]);
 
     useEffect(() => {
         isEditing && setIndex(route?.params?.index);
@@ -122,20 +128,16 @@ function BudgetData({ route, navigation }) {
     }, [navigation]);
 
     useEffect(() => {
-        setAllBudgets(budgetCtx.budgets);
-    }, [budgetCtx.budgets]);
-
-    useEffect(() => {
-        if (allBudgets.length > 0) {
-            budgetCtx.setSelectedBudgetId(allBudgets[0].id);
-            budgetCtx.setBudgets(allBudgets);
+        if (budgets?.length > 0) {
+            budgetCtx.setBudgets(budgets);
+            budgetCtx.setSelectedBudgetId(budgets[0].id);
             const budgetsOptionsArr = [];
-            allBudgets.map((val) => {
+            budgets.map((val) => {
                 budgetsOptionsArr.push({ id: val.id, label: val.name });
             });
             setBudgetOptions(budgetsOptionsArr);
         }
-    }, [allBudgets]);
+    }, [budgets]);
 
     useEffect(() => {
         setBudgetInfo(
@@ -146,8 +148,15 @@ function BudgetData({ route, navigation }) {
     async function fetchBudgets() {
         setIsSubmitting(true);
         try {
-            const budgets = await fetchBudget('auth=' + token, budgetCtx.email);
-            budgetCtx.setBudgets(budgets);
+            const budgetsData = await fetchBudget(
+                'auth=' + token,
+                budgetCtx.email
+            );
+            const formattedData = await formatBudgetData(
+                budgetsData,
+                budgetCtx.email
+            );
+            setBudgets(formattedData);
         } catch (error) {
             setError('Something went wrong!');
         }

@@ -16,6 +16,7 @@ function ManageExpense({ route, navigation }) {
 
     const budgetCtx = useContext(BudgetsContext);
     const expensesCtx = useContext(ExpensesContext);
+    const selectedBudgetId = budgetCtx.selectedBudgetId;
 
     const editedExpenseId = route.params?.expenseId;
     const isEditing = !!editedExpenseId;
@@ -50,20 +51,21 @@ function ManageExpense({ route, navigation }) {
 
     async function confirmHandler(expenseData) {
         setIsSubmitting(true);
+        const finalData = { ...expenseData, budgetId: selectedBudgetId };
         try {
             if (isEditing) {
-                expensesCtx.updateExpense(editedExpenseId, expenseData);
+                expensesCtx.updateExpense(editedExpenseId, finalData);
                 await updateExpense(
                     editedExpenseId,
-                    expenseData,
+                    finalData,
                     'auth=' + budgetCtx.token
                 );
             } else {
                 const id = await storeExpense(
-                    expenseData,
+                    finalData,
                     'auth=' + budgetCtx.token
                 );
-                expensesCtx.addExpense({ ...expenseData, id: id });
+                expensesCtx.addExpense({ ...finalData, id: id });
             }
             navigation.goBack();
         } catch (error) {

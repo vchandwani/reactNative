@@ -20,9 +20,13 @@ function RecentExpenses() {
         async function getExpenses() {
             setIsFetching(true);
             try {
+                const selectedBudgetId = budgetCtx.selectedBudgetId;
                 const token = budgetCtx.token;
                 const email = budgetCtx.email;
-                const expenses = await fetchExpenses('auth=' + token, email);
+                const expenses = await fetchExpenses(
+                    'auth=' + token,
+                    selectedBudgetId
+                );
                 expCtx.setExpenses(expenses);
             } catch (error) {
                 setError('Could not fetch');

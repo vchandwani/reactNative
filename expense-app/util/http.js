@@ -12,18 +12,19 @@ export async function storeExpense(expenseData, auth) {
     return id;
 }
 
-export async function fetchExpenses(auth, email) {
+export async function fetchExpenses(auth, selectedBudgetId) {
     const response = await axios.get(BACKEND_URL + 'expenses.json?' + auth);
     const expenses = [];
 
     for (const key in response.data) {
-        if (email && response.data[key].email === email) {
+        if (
+            selectedBudgetId &&
+            response.data[key].budgetId === selectedBudgetId
+        ) {
             const expenseObj = {
+                ...response.data[key],
                 id: key,
-                amount: response.data[key].amount,
                 date: new Date(response.data[key].date),
-                description: response.data[key].description,
-                email: response.data[key].email,
             };
             expenses.push(expenseObj);
         }
@@ -39,25 +40,10 @@ export function deleteExpense(id, auth) {
     return axios.delete(BACKEND_URL + `expenses/${id}.json?` + auth);
 }
 
-export async function fetchBudget(auth, email) {
+export async function fetchBudget(auth) {
     const response = await axios.get(BACKEND_URL + 'budget.json?' + auth);
-    const budget = [];
 
-    for (const key in response.data) {
-        if (email && response.data[key].users.includes(email)) {
-            const budgetObj = {
-                id: key,
-                entries: response.data[key].entries
-                    ? response.data[key].entries
-                    : [],
-
-                name: response.data[key].name,
-                users: response.data[key].users,
-            };
-            budget.push(budgetObj);
-        }
-    }
-    return budget;
+    return response.data;
 }
 
 export async function storeBudgetEntry(budgetId, entryData, auth) {

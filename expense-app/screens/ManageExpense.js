@@ -34,7 +34,11 @@ function ManageExpense({ route, navigation }) {
     async function deleteExpenseHandler() {
         setIsSubmitting(true);
         try {
-            await deleteExpense(editedExpenseId, 'auth=' + budgetCtx.token);
+            await deleteExpense(
+                budgetCtx.selectedBudgetId,
+                editedExpenseId,
+                'auth=' + budgetCtx.token
+            );
             expensesCtx.deleteExpense(editedExpenseId);
             navigation.goBack();
         } catch (error) {
@@ -56,12 +60,14 @@ function ManageExpense({ route, navigation }) {
             if (isEditing) {
                 expensesCtx.updateExpense(editedExpenseId, finalData);
                 await updateExpense(
+                    budgetCtx.selectedBudgetId,
                     editedExpenseId,
                     finalData,
                     'auth=' + budgetCtx.token
                 );
             } else {
                 const id = await storeExpense(
+                    budgetCtx.selectedBudgetId,
                     finalData,
                     'auth=' + budgetCtx.token
                 );

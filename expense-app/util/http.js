@@ -3,11 +3,12 @@ import axios from 'axios';
 const BACKEND_URL =
     'https://react-native-course-624d6-default-rtdb.firebaseio.com/';
 
-export async function storeExpense(expenseData, auth) {
+export async function storeExpense(budgetId, expenseData, auth) {
     const response = await axios.post(
-        BACKEND_URL + 'expenses.json?' + auth,
+        BACKEND_URL + `budget/${budgetId}/expenses.json?` + auth,
         expenseData
     );
+
     const id = response.data.name;
     return id;
 }
@@ -32,12 +33,17 @@ export async function fetchExpenses(auth, selectedBudgetId) {
     return expenses;
 }
 
-export function updateExpense(id, expenseData, auth) {
-    return axios.put(BACKEND_URL + `expenses/${id}.json?` + auth, expenseData);
+export function updateExpense(budgetId, id, expenseData, auth) {
+    return axios.put(
+        BACKEND_URL + `budget/${budgetId}/expenses/${id}.json?` + auth,
+        expenseData
+    );
 }
 
-export function deleteExpense(id, auth) {
-    return axios.delete(BACKEND_URL + `expenses/${id}.json?` + auth);
+export function deleteExpense(budgetId, id, auth) {
+    return axios.delete(
+        BACKEND_URL + `budget/${budgetId}/expenses/${id}.json?` + auth
+    );
 }
 
 export async function fetchBudget(auth) {

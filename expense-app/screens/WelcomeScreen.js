@@ -16,6 +16,7 @@ import {
     updateBudgetEntry,
     fetchBudget,
     deleteBudgetEntry,
+    fetchExpenses,
 } from '../util/http';
 import { formatBudgetData } from '../util/data';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
@@ -27,6 +28,7 @@ import IconButton from '../components/UI/IconButton';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { ExpensesOverview } from '../App';
+import { ExpensesContext } from '../store/expenses-context';
 
 const BottomTabs = createBottomTabNavigator();
 
@@ -38,6 +40,7 @@ function BudgetData({ route, navigation }) {
     const [notification, setNotification] = useState(null);
 
     const budgetCtx = useContext(BudgetsContext);
+    const expCtx = useContext(ExpensesContext);
     const token = budgetCtx.token;
     const selectedBudgetId = budgetCtx.selectedBudgetId;
 
@@ -130,7 +133,7 @@ function BudgetData({ route, navigation }) {
     useEffect(() => {
         if (budgets?.length > 0) {
             budgetCtx.setBudgets(budgets);
-            budgetCtx.setSelectedBudgetId(budgets[0].id);
+            changeBudget(budgets[0].id);
             const budgetsOptionsArr = [];
             budgets.map((val) => {
                 budgetsOptionsArr.push({ id: val.id, label: val.name });
@@ -143,7 +146,12 @@ function BudgetData({ route, navigation }) {
         setBudgetInfo(
             budgetCtx.budgets.find((el) => el.id === selectedBudgetId)
         );
+        expCtx.setExpenses(budgetInfo.expenses);
     }, [selectedBudgetId]);
+
+    const changeBudget = (id) => {
+        budgetCtx.setSelectedBudgetId(id);
+    };
 
     async function fetchBudgets() {
         setIsSubmitting(true);
@@ -234,9 +242,6 @@ function BudgetData({ route, navigation }) {
     if (isSubmitting) {
         return <LoadingOverlay />;
     }
-    function inputChangedHandler(field, enteredValue) {
-        budgetCtx.setSelectedBudgetId(enteredValue);
-    }
 
     return (
         <View style={styles.rootContainer}>
@@ -253,12 +258,10 @@ function BudgetData({ route, navigation }) {
             <Select
                 label='Select Budget'
                 textInputConfig={{
-                    onChangeText: inputChangedHandler.bind(
-                        this,
-                        'selectedBudgetId'
-                    ),
+                    onChangeText: changeBudget.bind(this),
                     value: selectedBudgetId,
                 }}
+                onCha
                 data={budgetOptions}
             />
 

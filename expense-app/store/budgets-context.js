@@ -3,16 +3,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const BudgetsContext = createContext({
     budgets: [],
-    addBudgetEntry: ({ name, amount, category, recurring }, budgetId) => {},
     setBudgets: (budgets) => {},
     selectedBudgetId: '',
     setSelectedBudgetId: (id) => {},
+    addBudgetEntry: ({ name, amount, category, recurring }, budgetId) => {},
     deleteBudgetEntry: (id, budgetId) => {},
     updateBudgetEntry: (
         id,
         { name, amount, category, recurring },
         budgetId
     ) => {},
+
+    addExpense: ({ description, amount, date, email }, budgetId) => {},
+    deleteExpense: (id, budgetId) => {},
+    updateExpense: (id, { description, amount, date, email }) => {},
+
     token: '',
     email: '',
     isAuthenticated: false,
@@ -21,32 +26,35 @@ export const BudgetsContext = createContext({
 });
 
 function budgetsReducer(state, action) {
+    const budgetIndex = state.findIndex((el) => el.id === action.budgetId);
     switch (action.type) {
         case 'ADDENTRY':
-            let selectedBudgetStateIndex = state.findIndex(
-                (el) => el.id === action.budgetId
-            );
-
-            state[selectedBudgetStateIndex].entries[action.payload.id] =
-                action.payload;
-
+            state[budgetIndex].entries[action.payload.id] = action.payload;
             return state;
         case 'SET':
             const inverted = action.payload.reverse();
             return inverted;
         case 'UPDATEENTRY':
-            const updatableBudgetIndex = state.findIndex(
-                (budget) => budget.id === action.budgetId
-            );
-            state[updatableBudgetIndex].entries[action.payload.id] =
-                action.payload.data;
+            state[budgetIndex].entries[action.payload.id] = action.payload.data;
             return state;
         case 'DELETEENTRY':
-            const budgetIndex = state.findIndex(
-                (budget) => budget.id === action.budgetId
-            );
             delete state[budgetIndex]['entries'][action.payload];
             return state;
+
+        case 'ADDEXPENSE':
+            state[budgetIndex].expenses[action.payload.id] =
+                action.payload.data;
+            return state;
+
+        case 'UPDATEEXPENSE':
+            state[budgetIndex].expenses[action.payload.id] =
+                action.payload.data;
+
+            return state;
+        case 'DELETEEXPENSE':
+            delete state[budgetIndex]['expenses'][action.payload];
+            return state;
+
         default:
             return state;
     }
@@ -98,6 +106,26 @@ function BudgetsContextProvider({ children }) {
         });
     }
 
+    function addExpense(expenseData, budgetId) {
+        dispatch({
+            type: 'ADDEXPENSE',
+            payload: expenseData,
+            budgetId: budgetId,
+        });
+    }
+
+    function deleteExpense(id, budgetId) {
+        dispatch({ type: 'DELETEEXPENSE', payload: id, budgetId: budgetId });
+    }
+
+    function updateExpense(id, expenseData, budgetId) {
+        dispatch({
+            type: 'UPDATEEXPENSE',
+            payload: { id: id, data: expenseData },
+            budgetId: budgetId,
+        });
+    }
+
     const value = useMemo(() => ({
         budgets: budgetsState,
         setBudgets: setBudgets,
@@ -111,6 +139,10 @@ function BudgetsContextProvider({ children }) {
         isAuthenticated: !!authToken,
         authenticate: authenticate,
         logout: logout,
+
+        addExpense: addExpense,
+        deleteExpense: deleteExpense,
+        updateExpense: updateExpense,
     }));
 
     return (

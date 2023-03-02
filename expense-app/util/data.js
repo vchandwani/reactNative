@@ -6,6 +6,7 @@ export const formatBudgetData = async (data, email) => {
             const budgetObj = {
                 id: key,
                 entries: data[key].entries ? data[key].entries : [],
+                expenses: data[key].expenses ? data[key].expenses : [],
 
                 name: data[key].name,
                 users: data[key].users,

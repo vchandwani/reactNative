@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
 
 import { styles } from '../../constants/styles';
 import { EXPENSE, INCOME } from '../../util/constants';
@@ -41,29 +41,29 @@ function BudgetOutput({ budgetEntries, fallbackText }) {
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             {budgetIncomeEntries.length > 0 && (
-                <div>
+                <View>
                     <BudgetSummary
                         budgetEntries={budgetIncomeEntries}
                         periodName='Total'
                     />
                     {budgetIncomeSummary}
-                </div>
+                </View>
             )}
 
             {budgetExpenseEntries.length > 0 && (
-                <div>
+                <View style={{ flex: 1 }}>
                     <BudgetSummary
                         budgetEntries={budgetExpenseEntries}
                         periodName='Total'
                     />
                     {budgetExpenseSummary}
-                </div>
+                </View>
             )}
 
             {(!budgetIncomeSummary || !budgetExpenseSummary) && content}
-        </View>
+        </ScrollView>
     );
 }
 

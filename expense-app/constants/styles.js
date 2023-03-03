@@ -55,6 +55,10 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         marginBottom: 4,
     },
+    infoContainer: {
+        flex: 4,
+        padding: 10,
+    },
     amountContainer: {
         paddingHorizontal: 12,
         paddingVertical: 4,
@@ -63,6 +67,8 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 4,
         minWidth: 80,
+        flex: 2,
+        padding: 10,
     },
     amount: {
         color: GlobalStyles.colors.font,

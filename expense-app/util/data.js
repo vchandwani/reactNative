@@ -33,12 +33,30 @@ export const getCurrentYear = () => {
 };
 
 export const getYearsArray = () => {
-    const startYear = STARTYEAR;
+    let startYear = STARTYEAR;
     const currentYear = new Date().getFullYear();
     const years = [];
 
     while (startYear <= currentYear) {
         years.push(startYear++);
     }
-    return years;
+    return years.reverse();
+};
+
+export const getMonthsArray = (year = '') => {
+    const moment = require('moment');
+    const currentYear = moment().year();
+    moment.locale('en'); // sets words language (optional if current locale is to be used)
+    moment.months(); // returns a list of months in the current locale (January, February, etc.)
+
+    if (year === currentYear) {
+        const date = new Date();
+        const d = moment(date);
+        const currentMonth = d.month();
+        return moment
+            .monthsShort()
+            .splice(0, currentMonth + 1)
+            .reverse();
+    }
+    return moment.monthsShort().reverse();
 };

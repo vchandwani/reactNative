@@ -257,7 +257,6 @@ function BudgetData({ route, navigation }) {
                     onChangeText: changeBudget.bind(this),
                     value: selectedBudgetId,
                 }}
-                onCha
                 data={budgetOptions}
             />
 

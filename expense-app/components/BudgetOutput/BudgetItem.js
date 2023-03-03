@@ -19,7 +19,7 @@ function BudgetItem({ id, name, amount, category, recurring }) {
             style={({ pressed }) => pressed && styles.pressed}
         >
             <View style={styles.item}>
-                <View>
+                <View style={styles.infoContainer}>
                     {name && (
                         <Text style={[styles.textBase, styles.description]}>
                             {name}

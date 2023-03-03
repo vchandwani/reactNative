@@ -33,7 +33,7 @@ function BudgetItem({ id, name, amount, category, recurring }) {
                         </Text>
                     )}
                 </View>
-                {amount && (
+                {amount >= 0 && (
                     <View style={styles.amountContainer}>
                         <Text style={styles.amount}>{amount.toFixed(2)}</Text>
                     </View>

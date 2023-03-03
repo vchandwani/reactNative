@@ -218,6 +218,7 @@ function BudgetData({ route, navigation }) {
             navigation.navigate('WelcomeScreen', {
                 index: 0,
             });
+            setIndex(0);
             setIsSubmitting(false);
             setNotification(
                 'Entry successfully '.concat(+isEditing ? 'Updated' : 'Added')

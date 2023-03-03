@@ -48,7 +48,7 @@ function BudgetForm({
             category: inputs.category.value,
         };
         const amountIsValid =
-            !isNaN(budgetData.amount) && budgetData.amount > 0;
+            !isNaN(budgetData.amount) && budgetData.amount >= 0;
         const nameIsValid = budgetData?.name?.trim().length > 0;
         const categoryIsValid = budgetData?.category?.trim().length > 0;
 

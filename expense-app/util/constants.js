@@ -6,4 +6,4 @@ export const EXPENSETYPE = [
 export const EXPENSE = 'Expense';
 export const INCOME = 'Income';
 
-export const STARTYEAR = 2023;
+export const STARTYEAR = 2022;

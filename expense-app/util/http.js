@@ -13,26 +13,6 @@ export async function storeExpense(budgetId, expenseData, auth) {
     return id;
 }
 
-export async function fetchExpenses(auth, selectedBudgetId) {
-    const response = await axios.get(BACKEND_URL + 'expenses.json?' + auth);
-    const expenses = [];
-
-    for (const key in response.data) {
-        if (
-            selectedBudgetId &&
-            response.data[key].budgetId === selectedBudgetId
-        ) {
-            const expenseObj = {
-                ...response.data[key],
-                id: key,
-                date: new Date(response.data[key].date),
-            };
-            expenses.push(expenseObj);
-        }
-    }
-    return expenses;
-}
-
 export function updateExpense(budgetId, id, expenseData, auth) {
     return axios.put(
         BACKEND_URL + `budget/${budgetId}/expenses/${id}.json?` + auth,

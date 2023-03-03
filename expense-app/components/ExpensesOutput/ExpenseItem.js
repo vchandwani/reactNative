@@ -5,6 +5,7 @@ import { styles } from '../../constants/styles';
 import { getFormattedDate } from '../../util/date';
 
 function ExpenseItem({ id, description, amount, date }) {
+    const dateVal = typeof date.getMonth === 'function' ? date : new Date(date);
     const navigation = useNavigation();
 
     function expensePressHandler() {
@@ -24,7 +25,7 @@ function ExpenseItem({ id, description, amount, date }) {
                         {description}
                     </Text>
                     <Text style={styles.textBase}>
-                        {getFormattedDate(date)}
+                        {getFormattedDate(dateVal)}
                     </Text>
                 </View>
                 <View style={styles.amountContainer}>

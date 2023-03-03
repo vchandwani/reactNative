@@ -16,7 +16,6 @@ import { GlobalStyles } from './constants/styles';
 import BudgetsContextProvider, {
     BudgetsContext,
 } from './store/budgets-context';
-import ExpensesContextProvider from './store/expenses-context';
 import { useContext, useState, useEffect } from 'react';
 import AppLoading from 'expo-app-loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -164,9 +163,7 @@ export default function App() {
         <>
             <StatusBar style='light' />
             <BudgetsContextProvider>
-                <ExpensesContextProvider>
-                    <Root />
-                </ExpensesContextProvider>
+                <Root />
             </BudgetsContextProvider>
         </>
     );

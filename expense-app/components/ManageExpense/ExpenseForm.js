@@ -17,7 +17,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
         },
         date: {
             value: defaultValues
-                ? getFormattedDate(defaultValues.date)
+                ? getFormattedDate(new Date(defaultValues.date))
                 : new Date(),
             isValid: true,
         },

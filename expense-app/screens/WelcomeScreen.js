@@ -16,7 +16,6 @@ import {
     updateBudgetEntry,
     fetchBudget,
     deleteBudgetEntry,
-    fetchExpenses,
 } from '../util/http';
 import { formatBudgetData } from '../util/data';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
@@ -28,7 +27,6 @@ import IconButton from '../components/UI/IconButton';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { ExpensesOverview } from '../App';
-import { ExpensesContext } from '../store/expenses-context';
 
 const BottomTabs = createBottomTabNavigator();
 
@@ -40,7 +38,6 @@ function BudgetData({ route, navigation }) {
     const [notification, setNotification] = useState(null);
 
     const budgetCtx = useContext(BudgetsContext);
-    const expCtx = useContext(ExpensesContext);
     const token = budgetCtx.token;
     const selectedBudgetId = budgetCtx.selectedBudgetId;
 
@@ -144,9 +141,8 @@ function BudgetData({ route, navigation }) {
 
     useEffect(() => {
         setBudgetInfo(
-            budgetCtx.budgets.find((el) => el.id === selectedBudgetId)
+            budgetCtx?.budgets?.find((el) => el.id === selectedBudgetId)
         );
-        expCtx.setExpenses(budgetInfo.expenses);
     }, [selectedBudgetId]);
 
     const changeBudget = (id) => {

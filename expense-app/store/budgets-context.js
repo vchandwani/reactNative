@@ -14,19 +14,21 @@ export const BudgetsContext = createContext({
         budgetId
     ) => {},
 
-    addExpense: ({ description, amount, date, email }, budgetId) => {},
+    addExpense: (id, { description, amount, date, email }, budgetId) => {},
     deleteExpense: (id, budgetId) => {},
-    updateExpense: (id, { description, amount, date, email }) => {},
+    updateExpense: (id, { description, amount, date, email }, budgetId) => {},
 
     token: '',
     email: '',
     isAuthenticated: false,
     authenticate: (token, email) => {},
     logout: () => {},
+    getExpenses: (budgetId) => {},
 });
 
 function budgetsReducer(state, action) {
-    const budgetIndex = state.findIndex((el) => el.id === action.budgetId);
+    const budgetIndex = state?.findIndex((el) => el.id === action.budgetId);
+
     switch (action.type) {
         case 'ADDENTRY':
             state[budgetIndex].entries[action.payload.id] = action.payload;
@@ -106,10 +108,10 @@ function BudgetsContextProvider({ children }) {
         });
     }
 
-    function addExpense(expenseData, budgetId) {
+    function addExpense(id, expenseData, budgetId) {
         dispatch({
             type: 'ADDEXPENSE',
-            payload: expenseData,
+            payload: { id: id, data: expenseData },
             budgetId: budgetId,
         });
     }
@@ -124,6 +126,13 @@ function BudgetsContextProvider({ children }) {
             payload: { id: id, data: expenseData },
             budgetId: budgetId,
         });
+    }
+
+    function getExpenses(budgetId) {
+        const indexVal = budgetsState?.findIndex((el) => el.id === budgetId);
+        return budgetsState[indexVal]['expenses']
+            ? budgetsState[indexVal]['expenses']
+            : [];
     }
 
     const value = useMemo(() => ({
@@ -143,6 +152,8 @@ function BudgetsContextProvider({ children }) {
         addExpense: addExpense,
         deleteExpense: deleteExpense,
         updateExpense: updateExpense,
+
+        getExpenses: getExpenses,
     }));
 
     return (

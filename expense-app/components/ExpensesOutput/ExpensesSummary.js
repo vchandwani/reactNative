@@ -3,8 +3,8 @@ import { View, Text } from 'react-native';
 import { styles } from '../../constants/styles';
 
 function ExpensesSummary({ expenses, periodName }) {
-    const expensesSum = expenses.reduce((sum, expense) => {
-        return sum + expense.amount;
+    const expensesSum = Object.keys(expenses)?.reduce((sum, expense) => {
+        return sum + expenses[expense].amount;
     }, 0);
 
     return (

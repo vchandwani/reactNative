@@ -7,7 +7,6 @@ import IconButton from '../components/UI/IconButton';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import { GlobalStyles } from '../constants/styles';
 import { BudgetsContext } from '../store/budgets-context';
-import { ExpensesContext } from '../store/expenses-context';
 import { storeExpense, updateExpense, deleteExpense } from '../util/http';
 
 function ManageExpense({ route, navigation }) {
@@ -15,15 +14,20 @@ function ManageExpense({ route, navigation }) {
     const [error, setError] = useState();
 
     const budgetCtx = useContext(BudgetsContext);
-    const expensesCtx = useContext(ExpensesContext);
     const selectedBudgetId = budgetCtx.selectedBudgetId;
 
     const editedExpenseId = route.params?.expenseId;
     const isEditing = !!editedExpenseId;
 
-    const selectedExpense = expensesCtx.expenses.find(
-        (expense) => expense.id === editedExpenseId
-    );
+    const expenses = budgetCtx.getExpenses(selectedBudgetId);
+    let selectedExpense = null;
+    if (expenses) {
+        Object.keys(expenses).find((expense) => {
+            if (expense === editedExpenseId) {
+                selectedExpense = expenses[expense];
+            }
+        });
+    }
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -39,7 +43,7 @@ function ManageExpense({ route, navigation }) {
                 editedExpenseId,
                 'auth=' + budgetCtx.token
             );
-            expensesCtx.deleteExpense(editedExpenseId);
+            budgetCtx.deleteExpense(editedExpenseId, selectedBudgetId);
             navigation.goBack();
         } catch (error) {
             setError('Could not delete expense - please try again later!');
@@ -56,9 +60,16 @@ function ManageExpense({ route, navigation }) {
     async function confirmHandler(expenseData) {
         setIsSubmitting(true);
         const finalData = { ...expenseData, budgetId: selectedBudgetId };
+        if (typeof finalData.date.getMonth === 'function') {
+            finalData.date = new Date(finalData.date).toISOString();
+        }
         try {
             if (isEditing) {
-                expensesCtx.updateExpense(editedExpenseId, finalData);
+                budgetCtx.updateExpense(
+                    editedExpenseId,
+                    finalData,
+                    selectedBudgetId
+                );
                 await updateExpense(
                     budgetCtx.selectedBudgetId,
                     editedExpenseId,
@@ -71,7 +82,11 @@ function ManageExpense({ route, navigation }) {
                     finalData,
                     'auth=' + budgetCtx.token
                 );
-                expensesCtx.addExpense({ ...finalData, id: id });
+                budgetCtx.addExpense(
+                    id,
+                    { ...finalData, id: id },
+                    selectedBudgetId
+                );
             }
             navigation.goBack();
         } catch (error) {

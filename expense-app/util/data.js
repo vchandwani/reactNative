@@ -1,4 +1,4 @@
-import { STARTYEAR } from './constants';
+import { STARTYEAR, EXPENSE } from './constants';
 
 export const formatBudgetData = async (data, email) => {
     const budget = [];
@@ -59,4 +59,17 @@ export const getMonthsArray = (year = '') => {
             .reverse();
     }
     return moment.monthsShort().reverse();
+};
+
+export const getBudgetCategories = (data) => {
+    const categoriesArray = [];
+    if (data) {
+        Object.keys(data)?.filter((key) => {
+            return (
+                data[key]?.category === EXPENSE &&
+                categoriesArray.push(data[key])
+            );
+        });
+    }
+    return categoriesArray;
 };

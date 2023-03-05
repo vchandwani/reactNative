@@ -17,7 +17,7 @@ import {
     fetchBudget,
     deleteBudgetEntry,
 } from '../util/http';
-import { formatBudgetData } from '../util/data';
+import { formatBudgetData, getBudgetCategories } from '../util/data';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -57,6 +57,11 @@ function BudgetData({ route, navigation }) {
         { key: 'first', title: 'Budget Info' },
         { key: 'second', title: 'Budget Entries' },
     ]);
+    useEffect(() => {
+        setTimeout(() => {
+            notification && setNotification(null);
+        }, 4000);
+    }, [notification]);
 
     const renderScene = SceneMap({
         first: () => (
@@ -144,6 +149,14 @@ function BudgetData({ route, navigation }) {
             budgetCtx?.budgets?.find((el) => el.id === selectedBudgetId)
         );
     }, [selectedBudgetId]);
+
+    useEffect(() => {
+        // Get Categories for Selected Budget for Expense type
+        const categories = getBudgetCategories(budgetInfo?.entries);
+        if (categories) {
+            budgetCtx.setCurrentBudgetExpenseCategories(categories);
+        }
+    }, [budgetInfo]);
 
     const changeBudget = (id) => {
         budgetCtx.setSelectedBudgetId(id);

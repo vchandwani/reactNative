@@ -24,6 +24,9 @@ export const BudgetsContext = createContext({
     authenticate: (token, email) => {},
     logout: () => {},
     getExpenses: (budgetId) => {},
+
+    setCurrentBudgetExpenseCategories: (dataCategories) => {},
+    currentBudgetExpenseCategories: '',
 });
 
 function budgetsReducer(state, action) {
@@ -69,6 +72,7 @@ function BudgetsContextProvider({ children }) {
     const [email, setEmail] = useState();
 
     const [budgetId, setBudgetId] = useState();
+    const [budgetExpenseCategories, setBudgetExpenseCategories] = useState();
 
     function authenticate(token, email = '') {
         setAuthToken(token);
@@ -135,14 +139,20 @@ function BudgetsContextProvider({ children }) {
             : [];
     }
 
+    function setCurrentBudgetExpenseCategories(dataCategories) {
+        setBudgetExpenseCategories(dataCategories);
+    }
+
     const value = useMemo(() => ({
         budgets: budgetsState,
         setBudgets: setBudgets,
         selectedBudgetId: budgetId,
         setSelectedBudgetId: setSelectedBudgetId,
+
         addBudgetEntry: addBudgetEntry,
         deleteBudgetEntry: deleteBudgetEntry,
         updateBudgetEntry: updateBudgetEntry,
+
         token: authToken,
         email: email,
         isAuthenticated: !!authToken,
@@ -152,8 +162,10 @@ function BudgetsContextProvider({ children }) {
         addExpense: addExpense,
         deleteExpense: deleteExpense,
         updateExpense: updateExpense,
-
         getExpenses: getExpenses,
+
+        setCurrentBudgetExpenseCategories: setCurrentBudgetExpenseCategories,
+        currentBudgetExpenseCategories: budgetExpenseCategories,
     }));
 
     return (

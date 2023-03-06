@@ -154,7 +154,7 @@ function BudgetData({ route, navigation }) {
         // Get Categories for Selected Budget for Expense type
         const categories = getBudgetCategories(budgetInfo?.entries);
         if (categories) {
-            budgetCtx.setCurrentBudgetExpenseCategories(categories);
+            budgetCtx.setCurrentBudgetCategories(categories);
         }
     }, [budgetInfo]);
 

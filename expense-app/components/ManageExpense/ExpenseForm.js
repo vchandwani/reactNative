@@ -7,12 +7,25 @@ import Button from '../UI/Button';
 import { getFormattedDate } from '../../util/date';
 import { GlobalStyles } from '../../constants/styles';
 import { BudgetsContext } from '../../store/budgets-context';
+import Select from './Select';
+import { categoryDropdown } from '../../util/data';
 
 function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
     const budgetCtx = useContext(BudgetsContext);
+    const currentBudgetCategories = budgetCtx.currentBudgetCategories;
+
+    const categoryArray = categoryDropdown(currentBudgetCategories);
+
     const [inputs, setInputs] = useState({
         amount: {
             value: defaultValues ? defaultValues.amount.toString() : '',
+            isValid: true,
+        },
+        category: {
+            value:
+                defaultValues && defaultValues?.category
+                    ? defaultValues?.category.toString()
+                    : null,
             isValid: true,
         },
         date: {
@@ -54,6 +67,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
     function submitHandler() {
         const expenseData = {
             amount: +inputs.amount.value,
+            category: inputs.category.value,
             date: new Date(inputs.date.value),
             description: inputs.description.value,
             email: budgetCtx.email,
@@ -63,8 +77,14 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
             !isNaN(expenseData.amount) && expenseData.amount > 0;
         const dateIsValid = expenseData.date.toString() !== 'Invalid Date';
         const descriptionIsValid = expenseData.description.trim().length > 0;
+        const categoryIsValid = expenseData?.category?.trim().length > 0;
 
-        if (!amountIsValid || !dateIsValid || !descriptionIsValid) {
+        if (
+            !amountIsValid ||
+            !dateIsValid ||
+            !descriptionIsValid ||
+            !categoryIsValid
+        ) {
             setInputs((curInputs) => {
                 return {
                     amount: {
@@ -75,6 +95,10 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
                     description: {
                         value: curInputs.description.value,
                         isValid: descriptionIsValid,
+                    },
+                    category: {
+                        value: curInputs.category.value,
+                        isValid: categoryIsValid,
                     },
                 };
             });
@@ -88,6 +112,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
         !inputs.amount.isValid ||
         !inputs.date.isValid ||
         !inputs.description.isValid;
+    !inputs.category.isValid;
 
     return (
         <View style={styles.form}>
@@ -102,6 +127,17 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
                     value: inputs.amount.value,
                 }}
             />
+            <Select
+                style={styles.rowInput}
+                label='Category'
+                invalid={!inputs.category.isValid}
+                textInputConfig={{
+                    onChangeText: inputChangedHandler.bind(this, 'category'),
+                    value: inputs.category.value,
+                }}
+                data={categoryArray}
+            />
+
             <DateComponent
                 style={styles.rowInput}
                 label='Date'

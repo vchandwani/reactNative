@@ -20,7 +20,7 @@ function ExpenseItem({ id, description, amount, date }) {
             style={({ pressed }) => pressed && styles.pressed}
         >
             <View style={styles.item}>
-                <View>
+                <View style={styles.infoContainer}>
                     <Text style={[styles.textBase, styles.description]}>
                         {description}
                     </Text>

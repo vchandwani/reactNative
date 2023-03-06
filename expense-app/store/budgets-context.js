@@ -25,8 +25,8 @@ export const BudgetsContext = createContext({
     logout: () => {},
     getExpenses: (budgetId) => {},
 
-    setCurrentBudgetExpenseCategories: (dataCategories) => {},
-    currentBudgetExpenseCategories: '',
+    setCurrentBudgetCategories: (dataCategories) => {},
+    currentBudgetCategories: '',
 });
 
 function budgetsReducer(state, action) {
@@ -139,7 +139,7 @@ function BudgetsContextProvider({ children }) {
             : [];
     }
 
-    function setCurrentBudgetExpenseCategories(dataCategories) {
+    function setCurrentBudgetCategories(dataCategories) {
         setBudgetExpenseCategories(dataCategories);
     }
 
@@ -164,8 +164,8 @@ function BudgetsContextProvider({ children }) {
         updateExpense: updateExpense,
         getExpenses: getExpenses,
 
-        setCurrentBudgetExpenseCategories: setCurrentBudgetExpenseCategories,
-        currentBudgetExpenseCategories: budgetExpenseCategories,
+        setCurrentBudgetCategories: setCurrentBudgetCategories,
+        currentBudgetCategories: budgetExpenseCategories,
     }));
 
     return (

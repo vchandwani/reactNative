@@ -65,11 +65,16 @@ export const getBudgetCategories = (data) => {
     const categoriesArray = [];
     if (data) {
         Object.keys(data)?.filter((key) => {
-            return (
-                data[key]?.category === EXPENSE &&
-                categoriesArray.push(data[key])
-            );
+            return categoriesArray.push(data[key]);
         });
     }
+    return categoriesArray;
+};
+
+export const categoryDropdown = (options) => {
+    const categoriesArray = [];
+    options.map((opt) => {
+        categoriesArray.push({ id: opt.name, label: opt.name });
+    });
     return categoriesArray;
 };

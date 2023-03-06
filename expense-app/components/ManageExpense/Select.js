@@ -23,6 +23,11 @@ function Select({ label, invalid, style, textInputConfig, data }) {
                     textInputConfig.onChangeText(itemValue)
                 }
             >
+                <Picker.Item
+                    label={'Selecta a Value'}
+                    value={null}
+                    key={'defaultVal'}
+                />
                 {data.map((val) => {
                     return (
                         <Picker.Item

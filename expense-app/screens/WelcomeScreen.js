@@ -175,6 +175,9 @@ function BudgetData({ route, navigation }) {
             );
             setBudgets(formattedData);
         } catch (error) {
+            if (error.response.status === 401) {
+                budgetCtx.logout();
+            }
             setError('Something went wrong!');
         }
         setIsSubmitting(false);
@@ -192,6 +195,9 @@ function BudgetData({ route, navigation }) {
             setIndex(0);
             setIsSubmitting(false);
         } catch (error) {
+            if (error.response.status === 401) {
+                budgetCtx.logout();
+            }
             setError('Could not delete entry - please try again later!');
             setIsSubmitting(false);
         }
@@ -237,6 +243,9 @@ function BudgetData({ route, navigation }) {
                 'Entry successfully '.concat(+isEditing ? 'Updated' : 'Added')
             );
         } catch (error) {
+            if (error.response.status === 401) {
+                budgetCtx.logout();
+            }
             setError('Could not save data - please try again later');
             setIsSubmitting(false);
         }

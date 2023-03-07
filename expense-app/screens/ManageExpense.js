@@ -61,6 +61,9 @@ function ManageExpense({ route, navigation }) {
             );
             !monthVal && !yearVal && navigation.goBack();
         } catch (error) {
+            if (error.response.status === 401) {
+                budgetCtx.logout();
+            }
             setError('Could not delete expense - please try again later!');
             setIsSubmitting(false);
         }
@@ -131,6 +134,9 @@ function ManageExpense({ route, navigation }) {
             }
             navigation.goBack();
         } catch (error) {
+            if (error.response.status === 401) {
+                budgetCtx.logout();
+            }
             setError('Could not save data - please try again later');
             setIsSubmitting(false);
         }

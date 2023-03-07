@@ -78,3 +78,10 @@ export const categoryDropdown = (options) => {
     });
     return categoriesArray;
 };
+
+export const getMonthAndYear = (date) => {
+    const moment = require('moment');
+    const dateVal = new Date(date);
+    const d = moment(dateVal);
+    return { month: d.format('MMM'), year: d.year() };
+};

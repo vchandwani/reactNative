@@ -25,7 +25,7 @@ function Select({ label, invalid, style, textInputConfig, data }) {
             >
                 <Picker.Item
                     label={'Selecta a Value'}
-                    value={null}
+                    value={''}
                     key={'defaultVal'}
                 />
                 {data.map((val) => {

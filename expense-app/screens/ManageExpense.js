@@ -7,6 +7,7 @@ import IconButton from '../components/UI/IconButton';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import { GlobalStyles } from '../constants/styles';
 import { BudgetsContext } from '../store/budgets-context';
+import { getMonthAndYear } from '../util/data';
 import { storeExpense, updateExpense, deleteExpense } from '../util/http';
 
 function ManageExpense({ route, navigation }) {
@@ -17,9 +18,16 @@ function ManageExpense({ route, navigation }) {
     const selectedBudgetId = budgetCtx.selectedBudgetId;
 
     const editedExpenseId = route.params?.expenseId;
+    const editedExpenseDate = route.params?.date;
+    const editedMonthDate = getMonthAndYear(editedExpenseDate);
+
     const isEditing = !!editedExpenseId;
 
-    const expenses = budgetCtx.getExpenses(selectedBudgetId);
+    const expenses = budgetCtx.getExpenses(
+        selectedBudgetId,
+        editedMonthDate.month,
+        editedMonthDate.year
+    );
     let selectedExpense = null;
     if (expenses) {
         Object.keys(expenses).find((expense) => {
@@ -35,22 +43,29 @@ function ManageExpense({ route, navigation }) {
         });
     }, [navigation, isEditing]);
 
-    async function deleteExpenseHandler() {
+    async function deleteExpenseHandler(monthVal = null, yearVal = null) {
         setIsSubmitting(true);
         try {
             await deleteExpense(
                 budgetCtx.selectedBudgetId,
                 editedExpenseId,
-                'auth=' + budgetCtx.token
+                'auth=' + budgetCtx.token,
+                monthVal ? monthVal : editedMonthDate.month,
+                yearVal ? yearVal : editedMonthDate.year
             );
-            budgetCtx.deleteExpense(editedExpenseId, selectedBudgetId);
-            navigation.goBack();
+            budgetCtx.deleteExpense(
+                editedExpenseId,
+                selectedBudgetId,
+                monthVal ? monthVal : editedMonthDate.month,
+                yearVal ? yearVal : editedMonthDate.year
+            );
+            !monthVal && !yearVal && navigation.goBack();
         } catch (error) {
             setError('Could not delete expense - please try again later!');
             setIsSubmitting(false);
         }
 
-        // setIsSubmitting(false);
+        setIsSubmitting(false);
     }
 
     function cancelHandler() {
@@ -63,29 +78,55 @@ function ManageExpense({ route, navigation }) {
         if (typeof finalData.date.getMonth === 'function') {
             finalData.date = new Date(finalData.date).toISOString();
         }
+        const dataMonthYear = getMonthAndYear(finalData.date);
+
         try {
-            if (isEditing) {
-                budgetCtx.updateExpense(
-                    editedExpenseId,
-                    finalData,
-                    selectedBudgetId
-                );
-                await updateExpense(
-                    budgetCtx.selectedBudgetId,
-                    editedExpenseId,
-                    finalData,
-                    'auth=' + budgetCtx.token
-                );
+            // get Month and Year
+            const oldMonthYear =
+                selectedExpense &&
+                getMonthAndYear(new Date(selectedExpense.date));
+
+            // No change in month and year
+            if (
+                oldMonthYear &&
+                dataMonthYear.month === oldMonthYear.month &&
+                dataMonthYear.year === oldMonthYear.year
+            ) {
+                if (isEditing) {
+                    budgetCtx.updateExpense(
+                        editedExpenseId,
+                        finalData,
+                        selectedBudgetId,
+                        dataMonthYear.month,
+                        dataMonthYear.year
+                    );
+                    await updateExpense(
+                        budgetCtx.selectedBudgetId,
+                        editedExpenseId,
+                        finalData,
+                        'auth=' + budgetCtx.token,
+                        dataMonthYear.month,
+                        dataMonthYear.year
+                    );
+                }
             } else {
+                if (isEditing) {
+                    // Delete previous entry and add new Entry
+                    deleteExpenseHandler(oldMonthYear.month, oldMonthYear.year);
+                }
                 const id = await storeExpense(
                     budgetCtx.selectedBudgetId,
                     finalData,
-                    'auth=' + budgetCtx.token
+                    'auth=' + budgetCtx.token,
+                    dataMonthYear.month,
+                    dataMonthYear.year
                 );
                 budgetCtx.addExpense(
                     id,
                     { ...finalData, id: id },
-                    selectedBudgetId
+                    selectedBudgetId,
+                    dataMonthYear.month,
+                    dataMonthYear.year
                 );
             }
             navigation.goBack();
@@ -119,7 +160,7 @@ function ManageExpense({ route, navigation }) {
                         icon='trash'
                         color={GlobalStyles.colors.error500}
                         size={36}
-                        onPress={deleteExpenseHandler}
+                        onPress={() => deleteExpenseHandler(null, null)}
                     />
                 </View>
             )}

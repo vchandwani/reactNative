@@ -1,28 +1,42 @@
-import { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 
 import ExpensesOutput from '../components/ExpensesOutput/ExpensesOutput';
 import { BudgetsContext } from '../store/budgets-context';
-import MOnthYearSelector from './MonthYearSelector';
+import MonthYearSelector from './MonthYearSelector';
 
-function AllExpenses() {
+function AllExpenses({ navigation }) {
     const budgetCtx = useContext(BudgetsContext);
+    const [month, setMonth] = useState();
+    const [year, setYear] = useState();
+    const isFocused = useIsFocused();
 
-    const expenses = budgetCtx.getExpenses(budgetCtx.selectedBudgetId);
     const monthYearData = (year, month) => {
         if (year && month) {
-            console.log(year);
-            console.log(month);
+            setMonth(month);
+            setYear(year);
         }
     };
 
+    const expenses = budgetCtx.getExpenses(
+        budgetCtx.selectedBudgetId,
+        month,
+        year
+    );
+
     return (
         <>
-            <MOnthYearSelector onSelect={monthYearData} />
-            <ExpensesOutput
-                expenses={expenses}
-                expensesPeriod='Total'
-                fallbackText='No registered expenses found!'
-            />
+            <MonthYearSelector onSelect={monthYearData} />
+            {month && year && (
+                <ExpensesOutput
+                    expenses={expenses}
+                    month={month}
+                    year={year}
+                    isFocused={isFocused}
+                    expensesPeriod='Total'
+                    fallbackText='No registered expenses found!'
+                />
+            )}
         </>
     );
 }

@@ -5,7 +5,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 import ManageExpense from './screens/ManageExpense';
-import RecentExpenses from './screens/RecentExpenses';
 import AllExpenses from './screens/AllExpenses';
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
@@ -23,7 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
-export function ExpensesOverview() {
+export function ExpensesOverview({ navigation }) {
     return (
         <BottomTabs.Navigator
             screenOptions={({ navigation }) => ({
@@ -37,17 +36,6 @@ export function ExpensesOverview() {
                 tabBarActiveTintColor: GlobalStyles.colors.accent500,
             })}
         >
-            <BottomTabs.Screen
-                name='RecentExpenses'
-                component={RecentExpenses}
-                options={{
-                    title: 'Recent Expenses',
-                    tabBarLabel: 'Recent',
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name='hourglass' size={size} color={color} />
-                    ),
-                }}
-            />
             <BottomTabs.Screen
                 name='AllExpenses'
                 component={AllExpenses}

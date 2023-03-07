@@ -6,12 +6,13 @@ function renderExpenseItem(itemData) {
     return <ExpenseItem {...itemData.item} />;
 }
 
-function ExpensesList({ expenses }) {
+function ExpensesList({ expenses, isFocused }) {
     return (
         <FlatList
             data={expenses}
             renderItem={renderExpenseItem}
             keyExtractor={(item) => item.id}
+            extraData={isFocused}
         />
     );
 }

@@ -14,16 +14,28 @@ export const BudgetsContext = createContext({
         budgetId
     ) => {},
 
-    addExpense: (id, { description, amount, date, email }, budgetId) => {},
-    deleteExpense: (id, budgetId) => {},
-    updateExpense: (id, { description, amount, date, email }, budgetId) => {},
+    addExpense: (
+        id,
+        { description, amount, date, email },
+        budgetId,
+        month,
+        year
+    ) => {},
+    deleteExpense: (id, budgetId, month, year) => {},
+    updateExpense: (
+        id,
+        { description, amount, date, email },
+        budgetId,
+        month,
+        year
+    ) => {},
 
     token: '',
     email: '',
     isAuthenticated: false,
     authenticate: (token, email) => {},
     logout: () => {},
-    getExpenses: (budgetId) => {},
+    getExpenses: (budgetId, month, year) => {},
 
     setCurrentBudgetCategories: (dataCategories) => {},
     currentBudgetCategories: '',
@@ -47,17 +59,32 @@ function budgetsReducer(state, action) {
             return state;
 
         case 'ADDEXPENSE':
-            state[budgetIndex].expenses[action.payload.id] =
-                action.payload.data;
+            if (!state[budgetIndex]['expenses'][action.year]) {
+                state[budgetIndex]['expenses'][action.year] = {};
+            }
+            if (!state[budgetIndex]['expenses'][action.year][action.month]) {
+                state[budgetIndex]['expenses'][action.year][action.month] = {};
+            }
+            state[budgetIndex]['expenses'][action.year][action.month][
+                action.payload.id
+            ] = action.payload.data;
             return state;
 
         case 'UPDATEEXPENSE':
-            state[budgetIndex].expenses[action.payload.id] =
-                action.payload.data;
-
+            if (!state[budgetIndex]['expenses'][action.year]) {
+                state[budgetIndex]['expenses'][action.year] = {};
+            }
+            if (!state[budgetIndex]['expenses'][action.year][action.month]) {
+                state[budgetIndex]['expenses'][action.year][action.month] = {};
+            }
+            state[budgetIndex].expenses[action.year][action.month][
+                action.payload.id
+            ] = action.payload.data;
             return state;
         case 'DELETEEXPENSE':
-            delete state[budgetIndex]['expenses'][action.payload];
+            delete state[budgetIndex]['expenses'][action.year][action.month][
+                action.payload
+            ];
             return state;
 
         default:
@@ -112,30 +139,40 @@ function BudgetsContextProvider({ children }) {
         });
     }
 
-    function addExpense(id, expenseData, budgetId) {
+    function addExpense(id, expenseData, budgetId, month, year) {
         dispatch({
             type: 'ADDEXPENSE',
             payload: { id: id, data: expenseData },
             budgetId: budgetId,
+            month: month,
+            year: year,
         });
     }
 
-    function deleteExpense(id, budgetId) {
-        dispatch({ type: 'DELETEEXPENSE', payload: id, budgetId: budgetId });
+    function deleteExpense(id, budgetId, month, year) {
+        dispatch({
+            type: 'DELETEEXPENSE',
+            payload: id,
+            budgetId: budgetId,
+            month: month,
+            year: year,
+        });
     }
 
-    function updateExpense(id, expenseData, budgetId) {
+    function updateExpense(id, expenseData, budgetId, month, year) {
         dispatch({
             type: 'UPDATEEXPENSE',
             payload: { id: id, data: expenseData },
             budgetId: budgetId,
+            month: month,
+            year: year,
         });
     }
 
-    function getExpenses(budgetId) {
+    function getExpenses(budgetId, month = '', year = '') {
         const indexVal = budgetsState?.findIndex((el) => el.id === budgetId);
-        return budgetsState[indexVal]['expenses']
-            ? budgetsState[indexVal]['expenses']
+        return budgetsState[indexVal]['expenses']?.[year]?.[month]
+            ? budgetsState[indexVal]['expenses'][year][month]
             : [];
     }
 

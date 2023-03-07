@@ -4,7 +4,7 @@ import { GlobalStyles } from '../constants/styles';
 import { StyleSheet, View } from 'react-native';
 import Select from '../components/ManageExpense/Select';
 
-function MOnthYearSelector({ onSelect }) {
+function MonthYearSelector({ onSelect }) {
     const years = getYearsArray();
     const [year, setYear] = useState(years[0]);
     const [months, setMonths] = useState([]);
@@ -70,7 +70,7 @@ function MOnthYearSelector({ onSelect }) {
     );
 }
 
-export default MOnthYearSelector;
+export default MonthYearSelector;
 
 const styles = StyleSheet.create({
     rootContainer: {

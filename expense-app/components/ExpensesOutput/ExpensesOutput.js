@@ -5,12 +5,23 @@ import { objectToArray } from '../../util/data';
 import ExpensesList from './ExpensesList';
 import ExpensesSummary from './ExpensesSummary';
 
-function ExpensesOutput({ expenses, expensesPeriod, fallbackText }) {
+function ExpensesOutput({
+    expenses,
+    month,
+    year,
+    isFocused,
+    expensesPeriod,
+    fallbackText,
+}) {
     let content = <Text style={styles.infoText}>{fallbackText}</Text>;
 
-    const expensesFormatted = objectToArray(expenses);
-    if (Object.keys(expensesFormatted).length > 0) {
-        content = <ExpensesList expenses={expensesFormatted} />;
+    if (Object.keys(objectToArray(expenses)).length > 0) {
+        content = (
+            <ExpensesList
+                expenses={objectToArray(expenses)}
+                isFocused={isFocused}
+            />
+        );
     }
 
     return (

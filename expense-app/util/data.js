@@ -1,4 +1,4 @@
-import { STARTYEAR, EXPENSE } from './constants';
+import { STARTYEAR } from './constants';
 
 export const formatBudgetData = async (data, email) => {
     const budget = [];
@@ -8,7 +8,9 @@ export const formatBudgetData = async (data, email) => {
             const budgetObj = {
                 id: key,
                 entries: data[key].entries ? data[key].entries : [],
-                expenses: data[key].expenses ? data[key].expenses : [],
+                transactions: data[key].transactions
+                    ? data[key].transactions
+                    : [],
 
                 name: data[key].name,
                 users: data[key].users,

@@ -1,60 +1,108 @@
 import { useContext, useLayoutEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import ExpenseForm from '../components/ManageExpense/ExpenseForm';
+import TransactionForm from '../components/ManageTransaction/TransactionForm';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
 import IconButton from '../components/UI/IconButton';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import { GlobalStyles } from '../constants/styles';
 import { BudgetsContext } from '../store/budgets-context';
 import { getMonthAndYear } from '../util/data';
-import { storeExpense, updateExpense, deleteExpense } from '../util/http';
+import {
+    storeTransaction,
+    updateTransaction,
+    deleteTransaction,
+} from '../util/http';
 
-function ManageExpense({ route, navigation }) {
+export async function newTransactionHandler(
+    budgetId,
+    tokenVal,
+    finalData,
+    month,
+    year,
+    ctx
+) {
+    const id = await storeTransaction(
+        budgetId,
+        finalData,
+        'auth=' + tokenVal,
+        month,
+        year
+    );
+    ctx.addTransaction(id, { ...finalData, id: id }, budgetId, month, year);
+}
+
+export async function updateTransactionHandler(
+    budgetId,
+    tokenVal,
+    editedTransactionId,
+    finalData,
+    month,
+    year,
+    ctx
+) {
+    ctx.updateTransaction(
+        editedTransactionId,
+        finalData,
+        budgetId,
+        month,
+        year
+    );
+    await updateTransaction(
+        budgetId,
+        editedTransactionId,
+        finalData,
+        'auth=' + tokenVal,
+        month,
+        year
+    );
+}
+
+function ManageTransaction({ route, navigation }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState();
 
     const budgetCtx = useContext(BudgetsContext);
     const selectedBudgetId = budgetCtx.selectedBudgetId;
 
-    const editedExpenseId = route.params?.expenseId;
-    const editedExpenseDate = route.params?.date;
-    const editedMonthDate = getMonthAndYear(editedExpenseDate);
+    const editedTransactionId = route.params?.transactionId;
+    const editedTransactionDate = route.params?.date;
+    const editedMonthDate = getMonthAndYear(editedTransactionDate);
 
-    const isEditing = !!editedExpenseId;
+    const isEditing = !!editedTransactionId;
 
-    const expenses = budgetCtx.getExpenses(
+    const transactions = budgetCtx.getTransactions(
         selectedBudgetId,
         editedMonthDate.month,
         editedMonthDate.year
     );
-    let selectedExpense = null;
-    if (expenses) {
-        Object.keys(expenses).find((expense) => {
-            if (expense === editedExpenseId) {
-                selectedExpense = expenses[expense];
+    let selectedTransaction = null;
+    if (transactions) {
+        Object.keys(transactions).find((tx) => {
+            if (tx === editedTransactionId) {
+                selectedTransaction = transactions[tx];
             }
         });
     }
 
     useLayoutEffect(() => {
         navigation.setOptions({
-            title: isEditing ? 'Edit Expense' : 'Add Expense',
+            title: isEditing ? 'Edit Transaction' : 'Add Transaction',
         });
     }, [navigation, isEditing]);
 
-    async function deleteExpenseHandler(monthVal = null, yearVal = null) {
+    async function deleteTransactionHandler(monthVal = null, yearVal = null) {
         setIsSubmitting(true);
         try {
-            await deleteExpense(
+            await deleteTransaction(
                 budgetCtx.selectedBudgetId,
-                editedExpenseId,
+                editedTransactionId,
                 'auth=' + budgetCtx.token,
                 monthVal ? monthVal : editedMonthDate.month,
                 yearVal ? yearVal : editedMonthDate.year
             );
-            budgetCtx.deleteExpense(
-                editedExpenseId,
+            budgetCtx.deleteTransaction(
+                editedTransactionId,
                 selectedBudgetId,
                 monthVal ? monthVal : editedMonthDate.month,
                 yearVal ? yearVal : editedMonthDate.year
@@ -64,7 +112,7 @@ function ManageExpense({ route, navigation }) {
             if (error.response.status === 401) {
                 budgetCtx.logout();
             }
-            setError('Could not delete expense - please try again later!');
+            setError('Could not delete transaction - please try again later!');
             setIsSubmitting(false);
         }
 
@@ -75,9 +123,9 @@ function ManageExpense({ route, navigation }) {
         navigation.goBack();
     }
 
-    async function confirmHandler(expenseData) {
+    async function confirmHandler(transactionData) {
         setIsSubmitting(true);
-        const finalData = { ...expenseData, budgetId: selectedBudgetId };
+        const finalData = { ...transactionData, budgetId: selectedBudgetId };
         if (typeof finalData.date.getMonth === 'function') {
             finalData.date = new Date(finalData.date).toISOString();
         }
@@ -86,8 +134,8 @@ function ManageExpense({ route, navigation }) {
         try {
             // get Month and Year
             const oldMonthYear =
-                selectedExpense &&
-                getMonthAndYear(new Date(selectedExpense.date));
+                selectedTransaction &&
+                getMonthAndYear(new Date(selectedTransaction.date));
 
             // No change in month and year
             if (
@@ -96,40 +144,31 @@ function ManageExpense({ route, navigation }) {
                 dataMonthYear.year === oldMonthYear.year
             ) {
                 if (isEditing) {
-                    budgetCtx.updateExpense(
-                        editedExpenseId,
-                        finalData,
-                        selectedBudgetId,
-                        dataMonthYear.month,
-                        dataMonthYear.year
-                    );
-                    await updateExpense(
+                    updateTransactionHandler(
                         budgetCtx.selectedBudgetId,
-                        editedExpenseId,
+                        budgetCtx.token,
+                        editedTransactionId,
                         finalData,
-                        'auth=' + budgetCtx.token,
                         dataMonthYear.month,
-                        dataMonthYear.year
+                        dataMonthYear.year,
+                        budgetCtx
                     );
                 }
             } else {
                 if (isEditing) {
-                    // Delete previous entry and add new Entry
-                    deleteExpenseHandler(oldMonthYear.month, oldMonthYear.year);
+                    // Delete previous entry and add new Entry due to change in Date
+                    deleteTransactionHandler(
+                        oldMonthYear.month,
+                        oldMonthYear.year
+                    );
                 }
-                const id = await storeExpense(
+                newTransactionHandler(
                     budgetCtx.selectedBudgetId,
+                    budgetCtx.token,
                     finalData,
-                    'auth=' + budgetCtx.token,
                     dataMonthYear.month,
-                    dataMonthYear.year
-                );
-                budgetCtx.addExpense(
-                    id,
-                    { ...finalData, id: id },
-                    selectedBudgetId,
-                    dataMonthYear.month,
-                    dataMonthYear.year
+                    dataMonthYear.year,
+                    budgetCtx
                 );
             }
             navigation.goBack();
@@ -154,11 +193,11 @@ function ManageExpense({ route, navigation }) {
 
     return (
         <View style={styles.container}>
-            <ExpenseForm
+            <TransactionForm
                 submitButtonLabel={isEditing ? 'Update' : 'Add'}
                 onSubmit={confirmHandler}
                 onCancel={cancelHandler}
-                defaultValues={selectedExpense}
+                defaultValues={selectedTransaction}
             />
             {isEditing && (
                 <View style={styles.deleteContainer}>
@@ -166,7 +205,7 @@ function ManageExpense({ route, navigation }) {
                         icon='trash'
                         color={GlobalStyles.colors.error500}
                         size={36}
-                        onPress={() => deleteExpenseHandler(null, null)}
+                        onPress={() => deleteTransactionHandler(null, null)}
                     />
                 </View>
             )}
@@ -174,7 +213,7 @@ function ManageExpense({ route, navigation }) {
     );
 }
 
-export default ManageExpense;
+export default ManageTransaction;
 
 const styles = StyleSheet.create({
     container: {

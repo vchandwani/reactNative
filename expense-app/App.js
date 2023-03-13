@@ -4,8 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
-import ManageExpense from './screens/ManageExpense';
-import AllExpenses from './screens/AllExpenses';
+import ManageTransaction from './screens/ManageTransaction';
+import AllTransactions from './screens/AllTransactions';
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
@@ -22,7 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
-export function ExpensesOverview({ navigation }) {
+export function TransactionsOverview({ navigation }) {
     return (
         <BottomTabs.Navigator
             screenOptions={({ navigation }) => ({
@@ -37,8 +37,8 @@ export function ExpensesOverview({ navigation }) {
             })}
         >
             <BottomTabs.Screen
-                name='AllExpenses'
-                component={AllExpenses}
+                name='AllTransactions'
+                component={AllTransactions}
                 options={{
                     title: 'All Transactions',
                     tabBarLabel: 'All Transactions',
@@ -92,15 +92,15 @@ function AuthenticatedStack() {
             />
 
             <Stack.Screen
-                name='ExpensesOverview'
-                component={ExpensesOverview}
+                name='TransactionsOverview'
+                component={TransactionsOverview}
                 options={{
                     headerShown: false,
                 }}
             />
             <Stack.Screen
-                name='ManageExpense'
-                component={ManageExpense}
+                name='ManageTransaction'
+                component={ManageTransaction}
                 options={{
                     presentation: 'modal',
                 }}

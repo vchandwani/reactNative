@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { BudgetsContext } from '../store/budgets-context';
 import { GlobalStyles } from '../constants/styles';
-import BudgetForm from '../components/ManageExpense/BudgetForm';
+import BudgetForm from '../components/ManageTransaction/BudgetForm';
 import {
     storeBudgetEntry,
     updateBudgetEntry,
@@ -21,12 +21,12 @@ import { formatBudgetData, getBudgetCategories } from '../util/data';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import Select from '../components/ManageExpense/Select';
+import Select from '../components/ManageTransaction/Select';
 import BudgetOutput from '../components/BudgetOutput/BudgetOutput';
 import IconButton from '../components/UI/IconButton';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { ExpensesOverview } from '../App';
+import { TransactionsOverview } from '../App';
 
 const BottomTabs = createBottomTabNavigator();
 
@@ -151,7 +151,7 @@ function BudgetData({ route, navigation }) {
     }, [selectedBudgetId]);
 
     useEffect(() => {
-        // Get Categories for Selected Budget for Expense type
+        // Get Categories for Selected Budget
         const categories = getBudgetCategories(budgetInfo?.entries);
         if (categories) {
             budgetCtx.setCurrentBudgetCategories(categories);
@@ -277,9 +277,9 @@ function BudgetData({ route, navigation }) {
             <Select
                 label='Select Budget'
                 textInputConfig={{
-                    onChangeText: changeBudget.bind(this),
                     value: selectedBudgetId,
                 }}
+                onChange={changeBudget.bind(this)}
                 data={budgetOptions}
             />
 
@@ -339,7 +339,7 @@ function WelcomeScreen({ route, navigation }) {
                             size={24}
                             color={tintColor}
                             onPress={() => {
-                                navigation.navigate('ManageExpense');
+                                navigation.navigate('ManageTransaction');
                             }}
                         />
                         <IconButton
@@ -347,7 +347,7 @@ function WelcomeScreen({ route, navigation }) {
                             size={24}
                             color={tintColor}
                             onPress={() => {
-                                navigation.navigate('ExpensesOverview');
+                                navigation.navigate('TransactionsOverview');
                             }}
                         />
 
@@ -373,11 +373,11 @@ function WelcomeScreen({ route, navigation }) {
                 }}
             />
             <BottomTabs.Screen
-                name='ExpensesOverview'
-                component={ExpensesOverview}
+                name='TransactionsOverview'
+                component={TransactionsOverview}
                 options={{
-                    title: 'Expenses Overview',
-                    tabBarLabel: 'Expenses Overview',
+                    title: 'Transactions Overview',
+                    tabBarLabel: 'Transactions Overview',
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name='calendar' size={size} color={color} />
                     ),

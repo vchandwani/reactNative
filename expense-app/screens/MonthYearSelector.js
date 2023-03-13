@@ -1,26 +1,19 @@
 import { useEffect, useState } from 'react';
-import { getMonthsArray, getYearsArray } from '../util/data';
 import { GlobalStyles } from '../constants/styles';
 import { StyleSheet, View } from 'react-native';
-import Select from '../components/ManageExpense/Select';
+import Select from '../components/ManageTransaction/Select';
 
-function MonthYearSelector({ onSelect }) {
-    const years = getYearsArray();
-    const [year, setYear] = useState(years[0]);
-    const [months, setMonths] = useState([]);
-    const [month, setMonth] = useState(months[0]);
-
-    useEffect(() => {
-        setMonths(getMonthsArray(year));
-    }, [year]);
+function MonthYearSelector({ onSelect, months, years, month, year }) {
+    const [yearVal, setYear] = useState(year);
+    const [monthVal, setMonth] = useState(month);
 
     useEffect(() => {
         setMonth(months[0]);
     }, [months]);
 
     useEffect(() => {
-        onSelect(year, month);
-    }, [month, year]);
+        onSelect(yearVal, monthVal);
+    }, [monthVal, yearVal]);
 
     const yearsDropdown = [];
     const monthsDropdown = [];
@@ -48,9 +41,9 @@ function MonthYearSelector({ onSelect }) {
                         style={styles.rowInput}
                         label='Select Year'
                         textInputConfig={{
-                            onChangeText: changeYear.bind(this),
-                            value: year,
+                            value: yearVal,
                         }}
+                        onChange={changeYear.bind(this)}
                         data={yearsDropdown}
                     />
                 </View>
@@ -59,9 +52,9 @@ function MonthYearSelector({ onSelect }) {
                         style={styles.rowInput}
                         label='Select Month'
                         textInputConfig={{
-                            onChangeText: changeMonth.bind(this),
-                            value: month,
+                            value: monthVal,
                         }}
+                        onChange={changeMonth.bind(this)}
                         data={monthsDropdown}
                     />
                 </View>

@@ -4,20 +4,20 @@ import { useNavigation } from '@react-navigation/native';
 import { styles } from '../../constants/styles';
 import { getFormattedDate } from '../../util/date';
 
-function ExpenseItem({ id, description, amount, date }) {
+function TransactionItem({ id, description, amount, date }) {
     const dateVal = typeof date.getMonth === 'function' ? date : new Date(date);
     const navigation = useNavigation();
 
-    function expensePressHandler() {
-        navigation.navigate('ManageExpense', {
-            expenseId: id,
+    function transactionPressHandler() {
+        navigation.navigate('ManageTransaction', {
+            transactionId: id,
             date: date,
         });
     }
 
     return (
         <Pressable
-            onPress={expensePressHandler}
+            onPress={transactionPressHandler}
             style={({ pressed }) => pressed && styles.pressed}
         >
             <View style={styles.item}>
@@ -37,4 +37,4 @@ function ExpenseItem({ id, description, amount, date }) {
     );
 }
 
-export default ExpenseItem;
+export default TransactionItem;

@@ -9,8 +9,14 @@ import { GlobalStyles } from '../../constants/styles';
 import { BudgetsContext } from '../../store/budgets-context';
 import Select from './Select';
 import { categoryDropdown } from '../../util/data';
+import { EXPENSETYPE } from '../../util/constants';
 
-function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
+function TransactionForm({
+    submitButtonLabel,
+    onCancel,
+    onSubmit,
+    defaultValues,
+}) {
     const budgetCtx = useContext(BudgetsContext);
     const currentBudgetCategories = budgetCtx.currentBudgetCategories;
 
@@ -19,6 +25,13 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
     const [inputs, setInputs] = useState({
         amount: {
             value: defaultValues ? defaultValues.amount.toString() : '',
+            isValid: true,
+        },
+        type: {
+            value:
+                defaultValues && defaultValues?.type
+                    ? defaultValues?.type.toString()
+                    : EXPENSETYPE[0].id,
             isValid: true,
         },
         category: {
@@ -65,8 +78,9 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
     }
 
     function submitHandler() {
-        const expenseData = {
+        const transactionData = {
             amount: +inputs.amount.value,
+            type: inputs.type.value,
             category: inputs.category.value,
             date: new Date(inputs.date.value),
             description: inputs.description.value,
@@ -74,16 +88,19 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
         };
 
         const amountIsValid =
-            !isNaN(expenseData.amount) && expenseData.amount > 0;
-        const dateIsValid = expenseData.date.toString() !== 'Invalid Date';
-        const descriptionIsValid = expenseData.description.trim().length > 0;
-        const categoryIsValid = expenseData?.category?.trim().length > 0;
+            !isNaN(transactionData.amount) && transactionData.amount > 0;
+        const dateIsValid = transactionData.date.toString() !== 'Invalid Date';
+        const descriptionIsValid =
+            transactionData.description.trim().length > 0;
+        const typeIsValid = transactionData?.type?.trim().length > 0;
+        const categoryIsValid = transactionData?.category?.trim().length > 0;
 
         if (
             !amountIsValid ||
             !dateIsValid ||
             !descriptionIsValid ||
-            !categoryIsValid
+            !categoryIsValid ||
+            !typeIsValid
         ) {
             setInputs((curInputs) => {
                 return {
@@ -100,23 +117,28 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
                         value: curInputs.category.value,
                         isValid: categoryIsValid,
                     },
+                    type: {
+                        value: curInputs.type.value,
+                        isValid: typeIsValid,
+                    },
                 };
             });
             return;
         }
 
-        onSubmit(expenseData);
+        onSubmit(transactionData);
     }
 
     const formIsInvalid =
         !inputs.amount.isValid ||
         !inputs.date.isValid ||
-        !inputs.description.isValid;
-    !inputs.category.isValid;
+        !inputs.description.isValid ||
+        !inputs.category.isValid ||
+        !inputs.type.isValid;
 
     return (
         <View style={styles.form}>
-            <Text style={styles.title}>Your Expense</Text>
+            <Text style={styles.title}>Your Transaction</Text>
             <Input
                 style={styles.rowInput}
                 label='Amount'
@@ -129,12 +151,22 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
             />
             <Select
                 style={styles.rowInput}
+                label='Type'
+                invalid={!inputs.type.isValid}
+                textInputConfig={{
+                    value: inputs.type.value,
+                }}
+                onChange={inputChangedHandler.bind(this, 'type')}
+                data={EXPENSETYPE}
+            />
+            <Select
+                style={styles.rowInput}
                 label='Category'
                 invalid={!inputs.category.isValid}
                 textInputConfig={{
-                    onChangeText: inputChangedHandler.bind(this, 'category'),
                     value: inputs.category.value,
                 }}
+                onChange={inputChangedHandler.bind(this, 'category')}
                 data={categoryArray}
             />
 
@@ -176,7 +208,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
     );
 }
 
-export default ExpenseForm;
+export default TransactionForm;
 
 const styles = StyleSheet.create({
     form: {

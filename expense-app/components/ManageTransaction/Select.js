@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Picker } from 'react-native';
 
 import { GlobalStyles } from '../../constants/styles';
 
-function Select({ label, invalid, style, textInputConfig, data }) {
+function Select({ label, invalid, style, textInputConfig, onChange, data }) {
     const inputStyles = [styles.input];
 
     if (invalid) {
@@ -19,9 +19,7 @@ function Select({ label, invalid, style, textInputConfig, data }) {
                 {...textInputConfig}
                 selectedValue={textInputConfig.value}
                 style={styles.input}
-                onValueChange={(itemValue, itemIndex) =>
-                    textInputConfig.onChangeText(itemValue)
-                }
+                onValueChange={(itemValue, itemIndex) => onChange(itemValue)}
             >
                 <Picker.Item
                     label={'Selecta a Value'}

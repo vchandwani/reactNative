@@ -126,12 +126,9 @@ function BudgetForm({
                         label='Category'
                         invalid={!inputs.category.isValid}
                         textInputConfig={{
-                            onChangeText: inputChangedHandler.bind(
-                                this,
-                                'category'
-                            ),
                             value: inputs.category.value,
                         }}
+                        onChange={inputChangedHandler.bind(this, 'category')}
                         data={EXPENSETYPE}
                     />
                     {!inputs.category.isValid && (

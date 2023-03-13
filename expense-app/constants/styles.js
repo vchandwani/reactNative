@@ -104,4 +104,27 @@ export const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: GlobalStyles.colors.font,
     },
+    title: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: GlobalStyles.colors.font,
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        height: 56,
+        paddingLeft: 25,
+        paddingRight: 18,
+        alignItems: 'center',
+        backgroundColor: GlobalStyles.colors.gray500,
+    },
+    parentHr: {
+        height: 1,
+        color: GlobalStyles.colors.font,
+        width: '100%',
+    },
+    child: {
+        backgroundColor: GlobalStyles.colors.gray500,
+        padding: 16,
+    },
 });

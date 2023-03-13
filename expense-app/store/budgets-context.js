@@ -1,5 +1,7 @@
 import { createContext, useMemo, useReducer, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { EXPENSE } from '../util/constants';
+import { objectToArray } from '../util/data';
 
 export const BudgetsContext = createContext({
     budgets: [],
@@ -14,15 +16,15 @@ export const BudgetsContext = createContext({
         budgetId
     ) => {},
 
-    addExpense: (
+    addTransaction: (
         id,
         { description, amount, date, email },
         budgetId,
         month,
         year
     ) => {},
-    deleteExpense: (id, budgetId, month, year) => {},
-    updateExpense: (
+    deleteTransaction: (id, budgetId, month, year) => {},
+    updateTransaction: (
         id,
         { description, amount, date, email },
         budgetId,
@@ -35,7 +37,7 @@ export const BudgetsContext = createContext({
     isAuthenticated: false,
     authenticate: (token, email) => {},
     logout: () => {},
-    getExpenses: (budgetId, month, year) => {},
+    getTransactions: (budgetId, month, year) => {},
 
     setCurrentBudgetCategories: (dataCategories) => {},
     currentBudgetCategories: '',
@@ -58,33 +60,39 @@ function budgetsReducer(state, action) {
             delete state[budgetIndex]['entries'][action.payload];
             return state;
 
-        case 'ADDEXPENSE':
-            if (!state[budgetIndex]['expenses'][action.year]) {
-                state[budgetIndex]['expenses'][action.year] = {};
+        case 'ADDTRANSACTION':
+            if (!state[budgetIndex]['transactions'][action.year]) {
+                state[budgetIndex]['transactions'][action.year] = {};
             }
-            if (!state[budgetIndex]['expenses'][action.year][action.month]) {
-                state[budgetIndex]['expenses'][action.year][action.month] = {};
+            if (
+                !state[budgetIndex]['transactions'][action.year][action.month]
+            ) {
+                state[budgetIndex]['transactions'][action.year][action.month] =
+                    {};
             }
-            state[budgetIndex]['expenses'][action.year][action.month][
+            state[budgetIndex]['transactions'][action.year][action.month][
                 action.payload.id
             ] = action.payload.data;
             return state;
 
-        case 'UPDATEEXPENSE':
-            if (!state[budgetIndex]['expenses'][action.year]) {
-                state[budgetIndex]['expenses'][action.year] = {};
+        case 'UPDATETRANSACTION':
+            if (!state[budgetIndex]['transactions'][action.year]) {
+                state[budgetIndex]['transactions'][action.year] = {};
             }
-            if (!state[budgetIndex]['expenses'][action.year][action.month]) {
-                state[budgetIndex]['expenses'][action.year][action.month] = {};
+            if (
+                !state[budgetIndex]['transactions'][action.year][action.month]
+            ) {
+                state[budgetIndex]['transactions'][action.year][action.month] =
+                    {};
             }
-            state[budgetIndex].expenses[action.year][action.month][
+            state[budgetIndex].transactions[action.year][action.month][
                 action.payload.id
             ] = action.payload.data;
             return state;
-        case 'DELETEEXPENSE':
-            delete state[budgetIndex]['expenses'][action.year][action.month][
-                action.payload
-            ];
+        case 'DELETETRANSACTION':
+            delete state[budgetIndex]['transactions'][action.year][
+                action.month
+            ][action.payload];
             return state;
 
         default:
@@ -139,19 +147,19 @@ function BudgetsContextProvider({ children }) {
         });
     }
 
-    function addExpense(id, expenseData, budgetId, month, year) {
+    function addTransaction(id, transactionData, budgetId, month, year) {
         dispatch({
-            type: 'ADDEXPENSE',
-            payload: { id: id, data: expenseData },
+            type: 'ADDTRANSACTION',
+            payload: { id: id, data: transactionData },
             budgetId: budgetId,
             month: month,
             year: year,
         });
     }
 
-    function deleteExpense(id, budgetId, month, year) {
+    function deleteTransaction(id, budgetId, month, year) {
         dispatch({
-            type: 'DELETEEXPENSE',
+            type: 'DELETETRANSACTION',
             payload: id,
             budgetId: budgetId,
             month: month,
@@ -159,21 +167,24 @@ function BudgetsContextProvider({ children }) {
         });
     }
 
-    function updateExpense(id, expenseData, budgetId, month, year) {
+    function updateTransaction(id, transactionData, budgetId, month, year) {
         dispatch({
-            type: 'UPDATEEXPENSE',
-            payload: { id: id, data: expenseData },
+            type: 'UPDATETRANSACTION',
+            payload: { id: id, data: transactionData },
             budgetId: budgetId,
             month: month,
             year: year,
         });
     }
 
-    function getExpenses(budgetId, month = '', year = '') {
+    function getTransactions(budgetId, month = '', year = '') {
         const indexVal = budgetsState?.findIndex((el) => el.id === budgetId);
-        return budgetsState[indexVal]['expenses']?.[year]?.[month]
-            ? budgetsState[indexVal]['expenses'][year][month]
-            : [];
+        const monthlyData =
+            budgetsState[indexVal]['transactions']?.[year]?.[month];
+
+        const expenseTransactions = monthlyData ? monthlyData : [];
+
+        return expenseTransactions;
     }
 
     function setCurrentBudgetCategories(dataCategories) {
@@ -196,10 +207,10 @@ function BudgetsContextProvider({ children }) {
         authenticate: authenticate,
         logout: logout,
 
-        addExpense: addExpense,
-        deleteExpense: deleteExpense,
-        updateExpense: updateExpense,
-        getExpenses: getExpenses,
+        addTransaction: addTransaction,
+        deleteTransaction: deleteTransaction,
+        updateTransaction: updateTransaction,
+        getTransactions: getTransactions,
 
         setCurrentBudgetCategories: setCurrentBudgetCategories,
         currentBudgetCategories: budgetExpenseCategories,

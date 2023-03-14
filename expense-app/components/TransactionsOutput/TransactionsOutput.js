@@ -7,7 +7,6 @@ import TransactionsSummary from './TransactionsSummary';
 
 function TransactionsOutput({
     transactions,
-
     isFocused,
     transactionsPeriod,
     fallbackText,

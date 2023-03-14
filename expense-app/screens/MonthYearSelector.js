@@ -1,19 +1,17 @@
-import { useEffect, useState } from 'react';
 import { GlobalStyles } from '../constants/styles';
 import { StyleSheet, View } from 'react-native';
 import Select from '../components/ManageTransaction/Select';
 
-function MonthYearSelector({ onSelect, months, years, month, year }) {
-    const [yearVal, setYear] = useState(year);
-    const [monthVal, setMonth] = useState(month);
-
-    useEffect(() => {
-        setMonth(months[0]);
-    }, [months]);
-
-    useEffect(() => {
-        onSelect(yearVal, monthVal);
-    }, [monthVal, yearVal]);
+function MonthYearSelector({
+    onYearChange,
+    onMonthChange,
+    yearDefault,
+    monthDefault,
+    years,
+    months,
+}) {
+    const year = yearDefault ? yearDefault : years[0];
+    const month = monthDefault ? monthDefault : months[0];
 
     const yearsDropdown = [];
     const monthsDropdown = [];
@@ -25,14 +23,6 @@ function MonthYearSelector({ onSelect, months, years, month, year }) {
         monthsDropdown.push({ id: m, label: m });
     });
 
-    const changeYear = (yr) => {
-        setYear(yr);
-    };
-
-    const changeMonth = (mth) => {
-        setMonth(mth);
-    };
-
     return (
         <View style={styles.rootContainer}>
             <View style={styles.form}>
@@ -41,9 +31,9 @@ function MonthYearSelector({ onSelect, months, years, month, year }) {
                         style={styles.rowInput}
                         label='Select Year'
                         textInputConfig={{
-                            value: yearVal,
+                            value: year,
                         }}
-                        onChange={changeYear.bind(this)}
+                        onChange={onYearChange.bind(this)}
                         data={yearsDropdown}
                     />
                 </View>
@@ -52,9 +42,9 @@ function MonthYearSelector({ onSelect, months, years, month, year }) {
                         style={styles.rowInput}
                         label='Select Month'
                         textInputConfig={{
-                            value: monthVal,
+                            value: month,
                         }}
-                        onChange={changeMonth.bind(this)}
+                        onChange={onMonthChange.bind(this)}
                         data={monthsDropdown}
                     />
                 </View>

@@ -22,7 +22,7 @@ function Select({ label, invalid, style, textInputConfig, onChange, data }) {
                 onValueChange={(itemValue, itemIndex) => onChange(itemValue)}
             >
                 <Picker.Item
-                    label={'Selecta a Value'}
+                    label={'Select a Value'}
                     value={''}
                     key={'defaultVal'}
                 />

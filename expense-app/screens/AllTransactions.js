@@ -10,71 +10,99 @@ import Accordian from '../components/UI/Accordian';
 import { ScrollView } from 'react-native';
 import { EXPENSE, INCOME } from '../util/constants';
 import { styles } from '../constants/styles';
+import LoadingOverlay from '../components/UI/LoadingOverlay';
 
 function AllTransactions() {
     const budgetCtx = useContext(BudgetsContext);
-    const [transactions, setTransactions] = useState([]);
-    const isFocused = useIsFocused();
+
     const yearsArray = getYearsArray();
+
+    const [trasactionIncomeEntries, setTrasactionIncomeEntries] = useState([]);
+    const [transactionExpenseEntries, setTransactionExpenseEntries] = useState(
+        []
+    );
+    const isFocused = useIsFocused();
     const [year, setYear] = useState(yearsArray[0]);
-    const [months, setMonths] = useState([]);
-    const [month, setMonth] = useState(months[0]);
-    const [isFocusedVal, setIsFocusedVal] = useState(isFocused);
+    const [months, setMonths] = useState();
+    const [month, setMonth] = useState();
+    const [isSubmitting, setIsSubmitting] = useState(true);
+    const date = new Date().toISOString();
+    const dataMonthYear = getMonthAndYear(date);
 
     const currentBudgetRecurringCategories =
         budgetCtx.currentBudgetCategories?.filter((btgCat) => {
             return btgCat?.recurring;
         });
-    const monthYearData = (year, month) => {
-        if (year && month) {
-            setMonth(month);
-            setYear(year);
-            setIsFocusedVal(true);
-        }
-    };
-
-    const transactionsArray = () => {
-        setTransactions(
-            budgetCtx.getTransactions(budgetCtx.selectedBudgetId, month, year)
-        );
-    };
-
-    let trasactionIncomeEntries = [];
-    let transactionExpenseEntries = [];
 
     useEffect(() => {
-        setIsFocusedVal(isFocused);
-    }, [isFocused]);
+        setMonth(dataMonthYear.month);
+        setYear(dataMonthYear.year);
+    }, []);
 
     useEffect(() => {
         setMonths(getMonthsArray(year));
     }, [year]);
 
     useEffect(() => {
-        setMonth(months[0]);
+        months && setMonth(months[0]);
     }, [months]);
 
     useEffect(() => {
-        for (const [key, value] of Object.entries(transactions)) {
-            if (value.type === INCOME) {
-                trasactionIncomeEntries.push({
-                    ...value,
-                    id: key,
-                });
-            } else if (value.type === EXPENSE) {
-                transactionExpenseEntries.push({
-                    ...value,
-                    id: key,
-                });
-            }
-        }
-    }, [transactions]);
-
-    useEffect(() => {
-        if (isFocused) {
+        setIsSubmitting(true);
+        if (isFocused && month && year) {
+            // call the function
             transactionsArray();
         }
     }, [month, year, isFocused]);
+
+    const monthSelect = (month) => {
+        if (month) {
+            setMonth(month);
+        }
+    };
+    const yearSelect = (year) => {
+        if (year) {
+            setYear(year);
+        }
+    };
+
+    const transactionsArray = () => {
+        formatTransactions(
+            budgetCtx.getTransactions(budgetCtx.selectedBudgetId, month, year)
+        );
+    };
+
+    const formatTransactions = (data) => {
+        let incomeExp = [];
+        let expenseExp = [];
+
+        if (Object.entries(data).length) {
+            let i = 0;
+            for (const [key, value] of Object.entries(data)) {
+                if (value.type === INCOME) {
+                    incomeExp.push({
+                        ...value,
+                        id: key,
+                    });
+                } else if (value.type === EXPENSE) {
+                    expenseExp.push({
+                        ...value,
+                        id: key,
+                    });
+                }
+                i++;
+                if (i === Object.entries(data).length) {
+                    setTrasactionIncomeEntries(incomeExp);
+                    setTransactionExpenseEntries(expenseExp);
+                    setIsSubmitting(false);
+                }
+            }
+        } else {
+            setIsSubmitting(false);
+            setTrasactionIncomeEntries([]);
+            setTransactionExpenseEntries([]);
+        }
+    };
 
     // useEffect(() => {
     //     if (refresh < 2) {
@@ -120,17 +148,21 @@ function AllTransactions() {
     //     }
     // }, [month, year, refresh, transactions.length]);
 
+    if (isSubmitting) {
+        return <LoadingOverlay />;
+    }
     return (
         <ScrollView style={styles.container}>
             <Accordian
                 title={'Month Year Selector'}
                 data={
                     <MonthYearSelector
-                        onSelect={monthYearData}
-                        months={months}
+                        onYearChange={yearSelect}
+                        onMonthChange={monthSelect}
+                        yearDefault={year}
+                        monthDefault={month}
                         years={yearsArray}
-                        month={month}
-                        year={year}
+                        months={months}
                     />
                 }
             />

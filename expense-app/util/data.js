@@ -11,6 +11,9 @@ export const formatBudgetData = async (data, email) => {
                 transactions: data[key].transactions
                     ? data[key].transactions
                     : [],
+                monthlyEntries: data[key].monthlyEntries
+                    ? data[key].monthlyEntries
+                    : [],
 
                 name: data[key].name,
                 users: data[key].users,

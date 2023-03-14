@@ -71,3 +71,20 @@ export function deleteBudgetEntry(id, budgetId, auth) {
         BACKEND_URL + `budget/${budgetId}/entries/${id}.json?` + auth
     );
 }
+
+export async function storeBudgetMonthlyEntry(
+    budgetId,
+    year,
+    month,
+    entryData,
+    auth
+) {
+    const response = await axios.post(
+        BACKEND_URL +
+            `budget/${budgetId}/monthlyEntries/${year}/${month}.json?` +
+            auth,
+        entryData
+    );
+    const id = response.data.name;
+    return id;
+}

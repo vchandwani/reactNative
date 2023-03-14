@@ -4,20 +4,39 @@ import { useIsFocused } from '@react-navigation/native';
 import TransactionsOutput from '../components/TransactionsOutput/TransactionsOutput';
 import { BudgetsContext } from '../store/budgets-context';
 import MonthYearSelector from './MonthYearSelector';
-import { getMonthAndYear, getMonthsArray, getYearsArray } from '../util/data';
+import {
+    getMonthAndYear,
+    getMonthsArray,
+    getYearsArray,
+    objectToArray,
+} from '../util/data';
 import { newTransactionHandler } from './ManageTransaction';
 import Accordian from '../components/UI/Accordian';
 import { ScrollView } from 'react-native';
 import { EXPENSE, INCOME } from '../util/constants';
 import { styles } from '../constants/styles';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
+import { storeBudgetMonthlyEntry } from '../util/http';
+
+async function newBudgetMonthlyEntry(budgetId, year, month, data, token, ctx) {
+    const id = await storeBudgetMonthlyEntry(
+        budgetId,
+        year,
+        month,
+        data,
+        'auth=' + token
+    );
+    ctx.addBudgetMonthlyEntry(id, { ...data, id: id }, budgetId, month, year);
+}
 
 function AllTransactions() {
     const budgetCtx = useContext(BudgetsContext);
 
     const yearsArray = getYearsArray();
 
-    const [trasactionIncomeEntries, setTrasactionIncomeEntries] = useState([]);
+    const [transactionIncomeEntries, setTransactionIncomeEntries] = useState(
+        []
+    );
     const [transactionExpenseEntries, setTransactionExpenseEntries] = useState(
         []
     );
@@ -55,6 +74,71 @@ function AllTransactions() {
         }
     }, [month, year, isFocused]);
 
+    useEffect(() => {
+        if (
+            month &&
+            year &&
+            !isSubmitting &&
+            transactionIncomeEntries.length === 0 &&
+            transactionExpenseEntries.length === 0
+        ) {
+            const { entries, monthlyEntries, transactions } =
+                budgetCtx?.budgets?.find(
+                    (el) => el.id === budgetCtx.selectedBudgetId
+                );
+
+            // make monthly entries from base entries
+            if (entries && !monthlyEntries?.[year]?.[month]) {
+                objectToArray(entries).map((budgetEntryData) => {
+                    budgetEntryData.id = null;
+                    newBudgetMonthlyEntry(
+                        budgetCtx.selectedBudgetId,
+                        year,
+                        month,
+                        budgetEntryData,
+                        budgetCtx.token,
+                        budgetCtx
+                    );
+                });
+            }
+            if (!transactions?.[year]?.[month]) {
+                // No Entries, enter recurring entries for the month selected
+                // Recurring transaction for the month and year if entries not present, newTransactionHandler called
+
+                currentBudgetRecurringCategories.map((budgetCatg) => {
+                    // check entry present
+                    const data = {
+                        amount: budgetCatg.amount,
+                        budgetId: budgetCtx.selectedBudgetId,
+                        category: budgetCatg.name,
+                        type: budgetCatg.category,
+                        date: date,
+                        description:
+                            budgetCatg.name +
+                            ' ' +
+                            dataMonthYear.month +
+                            ' ' +
+                            dataMonthYear.year +
+                            ' entry',
+                        email: budgetCtx.email,
+                    };
+                    newTransactionHandler(
+                        budgetCtx.selectedBudgetId,
+                        budgetCtx.token,
+                        data,
+                        month,
+                        year,
+                        budgetCtx
+                    );
+                });
+            }
+        }
+    }, [
+        transactionIncomeEntries.length,
+        transactionExpenseEntries.length,
+        isSubmitting,
+    ]);
+
     const monthSelect = (month) => {
         if (month) {
             setMonth(month);
@@ -67,9 +151,17 @@ function AllTransactions() {
     };
 
     const transactionsArray = () => {
-        formatTransactions(
-            budgetCtx.getTransactions(budgetCtx.selectedBudgetId, month, year)
-        );
+        setIsSubmitting(true);
+
+        setTimeout(() => {
+            formatTransactions(
+                budgetCtx.getTransactions(
+                    budgetCtx.selectedBudgetId,
+                    month,
+                    year
+                )
+            );
+        }, 100);
     };
 
     const formatTransactions = (data) => {
@@ -92,61 +184,17 @@ function AllTransactions() {
                 }
                 i++;
                 if (i === Object.entries(data).length) {
-                    setTrasactionIncomeEntries(incomeExp);
+                    setTransactionIncomeEntries(incomeExp);
                     setTransactionExpenseEntries(expenseExp);
                     setIsSubmitting(false);
                 }
             }
         } else {
             setIsSubmitting(false);
-            setTrasactionIncomeEntries([]);
+            setTransactionIncomeEntries([]);
             setTransactionExpenseEntries([]);
         }
     };
-
-    // useEffect(() => {
-    //     if (refresh < 2) {
-    //         setTimeout(() => {
-    //             transactionsArray();
-    //             setRefresh(refresh + 1);
-    //         }, 2000);
-    //     }
-
-    //     if (month && year && refresh === 1 && transactions.length === 0) {
-    //         // No Entries, enter recurring entries for the month selected
-    //         const date = new Date().toISOString();
-    //         const dataMonthYear = getMonthAndYear(date);
-
-    //         // Recurring transaction for the month and year if entries not present, newTransactionHandler called
-    //         currentBudgetRecurringCategories.map((budgetCatg) => {
-    //             // check entry present
-    //             const data = {
-    //                 amount: budgetCatg.amount,
-    //                 budgetId: budgetCtx.selectedBudgetId,
-    //                 category: budgetCatg.name,
-    //                 type: budgetCatg.category,
-    //                 date: date,
-    //                 description:
-    //                     budgetCatg.name +
-    //                     ' ' +
-    //                     dataMonthYear.month +
-    //                     ' ' +
-    //                     dataMonthYear.year +
-    //                     ' entry',
-    //                 email: budgetCtx.email,
-    //             };
-
-    //             newTransactionHandler(
-    //                 budgetCtx.selectedBudgetId,
-    //                 budgetCtx.token,
-    //                 data,
-    //                 dataMonthYear.month,
-    //                 dataMonthYear.year,
-    //                 budgetCtx
-    //             );
-    //         });
-    //     }
-    // }, [month, year, refresh, transactions.length]);
 
     if (isSubmitting) {
         return <LoadingOverlay />;
@@ -170,7 +218,7 @@ function AllTransactions() {
                 title={'Icnome Transactions'}
                 data={
                     <TransactionsOutput
-                        transactions={trasactionIncomeEntries}
+                        transactions={transactionIncomeEntries}
                         month={month}
                         year={year}
                         isFocused={isFocused}

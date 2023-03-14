@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 
 import TransactionItem from './TransactionItem';
@@ -8,13 +7,7 @@ function renderTransactionItem(itemData) {
 }
 
 function TransactionsList({ transactions, isFocused }) {
-    const [listItemsRefresh, setListItemsRefresh] = useState(isFocused);
     // setListItemsRefresh(!listItemsRefresh);
-
-    useEffect(() => {
-        console.log('isFocused');
-        console.log(isFocused);
-    }, [isFocused]);
 
     return (
         <>

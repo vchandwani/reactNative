@@ -16,6 +16,14 @@ export const BudgetsContext = createContext({
         budgetId
     ) => {},
 
+    addBudgetMonthlyEntry: (
+        { name, amount, category, recurring },
+        budgetId,
+        month,
+        year
+    ) => {},
+    getBudgetMonthlyEntries: (budgetId, month, year) => {},
+
     addTransaction: (
         id,
         { description, amount, date, email },
@@ -58,6 +66,22 @@ function budgetsReducer(state, action) {
             return state;
         case 'DELETEENTRY':
             delete state[budgetIndex]['entries'][action.payload];
+            return state;
+
+        case 'ADDBUDGETMONTHLYENTRY':
+            if (!state[budgetIndex]['monthlyEntries'][action.year]) {
+                state[budgetIndex]['monthlyEntries'][action.year] = {};
+            }
+            if (
+                !state[budgetIndex]['monthlyEntries'][action.year][action.month]
+            ) {
+                state[budgetIndex]['monthlyEntries'][action.year][
+                    action.month
+                ] = {};
+            }
+            state[budgetIndex]['monthlyEntries'][action.year][action.month][
+                action.payload.id
+            ] = action.payload.data;
             return state;
 
         case 'ADDTRANSACTION':
@@ -147,6 +171,29 @@ function BudgetsContextProvider({ children }) {
         });
     }
 
+    function getBudgetMonthlyEntries(budgetId, month = '', year = '') {
+        const indexVal = budgetsState?.findIndex((el) => el.id === budgetId);
+        const monthlyEntriesData =
+            budgetsState[indexVal]['monthlyEntries']?.[year]?.[month];
+
+        return monthlyEntriesData ? monthlyEntriesData : [];
+    }
+
+    function addBudgetMonthlyEntry(
+        id,
+        budgetMonthlyData,
+        budgetId,
+        month,
+        year
+    ) {
+        dispatch({
+            type: 'ADDBUDGETMONTHLYENTRY',
+            payload: { id: id, data: budgetMonthlyData },
+            budgetId: budgetId,
+            month: month,
+            year: year,
+        });
+    }
     function addTransaction(id, transactionData, budgetId, month, year) {
         dispatch({
             type: 'ADDTRANSACTION',
@@ -179,12 +226,10 @@ function BudgetsContextProvider({ children }) {
 
     function getTransactions(budgetId, month = '', year = '') {
         const indexVal = budgetsState?.findIndex((el) => el.id === budgetId);
-        const monthlyData =
+        const monthlyTransactionsData =
             budgetsState[indexVal]['transactions']?.[year]?.[month];
 
-        const expenseTransactions = monthlyData ? monthlyData : [];
-
-        return expenseTransactions;
+        return monthlyTransactionsData ? monthlyTransactionsData : [];
     }
 
     function setCurrentBudgetCategories(dataCategories) {
@@ -200,6 +245,9 @@ function BudgetsContextProvider({ children }) {
         addBudgetEntry: addBudgetEntry,
         deleteBudgetEntry: deleteBudgetEntry,
         updateBudgetEntry: updateBudgetEntry,
+
+        getBudgetMonthlyEntries: getBudgetMonthlyEntries,
+        addBudgetMonthlyEntry: addBudgetMonthlyEntry,
 
         token: authToken,
         email: email,

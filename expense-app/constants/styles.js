@@ -16,10 +16,12 @@ export const GlobalStyles = {
         gray100: '#94919c',
         gray500: '#39324a',
         gray700: '#221c30',
+        green10: '#DBEBDB',
         green50: '#91ba8f',
         green100: '#4b694a',
         green500: '#156b12',
         green700: '#043002',
+        red10: '#EBD5DA',
         red100: '#9e777e',
         red500: '#990b25',
         font: '#FAFCF8',
@@ -43,6 +45,23 @@ export const styles = StyleSheet.create({
         shadowOffset: { width: 1, height: 1 },
         shadowOpacity: 0.4,
     },
+    leanItem: {
+        padding: 4,
+        margin: 2,
+    },
+    rowItem: {
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        padding: 4,
+        marginVertical: 8,
+        backgroundColor: GlobalStyles.colors.primary500,
+        borderRadius: 6,
+        elevation: 3,
+        shadowColor: GlobalStyles.colors.gray500,
+        shadowRadius: 4,
+        shadowOffset: { width: 1, height: 1 },
+        shadowOpacity: 0.4,
+    },
     textBase: {
         color: GlobalStyles.colors.font,
     },
@@ -58,6 +77,12 @@ export const styles = StyleSheet.create({
     infoContainer: {
         flex: 4,
         padding: 10,
+    },
+    rowInfoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        flex: 4,
+        padding: 4,
     },
     amountContainer: {
         paddingHorizontal: 12,
@@ -126,5 +151,26 @@ export const styles = StyleSheet.create({
     child: {
         backgroundColor: GlobalStyles.colors.gray500,
         padding: 16,
+    },
+    green: { color: GlobalStyles.colors.green10 },
+    red: {
+        color: GlobalStyles.colors.red10,
+    },
+    bold: {
+        fontWeight: 'bold',
+    },
+    greenBackground: {
+        color: GlobalStyles.colors.green10,
+        backgroundColor: GlobalStyles.colors.green700,
+        minWidth: '6rem',
+        textAlign: 'end',
+        flex: 0,
+    },
+    redBackground: {
+        color: GlobalStyles.colors.red10,
+        backgroundColor: GlobalStyles.colors.red100,
+        minWidth: '6rem',
+        textAlign: 'end',
+        flex: 0,
     },
 });

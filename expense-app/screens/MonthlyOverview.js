@@ -3,7 +3,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 import OverviewOutput from '../components/OverviewOutput/OverviewOutput';
 import { BudgetsContext } from '../store/budgets-context';
-import MonthYearSelector from './MonthYearSelector';
+import MonthYearSelector from '../components/UI/MonthYearSelector';
 import {
     getMonthAndYear,
     getMonthsArray,

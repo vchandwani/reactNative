@@ -1,6 +1,6 @@
-import { GlobalStyles } from '../constants/styles';
+import { GlobalStyles } from '../../constants/styles';
 import { StyleSheet, View } from 'react-native';
-import Select from '../components/ManageTransaction/Select';
+import Select from '../ManageTransaction/Select';
 
 function MonthYearSelector({
     onYearChange,

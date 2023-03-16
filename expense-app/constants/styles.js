@@ -25,12 +25,23 @@ export const GlobalStyles = {
         red100: '#9e777e',
         red500: '#990b25',
         font: '#FAFCF8',
+        fontSecondary: '#DCDCDC',
     },
 };
 
 export const styles = StyleSheet.create({
     pressed: {
         opacity: 0.75,
+    },
+    rootContainer: {
+        backgroundColor: GlobalStyles.colors.primary800,
+    },
+
+    form: {
+        marginTop: 10,
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     item: {
         padding: 12,
@@ -84,6 +95,13 @@ export const styles = StyleSheet.create({
         flex: 4,
         padding: 4,
     },
+    fieldContainer: {
+        flexDirection: 'row',
+        marginBottom: 10,
+        width: '100%',
+        justifyContent: 'space-between',
+    },
+
     amountContainer: {
         paddingHorizontal: 12,
         paddingVertical: 4,
@@ -168,9 +186,15 @@ export const styles = StyleSheet.create({
     },
     redBackground: {
         color: GlobalStyles.colors.red10,
-        backgroundColor: GlobalStyles.colors.red100,
+        backgroundColor: GlobalStyles.colors.red500,
         minWidth: '6rem',
         textAlign: 'end',
         flex: 0,
+    },
+    tableHeader: {
+        backgroundColor: GlobalStyles.colors.gray500,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        color: GlobalStyles.colors.font,
     },
 });

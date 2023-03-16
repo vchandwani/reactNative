@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ManageTransaction from './screens/ManageTransaction';
 import AllTransactions from './screens/AllTransactions';
 import MonthlyOverview from './screens/MonthlyOverview';
+import AnnualOverview from './screens/AnnualOverview';
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
@@ -54,6 +55,17 @@ export function TransactionsOverview({ navigation }) {
                 options={{
                     title: 'Monthly Overview',
                     tabBarLabel: 'Monthly Overview',
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name='cash-sharp' size={size} color={color} />
+                    ),
+                }}
+            />
+            <BottomTabs.Screen
+                name='AnnualOverview'
+                component={AnnualOverview}
+                options={{
+                    title: 'Annual Overview',
+                    tabBarLabel: 'Annual Overview',
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name='cash-sharp' size={size} color={color} />
                     ),

@@ -1,36 +1,62 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { BudgetsContext } from '../store/budgets-context';
 import { getMonthsArray, getYearsArray, objectToArray } from '../util/data';
-import Accordian from '../components/UI/Accordian';
-import { ScrollView } from 'react-native';
-import { GlobalStyles, styles } from '../constants/styles';
+import { ScrollView, View, Dimensions } from 'react-native';
+import { styles } from '../constants/styles';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import YearScroll from '../components/UI/YearScroll';
 import { EXPENSE, INCOME } from '../util/constants';
 import { DataTable, Text } from 'react-native-paper';
-
+import { LineChart } from 'react-native-chart-kit';
 function AnnualOverview() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [yearIndex, setYearIndex] = useState(0);
     const [yearlyData, setYearlyData] = useState([]);
+    const diffAmount = useRef([]);
 
     let totalSpentAmount = 0;
     let totalIncomeAmount = 0;
-
+    let monthsArray = [];
     const budgetCtx = useContext(BudgetsContext);
+    const screenWidth = Dimensions.get('window').width;
 
     const yearsArray = getYearsArray().reverse();
+    const chartConfig = {
+        backgroundGradientFrom: '#1E2923',
+        backgroundGradientFromOpacity: 0,
+        backgroundGradientTo: '#08130D',
+        backgroundGradientToOpacity: 0.5,
+        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        strokeWidth: 2, // optional, default 3
+        barPercentage: 0.5,
+        useShadowColorFromDataset: false, // optional
+    };
+
+    const [chartData, setChartData] = useState({
+        labels: monthsArray,
+        datasets: [
+            {
+                data: [20, 45, 28, 80, 99, 43],
+                color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
+                strokeWidth: 2, // optional
+            },
+        ],
+        legend: ['Monthly Money Left'], // optional
+    });
 
     useEffect(() => {
         setYearlyData([]);
         setYearIndex(yearsArray.length - 1);
     }, [yearsArray.length]);
     useEffect(() => {
+        diffAmount.current = [];
+
         const { monthlyEntries, transactions } = budgetCtx?.budgets?.find(
             (el) => el.id === budgetCtx.selectedBudgetId
         );
-        const monthsArray = getMonthsArray(yearsArray[yearIndex]).reverse();
+        monthsArray = getMonthsArray(yearsArray[yearIndex]).reverse();
+
         setIsSubmitting(true);
         monthsArray.map((mnth) => {
             if (monthlyEntries?.[yearsArray[yearIndex]]?.[mnth]) {
@@ -76,25 +102,51 @@ function AnnualOverview() {
                 ]);
             }
         });
+        setChartData({
+            ...chartData,
+            labels: monthsArray,
+        });
         setIsSubmitting(false);
     }, [yearIndex]);
+
+    useEffect(() => {
+        setChartData({
+            ...chartData,
+            datasets: [
+                {
+                    ...chartData.datasets[0],
+                    data: [...diffAmount.current],
+                },
+            ],
+        });
+    }, [diffAmount.current]);
+
     const onYearChange = (val) => {
         totalSpentAmount = 0;
         totalIncomeAmount = 0;
 
         setYearIndex((oldVal) => oldVal + val);
     };
+
     if (isSubmitting) {
         return <LoadingOverlay />;
     }
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.yearlyContainer}>
             <YearScroll
                 onYearChange={onYearChange}
                 index={yearIndex}
                 years={yearsArray}
             />
+            <View style={styles.form}>
+                <LineChart
+                    data={chartData}
+                    width={screenWidth}
+                    height={220}
+                    chartConfig={chartConfig}
+                />
+            </View>
             {yearlyData && (
                 <DataTable style={styles.container}>
                     <DataTable.Header style={styles.tableHeader}>
@@ -111,6 +163,10 @@ function AnnualOverview() {
                     {yearlyData.map((monthlyData, i) => {
                         totalIncomeAmount += monthlyData.income;
                         totalSpentAmount += monthlyData.expense;
+                        diffAmount.current.push(
+                            monthlyData.income - monthlyData.expense
+                        );
+
                         return (
                             <DataTable.Row
                                 style={styles.amount}

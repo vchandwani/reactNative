@@ -124,6 +124,12 @@ export const styles = StyleSheet.create({
         paddingBottom: 0,
         backgroundColor: GlobalStyles.colors.primary700,
     },
+    yearlyContainer: {
+        flex: 1,
+        paddingTop: 24,
+        paddingBottom: 0,
+        backgroundColor: GlobalStyles.colors.primary700,
+    },
     infoText: {
         color: GlobalStyles.colors.font,
         fontSize: 16,

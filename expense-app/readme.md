@@ -23,6 +23,7 @@ Production Build
 
 > eas build --platform android
 > eas build --platform ios
+> eas build --platform all
 
 //TODO:
 Introduce TypeScript

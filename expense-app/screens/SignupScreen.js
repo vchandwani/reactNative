@@ -1,35 +1,36 @@
-import { useContext, useState } from "react";
-import { Alert } from "react-native";
+import { useContext, useState } from 'react';
 
-import AuthContent from "../components/Auth/AuthContent";
-import LoadingOverlay from "../components/UI/LoadingOverlay";
-import { ExpensesContext } from "../store/expenses-context";
-import { createUser } from "../util/auth";
+import AuthContent from '../components/Auth/AuthContent';
+import LoadingOverlay from '../components/UI/LoadingOverlay';
+import { BudgetsContext } from '../store/budgets-context';
+import { createUser } from '../util/auth';
 
 function SignupScreen() {
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
+    const [isAuthenticating, setIsAuthenticating] = useState(false);
+    const [error, setError] = useState(null);
 
-  const expCtx = useContext(ExpensesContext);
+    const budgetCtx = useContext(BudgetsContext);
 
-  async function signupHandler({ email, password }) {
-    setIsAuthenticating(true);
-    try {
-      const token = await createUser(email, password);
-      expCtx.authenticate(token);
-    } catch (error) {
-      Alert.alert(
-        "Authentication Failed",
-        "Could not create user. Please check your input or try again later!"
-      );
-      setIsAuthenticating(false);
+    async function signupHandler({ email, password }) {
+        setIsAuthenticating(true);
+        try {
+            const userData = await createUser(email, password);
+            budgetCtx.authenticate(userData.token, userData.email);
+        } catch (error) {
+            setError({
+                title: 'Authentication Failed',
+                message:
+                    'Could not create user. Please check your input or try again later!',
+            });
+            setIsAuthenticating(false);
+        }
     }
-  }
 
-  if (isAuthenticating) {
-    return <LoadingOverlay message="Creating user..." />;
-  }
+    if (isAuthenticating) {
+        return <LoadingOverlay message='Creating user...' />;
+    }
 
-  return <AuthContent onAuthenticate={signupHandler} />;
+    return <AuthContent onAuthenticate={signupHandler} error={error} />;
 }
 
 export default SignupScreen;

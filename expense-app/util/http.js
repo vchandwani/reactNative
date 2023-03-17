@@ -1,39 +1,90 @@
-import axios from "axios";
+import axios from 'axios';
 
 const BACKEND_URL =
-  "https://react-native-course-624d6-default-rtdb.firebaseio.com/";
+    'https://react-native-course-624d6-default-rtdb.firebaseio.com/';
 
-export async function storeExpense(expenseData) {
-  const response = await axios.post(
-    BACKEND_URL + "/expenses.json",
-    expenseData
-  );
-  const id = response.data.name;
-  return id;
+export async function storeTransaction(
+    budgetId,
+    transactionData,
+    auth,
+    month,
+    year
+) {
+    const response = await axios.post(
+        BACKEND_URL +
+            `budget/${budgetId}/transactions/${year}/${month}.json?` +
+            auth,
+        transactionData
+    );
+
+    const id = response.data.name;
+    return id;
 }
 
-export async function fetchExpenses() {
-  const response = await axios.get(BACKEND_URL + "/expenses.json");
-
-  const expenses = [];
-
-  for (const key in response.data) {
-    const expenseObj = {
-      id: key,
-      amount: response.data[key].amount,
-      date: new Date(response.data[key].date),
-      description: response.data[key].description,
-    };
-    expenses.push(expenseObj);
-  }
-
-  return expenses;
+export function updateTransaction(
+    budgetId,
+    id,
+    transactionData,
+    auth,
+    month,
+    year
+) {
+    return axios.put(
+        BACKEND_URL +
+            `budget/${budgetId}/transactions/${year}/${month}/${id}.json?` +
+            auth,
+        transactionData
+    );
 }
 
-export function updateExpense(id, expenseData) {
-  return axios.put(BACKEND_URL + `/expenses/${id}.json`, expenseData);
+export function deleteTransaction(budgetId, id, auth, month, year) {
+    return axios.delete(
+        BACKEND_URL +
+            `budget/${budgetId}/transactions/${year}/${month}/${id}.json?` +
+            auth
+    );
 }
 
-export function deleteExpense(id) {
-  return axios.delete(BACKEND_URL + `/expenses/${id}.json`);
+export async function fetchBudget(auth) {
+    const response = await axios.get(BACKEND_URL + 'budget.json?' + auth);
+
+    return response.data;
+}
+
+export async function storeBudgetEntry(budgetId, entryData, auth) {
+    const response = await axios.post(
+        BACKEND_URL + `budget/${budgetId}/entries.json?` + auth,
+        entryData
+    );
+    const id = response.data.name;
+    return id;
+}
+export function updateBudgetEntry(id, entryData, budgetId, auth) {
+    return axios.put(
+        BACKEND_URL + `budget/${budgetId}/entries/${id}.json?` + auth,
+        entryData
+    );
+}
+
+export function deleteBudgetEntry(id, budgetId, auth) {
+    return axios.delete(
+        BACKEND_URL + `budget/${budgetId}/entries/${id}.json?` + auth
+    );
+}
+
+export async function storeBudgetMonthlyEntry(
+    budgetId,
+    year,
+    month,
+    entryData,
+    auth
+) {
+    const response = await axios.post(
+        BACKEND_URL +
+            `budget/${budgetId}/monthlyEntries/${year}/${month}.json?` +
+            auth,
+        entryData
+    );
+    const id = response.data.name;
+    return id;
 }

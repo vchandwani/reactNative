@@ -242,6 +242,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     switch: {
-        marginLeft: '10px',
+        marginLeft: 10,
     },
 });

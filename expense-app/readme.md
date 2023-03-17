@@ -1,3 +1,7 @@
+Local app run command
+
+> npx expo start
+
 EAS
 
 On command prompt

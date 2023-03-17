@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, CheckBox, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, StatusBar } from 'react-native';
+import { Switch } from '@react-native-material/core';
 
 import Select from './Select';
 import Input from './Input';
@@ -138,16 +139,15 @@ function BudgetForm({
                     )}
                 </View>
                 <View style={styles.fieldContainer}>
-                    <CheckBox
-                        style={styles.checkbox}
+                    <Text style={styles.label}>Recurring?</Text>
+                    <Switch
+                        style={styles.switch}
                         value={inputs.recurring.value}
                         onValueChange={inputChangedHandler.bind(
                             this,
                             'recurring'
                         )}
                     />
-                    <Text style={styles.label}>Recurring?</Text>
-
                     {!inputs.recurring.isValid && (
                         <Text style={styles.errorText}>
                             Please select value
@@ -240,5 +240,8 @@ const styles = StyleSheet.create({
         padding: 16,
         color: 'red',
         fontSize: 20,
+    },
+    switch: {
+        marginLeft: '10px',
     },
 });

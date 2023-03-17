@@ -14,6 +14,7 @@ function AnnualOverview() {
     const [yearIndex, setYearIndex] = useState(0);
     const [yearlyData, setYearlyData] = useState([]);
     const diffAmount = useRef([]);
+    const chartLabels = useRef([]);
 
     let totalSpentAmount = 0;
     let totalIncomeAmount = 0;
@@ -34,7 +35,7 @@ function AnnualOverview() {
     };
 
     const [chartData, setChartData] = useState({
-        labels: monthsArray,
+        labels: [],
         datasets: [
             {
                 data: [20, 45, 28, 80, 99, 43],
@@ -51,6 +52,7 @@ function AnnualOverview() {
     }, [yearsArray.length]);
     useEffect(() => {
         diffAmount.current = [];
+        chartLabels.current = [];
 
         const { monthlyEntries, transactions } = budgetCtx?.budgets?.find(
             (el) => el.id === budgetCtx.selectedBudgetId
@@ -102,16 +104,13 @@ function AnnualOverview() {
                 ]);
             }
         });
-        setChartData({
-            ...chartData,
-            labels: monthsArray,
-        });
         setIsSubmitting(false);
     }, [yearIndex]);
 
     useEffect(() => {
         setChartData({
             ...chartData,
+            labels: [...chartLabels.current],
             datasets: [
                 {
                     ...chartData.datasets[0],
@@ -119,7 +118,7 @@ function AnnualOverview() {
                 },
             ],
         });
-    }, [diffAmount.current]);
+    }, [diffAmount.current, chartLabels.current]);
 
     const onYearChange = (val) => {
         totalSpentAmount = 0;
@@ -131,7 +130,7 @@ function AnnualOverview() {
     if (isSubmitting) {
         return <LoadingOverlay />;
     }
-
+    console.log(chartData);
     return (
         <ScrollView style={styles.yearlyContainer}>
             <YearScroll
@@ -166,6 +165,7 @@ function AnnualOverview() {
                         diffAmount.current.push(
                             monthlyData.income - monthlyData.expense
                         );
+                        chartLabels.current.push(monthlyData.name);
 
                         return (
                             <DataTable.Row

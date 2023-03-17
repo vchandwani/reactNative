@@ -203,4 +203,10 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         color: GlobalStyles.colors.font,
     },
+
+    divider: {
+        color: GlobalStyles.colors.fontSecondary,
+        height: '1px',
+        marginTop: '4px',
+    },
 });

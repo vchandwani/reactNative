@@ -62,12 +62,14 @@ function MonthlyOverview() {
             objectToArray(monthlyEntries?.[year]?.[month]).map(
                 (monthlyEntry) => {
                     let spentAmount = 0;
+                    let categoryTransactions = [];
                     if (transactions?.[year]?.[month]) {
-                        const categoryTransactions = objectToArray(
+                        categoryTransactions = objectToArray(
                             transactions?.[year]?.[month]
                         )?.filter((val) => {
                             return val.category === monthlyEntry.name;
                         });
+
                         if (categoryTransactions) {
                             spentAmount += categoryTransactions?.reduce(
                                 (sum, { amount }) => sum + amount,
@@ -75,6 +77,7 @@ function MonthlyOverview() {
                             );
                         }
                     }
+
                     setCategoryWiseData((oldVal) => [
                         ...oldVal,
                         {
@@ -82,6 +85,7 @@ function MonthlyOverview() {
                             targetAmount: monthlyEntry.amount,
                             spentAmount: spentAmount,
                             category: monthlyEntry.category,
+                            categoryTransactions: categoryTransactions,
                         },
                     ]);
                 }

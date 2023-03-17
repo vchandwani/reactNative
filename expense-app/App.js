@@ -18,9 +18,9 @@ import BudgetsContextProvider, {
     BudgetsContext,
 } from './store/budgets-context';
 import { useContext, useState, useEffect } from 'react';
-import AppLoading from 'expo-app-loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import LoadingOverlay from './components/UI/LoadingOverlay';
+import { Provider } from '@react-native-material/core';
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
@@ -164,7 +164,7 @@ function Root() {
     }, []);
 
     if (isTryingLogin) {
-        return <AppLoading />;
+        return <LoadingOverlay />;
     }
 
     return <Navigation />;
@@ -175,7 +175,9 @@ export default function App() {
         <>
             <StatusBar style='light' />
             <BudgetsContextProvider>
-                <Root />
+                <Provider>
+                    <Root />
+                </Provider>
             </BudgetsContextProvider>
         </>
     );

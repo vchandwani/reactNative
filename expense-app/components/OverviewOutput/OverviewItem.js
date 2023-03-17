@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {
     Dialog,
@@ -67,11 +67,13 @@ function CategoryItem({
         >
             <Dialog visible={visible} onDismiss={toggleDialog} maxWidth={false}>
                 <DialogHeader title='Transactions' />
-                <DialogContent>
-                    {categoryTransactions.map((txs, i) => {
-                        return description(txs, i);
-                    })}
-                </DialogContent>
+                <ScrollView>
+                    <DialogContent>
+                        {categoryTransactions.map((txs, i) => {
+                            return description(txs, i);
+                        })}
+                    </DialogContent>
+                </ScrollView>
                 <DialogActions>
                     <Button onPress={toggleDialog} mode='flat'>
                         Cancel

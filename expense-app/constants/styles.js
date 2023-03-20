@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { StatusBar } from 'react-native';
 
 export const GlobalStyles = {
     colors: {
@@ -34,12 +35,12 @@ export const styles = StyleSheet.create({
         opacity: 0.75,
     },
     rootContainer: {
+        flex: 1,
         backgroundColor: GlobalStyles.colors.primary800,
     },
 
     form: {
         marginTop: 10,
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -78,8 +79,10 @@ export const styles = StyleSheet.create({
     },
     description: {
         fontSize: 16,
+        marginTop: 4,
         marginBottom: 4,
-        fontWeight: 'bold',
+        color: GlobalStyles.colors.font,
+        textAlign: 'center',
     },
     smallDescription: {
         fontSize: 12,
@@ -122,7 +125,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingTop: 24,
         paddingBottom: 0,
-        backgroundColor: GlobalStyles.colors.primary700,
+        backgroundColor: GlobalStyles.colors.primary800,
     },
     yearlyContainer: {
         flex: 1,
@@ -152,6 +155,13 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: GlobalStyles.colors.font,
+    },
+    header: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: GlobalStyles.colors.font,
+        margin: 10,
+        textAlign: 'center',
     },
     title: {
         fontSize: 14,
@@ -208,5 +218,113 @@ export const styles = StyleSheet.create({
         color: GlobalStyles.colors.fontSecondary,
         height: '1px',
         marginTop: '4px',
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 8,
+        color: GlobalStyles.colors.font,
+    },
+    budgetSelect: {
+        padding: 24,
+        backgroundColor: GlobalStyles.colors.primary800,
+    },
+    budgetInfo: {
+        flex: 1,
+        padding: 24,
+        backgroundColor: GlobalStyles.colors.primary800,
+    },
+
+    notificationLabel: {
+        color: GlobalStyles.colors.green700,
+        backgroundColor: GlobalStyles.colors.green50,
+        marginBottom: 4,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        minHeight: '20px',
+        height: 'auto',
+        borderRadius: '10px',
+        justifyContent: 'center',
+    },
+    deleteContainer: {
+        marginTop: 16,
+        paddingTop: 8,
+        borderTopWidth: 2,
+        borderTopColor: GlobalStyles.colors.primary200,
+        alignItems: 'center',
+    },
+    inputsRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    rowInput: {
+        flex: 1,
+    },
+    flex: {
+        flex: 1,
+    },
+    errorText: {
+        textAlign: 'center',
+        color: GlobalStyles.colors.error500,
+        margin: 8,
+        flex: 1,
+    },
+    buttons: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    button: {
+        minWidth: 120,
+        marginHorizontal: 8,
+    },
+    errorContainer: {
+        flexDirection: 'row',
+        marginBottom: 2,
+        width: '100%',
+    },
+    label: {
+        fontSize: 12,
+        color: GlobalStyles.colors.font,
+        marginBottom: 4,
+        marginLeft: 4,
+    },
+
+    checkbox: {
+        alignSelf: 'center',
+    },
+
+    tabBar: {
+        flexDirection: 'row',
+        paddingTop: StatusBar.currentHeight,
+        color: 'black',
+        backgroundColor: 'white',
+        fontSize: 20,
+    },
+    tabItem: {
+        flex: 1,
+        alignItems: 'center',
+        padding: 16,
+        color: 'red',
+        fontSize: 20,
+    },
+    switch: {
+        marginLeft: 10,
+        marginBottom: 4,
+    },
+    resetButton: {
+        backgroundColor: GlobalStyles.colors.primary100,
+    },
+    buttonMargin: {
+        marginTop: 12,
+    },
+    errorLabel: {
+        color: GlobalStyles.colors.red100,
+        marginBottom: 4,
+        textAlign: 'center',
+        fontWeight: 'bold',
+    },
+    width100: {
+        width: '100%',
     },
 });

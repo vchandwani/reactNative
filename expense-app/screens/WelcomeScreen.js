@@ -1,15 +1,9 @@
 import axios from 'axios';
 import { useContext, useEffect, useState, useLayoutEffect } from 'react';
 
-import {
-    StyleSheet,
-    Text,
-    View,
-    useWindowDimensions,
-    Pressable,
-} from 'react-native';
+import { Text, View, useWindowDimensions, Pressable } from 'react-native';
 import { BudgetsContext } from '../store/budgets-context';
-import { GlobalStyles } from '../constants/styles';
+import { GlobalStyles, styles } from '../constants/styles';
 import BudgetForm from '../components/ManageTransaction/BudgetForm';
 import {
     storeBudgetEntry,
@@ -67,13 +61,15 @@ function BudgetData({ route, navigation }) {
         first: () => (
             <View style={[styles.budgetInfo]}>
                 {budgetInfo && (
-                    <>
-                        <Text style={styles.title}>{budgetInfo.name}</Text>
+                    <View>
+                        <Text style={styles.headerTitle}>
+                            {budgetInfo.name}
+                        </Text>
                         <BudgetOutput
                             budgetEntries={budgetInfo.entries}
                             fallbackText='No data available'
                         />
-                    </>
+                    </View>
                 )}
             </View>
         ),
@@ -275,6 +271,7 @@ function BudgetData({ route, navigation }) {
                 </Pressable>
             )}
             <Select
+                style={styles.budgetSelect}
                 label='Select Budget'
                 textInputConfig={{
                     value: selectedBudgetId,
@@ -283,7 +280,7 @@ function BudgetData({ route, navigation }) {
                 data={budgetOptions}
             />
 
-            <View style={styles.container}>
+            <View style={styles.rootContainer}>
                 <TabView
                     navigationState={{ index, routes }}
                     renderScene={renderScene}
@@ -293,7 +290,7 @@ function BudgetData({ route, navigation }) {
                         <TabBar
                             {...props}
                             style={{
-                                backgroundColor: GlobalStyles.colors.primary50,
+                                backgroundColor: GlobalStyles.colors.primary800,
                                 color: GlobalStyles.colors.font,
                             }}
                         />
@@ -388,50 +385,3 @@ function WelcomeScreen({ route, navigation }) {
 }
 
 export default WelcomeScreen;
-
-const styles = StyleSheet.create({
-    rootContainer: {
-        flex: 1,
-        backgroundColor: GlobalStyles.colors.primary800,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 8,
-        color: GlobalStyles.colors.font,
-    },
-    description: {
-        fontSize: 16,
-        marginBottom: 8,
-        color: GlobalStyles.colors.font,
-        textAlign: 'center',
-    },
-    container: {
-        flex: 1,
-        backgroundColor: GlobalStyles.colors.primary800,
-    },
-    budgetInfo: {
-        backgroundColor: GlobalStyles.colors.primary800,
-        flex: 1,
-        padding: 24,
-        backgroundColor: GlobalStyles.colors.primary800,
-    },
-    notificationLabel: {
-        color: GlobalStyles.colors.green700,
-        backgroundColor: GlobalStyles.colors.green50,
-        marginBottom: 4,
-        textAlign: 'center',
-        fontWeight: 'bold',
-        minHeight: '20px',
-        height: 'auto',
-        borderRadius: '10px',
-        justifyContent: 'center',
-    },
-    deleteContainer: {
-        marginTop: 16,
-        paddingTop: 8,
-        borderTopWidth: 2,
-        borderTopColor: GlobalStyles.colors.primary200,
-        alignItems: 'center',
-    },
-});

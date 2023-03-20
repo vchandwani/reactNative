@@ -1,11 +1,11 @@
 import { useContext, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import Input from './Input';
 import DateComponent from './Date';
 import Button from '../UI/Button';
 import { getFormattedDate } from '../../util/date';
-import { GlobalStyles } from '../../constants/styles';
+import { styles } from '../../constants/styles';
 import { BudgetsContext } from '../../store/budgets-context';
 import Select from './Select';
 import { categoryDropdown } from '../../util/data';
@@ -137,7 +137,7 @@ function TransactionForm({
         !inputs.type.isValid;
 
     return (
-        <View style={styles.form}>
+        <View style={{ marginTop: 40 }}>
             <Text style={styles.title}>Your Transaction</Text>
             <Input
                 style={styles.rowInput}
@@ -209,37 +209,3 @@ function TransactionForm({
 }
 
 export default TransactionForm;
-
-const styles = StyleSheet.create({
-    form: {
-        marginTop: 40,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: GlobalStyles.colors.font,
-        marginVertical: 24,
-        textAlign: 'center',
-    },
-    inputsRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    rowInput: {
-        flex: 1,
-    },
-    errorText: {
-        textAlign: 'center',
-        color: GlobalStyles.colors.error500,
-        margin: 8,
-    },
-    buttons: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    button: {
-        minWidth: 120,
-        marginHorizontal: 8,
-    },
-});

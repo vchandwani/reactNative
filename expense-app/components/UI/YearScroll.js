@@ -17,7 +17,7 @@ function YearScroll({ onYearChange, index, years }) {
 
     return (
         <View style={styles.rootContainer}>
-            <View style={styles.form}>
+            <View style={[styles.form, styles.flex]}>
                 <View style={styles.fieldContainer}>
                     <View pointerEvents={!years[index - 1] && 'none'}>
                         <MaterialIcons

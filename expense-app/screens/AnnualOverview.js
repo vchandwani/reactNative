@@ -138,7 +138,7 @@ function AnnualOverview() {
                 index={yearIndex}
                 years={yearsArray}
             />
-            <View style={styles.form}>
+            <View style={[styles.form, styles.flex]}>
                 <LineChart
                     data={chartData}
                     width={screenWidth}

@@ -1,5 +1,5 @@
-import { GlobalStyles } from '../../constants/styles';
-import { StyleSheet, View } from 'react-native';
+import { styles } from '../../constants/styles';
+import { View } from 'react-native';
 import Select from '../ManageTransaction/Select';
 
 function MonthYearSelector({
@@ -54,24 +54,3 @@ function MonthYearSelector({
 }
 
 export default MonthYearSelector;
-
-const styles = StyleSheet.create({
-    rootContainer: {
-        backgroundColor: GlobalStyles.colors.primary800,
-    },
-    form: {
-        marginTop: 10,
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    fieldContainer: {
-        flexDirection: 'row',
-        marginBottom: 10,
-        width: '100%',
-    },
-
-    rowInput: {
-        flex: 1,
-    },
-});

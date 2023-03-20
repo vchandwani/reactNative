@@ -1,4 +1,4 @@
-import { Text, View, ScrollView } from 'react-native';
+import { Text, View, ScrollView, SafeAreaView } from 'react-native';
 
 import { styles } from '../../constants/styles';
 import { EXPENSE, INCOME } from '../../util/constants';
@@ -41,7 +41,7 @@ function BudgetOutput({ budgetEntries, fallbackText }) {
     }
 
     return (
-        <ScrollView style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {budgetIncomeEntries.length > 0 && (
                 <View>
                     <BudgetSummary
@@ -63,7 +63,7 @@ function BudgetOutput({ budgetEntries, fallbackText }) {
             )}
 
             {(!budgetIncomeSummary || !budgetExpenseSummary) && content}
-        </ScrollView>
+        </SafeAreaView>
     );
 }
 

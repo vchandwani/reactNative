@@ -22,11 +22,7 @@ function Select({ label, invalid, style, textInputConfig, onChange, data }) {
                 style={styles.input}
                 onValueChange={(itemValue, itemIndex) => onChange(itemValue)}
             >
-                <Picker.Item
-                    label={'Select a Value'}
-                    value={''}
-                    key={'defaultVal'}
-                />
+                <Picker.Item label='Select a Value' value={null} />
                 {data.map((val) => {
                     return (
                         <Picker.Item

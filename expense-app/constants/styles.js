@@ -1,5 +1,4 @@
-import { StyleSheet } from 'react-native';
-import { StatusBar } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 
 export const GlobalStyles = {
     colors: {
@@ -103,6 +102,7 @@ export const styles = StyleSheet.create({
         marginBottom: 10,
         width: '100%',
         justifyContent: 'space-between',
+        alignItems: 'center',
     },
 
     amountContainer: {
@@ -247,9 +247,8 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     deleteContainer: {
-        marginTop: 16,
-        paddingTop: 8,
-        borderTopWidth: 2,
+        top: 16,
+        marginTop: 12,
         borderTopColor: GlobalStyles.colors.primary200,
         alignItems: 'center',
     },
@@ -326,5 +325,8 @@ export const styles = StyleSheet.create({
     },
     width100: {
         width: '100%',
+    },
+    height100: {
+        height: '100%',
     },
 });

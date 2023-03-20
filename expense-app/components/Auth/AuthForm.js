@@ -61,7 +61,7 @@ function AuthForm({
     }
 
     return (
-        <View style={[styles.form, styles.flex]}>
+        <View style={styles.form}>
             {error && (
                 <View>
                     {error.title && (

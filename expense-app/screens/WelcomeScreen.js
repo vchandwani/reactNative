@@ -1,7 +1,15 @@
 import axios from 'axios';
 import { useContext, useEffect, useState, useLayoutEffect } from 'react';
 
-import { Text, View, useWindowDimensions, Pressable } from 'react-native';
+import {
+    Text,
+    View,
+    useWindowDimensions,
+    Pressable,
+    SafeAreaView,
+    Animated,
+    ScrollView,
+} from 'react-native';
 import { BudgetsContext } from '../store/budgets-context';
 import { GlobalStyles, styles } from '../constants/styles';
 import BudgetForm from '../components/ManageTransaction/BudgetForm';
@@ -57,11 +65,41 @@ function BudgetData({ route, navigation }) {
         }, 4000);
     }, [notification]);
 
+    let AnimatedHeaderValue = new Animated.Value(0);
+    const HEADER_MAX_HEIGHT = 150;
+    const HEADER_MIN_HEIGHT = 50;
+    const animatedHeaderBackgroundColor = AnimatedHeaderValue.interpolate({
+        inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+        outputRange: ['transparent', 'transparent'],
+        extrapolate: 'clamp',
+    });
+
+    const animateHeaderHeight = AnimatedHeaderValue.interpolate({
+        inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+        outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+        extrapolate: 'clamp',
+    });
+
     const renderScene = SceneMap({
         first: () => (
-            <View style={[styles.budgetInfo]}>
+            <ScrollView
+                style={styles.budgetInfo}
+                scrollEventThrottle={16}
+                onScoll={Animated.event(
+                    [
+                        {
+                            nativeEvent: {
+                                contentOffset: {
+                                    y: AnimatedHeaderValue,
+                                },
+                            },
+                        },
+                    ],
+                    { useNativeDriver: false }
+                )}
+            >
                 {budgetInfo && (
-                    <View>
+                    <View style={styles.height100}>
                         <Text style={styles.headerTitle}>
                             {budgetInfo.name}
                         </Text>
@@ -71,10 +109,10 @@ function BudgetData({ route, navigation }) {
                         />
                     </View>
                 )}
-            </View>
+            </ScrollView>
         ),
         second: () => (
-            <View style={[styles.budgetInfo]}>
+            <View style={styles.budgetInfo}>
                 <BudgetForm
                     submitButtonLabel={isEditing ? 'Update' : 'Add'}
                     onSubmit={confirmHandler}
@@ -259,28 +297,38 @@ function BudgetData({ route, navigation }) {
     }
 
     return (
-        <View style={styles.rootContainer}>
-            <Text style={styles.description}>{fetchedMessage}</Text>
-            {notification && (
-                <Pressable onPress={() => setNotification(null)}>
-                    <View>
-                        <Text style={styles.notificationLabel}>
-                            {notification}
-                        </Text>
-                    </View>
-                </Pressable>
-            )}
-            <Select
-                style={styles.budgetSelect}
-                label='Select Budget'
-                textInputConfig={{
-                    value: selectedBudgetId,
-                }}
-                onChange={changeBudget.bind(this)}
-                data={budgetOptions}
-            />
+        <SafeAreaView style={styles.rootContainer}>
+            <Animated.View
+                style={
+                    (styles.rootContainer,
+                    {
+                        height: animateHeaderHeight,
+                        backgroundColor: animatedHeaderBackgroundColor,
+                    })
+                }
+            >
+                <Text style={styles.description}>{fetchedMessage}</Text>
+                {notification && (
+                    <Pressable onPress={() => setNotification(null)}>
+                        <View>
+                            <Text style={styles.notificationLabel}>
+                                {notification}
+                            </Text>
+                        </View>
+                    </Pressable>
+                )}
+                <Select
+                    style={styles.budgetSelect}
+                    label='Select Budget'
+                    textInputConfig={{
+                        value: selectedBudgetId,
+                    }}
+                    onChange={changeBudget.bind(this)}
+                    data={budgetOptions}
+                />
+            </Animated.View>
 
-            <View style={styles.rootContainer}>
+            <View style={[styles.rootContainer]}>
                 <TabView
                     navigationState={{ index, routes }}
                     renderScene={renderScene}
@@ -297,7 +345,7 @@ function BudgetData({ route, navigation }) {
                     )}
                 />
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 function WelcomeScreen({ route, navigation }) {

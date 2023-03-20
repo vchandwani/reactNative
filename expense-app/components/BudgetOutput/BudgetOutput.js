@@ -41,28 +41,30 @@ function BudgetOutput({ budgetEntries, fallbackText }) {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
-            {budgetIncomeEntries.length > 0 && (
-                <View>
-                    <BudgetSummary
-                        budgetEntries={budgetIncomeEntries}
-                        periodName='Total'
-                    />
-                    {budgetIncomeSummary}
-                </View>
-            )}
+        <SafeAreaView style={styles.rootContainer}>
+            <ScrollView>
+                {budgetIncomeEntries.length > 0 && (
+                    <View style={{ paddingBottom: 10 }}>
+                        <BudgetSummary
+                            budgetEntries={budgetIncomeEntries}
+                            periodName='Total'
+                        />
+                        {budgetIncomeSummary}
+                    </View>
+                )}
 
-            {budgetExpenseEntries.length > 0 && (
-                <View style={{ flex: 1 }}>
-                    <BudgetSummary
-                        budgetEntries={budgetExpenseEntries}
-                        periodName='Total'
-                    />
-                    {budgetExpenseSummary}
-                </View>
-            )}
+                {budgetExpenseEntries.length > 0 && (
+                    <View style={{ paddingBottom: 24 }}>
+                        <BudgetSummary
+                            budgetEntries={budgetExpenseEntries}
+                            periodName='Total'
+                        />
+                        {budgetExpenseSummary}
+                    </View>
+                )}
 
-            {(!budgetIncomeSummary || !budgetExpenseSummary) && content}
+                {(!budgetIncomeSummary || !budgetExpenseSummary) && content}
+            </ScrollView>
         </SafeAreaView>
     );
 }

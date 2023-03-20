@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
-import { Switch } from '@react-native-material/core';
+import { Switch, Grid } from '@react-native-material/core';
 
 import Select from './Select';
 import Input from './Input';
@@ -128,7 +128,7 @@ function BudgetForm({
                 )}
                 <View style={styles.fieldContainer}>
                     <Select
-                        style={styles.container}
+                        style={styles.flex}
                         label='Category'
                         invalid={!inputs.category.isValid}
                         textInputConfig={{

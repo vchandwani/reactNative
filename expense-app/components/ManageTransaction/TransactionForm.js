@@ -128,7 +128,6 @@ function TransactionForm({
 
         onSubmit(transactionData);
     }
-
     const formIsInvalid =
         !inputs.amount.isValid ||
         !inputs.date.isValid ||
@@ -137,65 +136,74 @@ function TransactionForm({
         !inputs.type.isValid;
 
     return (
-        <View style={{ marginTop: 40 }}>
+        <View style={(styles.rowItem, { marginTop: 40 })}>
             <Text style={styles.title}>Your Transaction</Text>
-            <Input
-                style={styles.rowInput}
-                label='Amount'
-                invalid={!inputs.amount.isValid}
-                textInputConfig={{
-                    keyboardType: 'decimal-pad',
-                    onChangeText: inputChangedHandler.bind(this, 'amount'),
-                    value: inputs.amount.value,
-                }}
-            />
-            <Select
-                style={styles.rowInput}
-                label='Type'
-                invalid={!inputs.type.isValid}
-                textInputConfig={{
-                    value: inputs.type.value,
-                }}
-                onChange={inputChangedHandler.bind(this, 'type')}
-                data={EXPENSETYPE}
-            />
-            <Select
-                style={styles.rowInput}
-                label='Category'
-                invalid={!inputs.category.isValid}
-                textInputConfig={{
-                    value: inputs.category.value,
-                }}
-                onChange={inputChangedHandler.bind(this, 'category')}
-                data={categoryArray}
-            />
-
-            <DateComponent
-                style={styles.rowInput}
-                label='Date'
-                invalid={!inputs.date.isValid}
-                textInputConfig={{
-                    onChangedate: dateChangedHandler.bind(this, 'date'),
-                    value: inputs.date.value,
-                }}
-            />
-
-            <Input
-                label='Description'
-                invalid={!inputs.description.isValid}
-                textInputConfig={{
-                    multiline: true,
-                    // autoCapitalize: 'none'
-                    // autoCorrect: false // default is true
-                    onChangeText: inputChangedHandler.bind(this, 'description'),
-                    value: inputs.description.value,
-                }}
-            />
-            {formIsInvalid && (
-                <Text style={styles.errorText}>
-                    Invalid input values - please check your entered data!
-                </Text>
-            )}
+            <View>
+                <Input
+                    label='Amount'
+                    invalid={!inputs.amount.isValid}
+                    textInputConfig={{
+                        keyboardType: 'decimal-pad',
+                        onChangeText: inputChangedHandler.bind(this, 'amount'),
+                        value: inputs.amount.value,
+                    }}
+                />
+            </View>
+            <View>
+                <Select
+                    label='Type'
+                    invalid={!inputs.type.isValid}
+                    textInputConfig={{
+                        value: inputs.type.value,
+                    }}
+                    onChange={inputChangedHandler.bind(this, 'type')}
+                    data={EXPENSETYPE}
+                />
+            </View>
+            <View>
+                <Select
+                    label='Category'
+                    invalid={!inputs.category.isValid}
+                    textInputConfig={{
+                        value: inputs.category.value,
+                    }}
+                    onChange={inputChangedHandler.bind(this, 'category')}
+                    data={categoryArray}
+                />
+            </View>
+            <View>
+                <DateComponent
+                    label='Date'
+                    invalid={!inputs.date.isValid}
+                    textInputConfig={{
+                        onChangedate: dateChangedHandler.bind(this, 'date'),
+                        value: inputs.date.value,
+                    }}
+                />
+            </View>
+            <View>
+                <Input
+                    label='Description'
+                    invalid={!inputs.description.isValid}
+                    textInputConfig={{
+                        multiline: true,
+                        // autoCapitalize: 'none'
+                        // autoCorrect: false // default is true
+                        onChangeText: inputChangedHandler.bind(
+                            this,
+                            'description'
+                        ),
+                        value: inputs.description.value,
+                    }}
+                />
+            </View>
+            <View>
+                {formIsInvalid && (
+                    <Text style={styles.errorText}>
+                        Invalid input values - please check your entered data!
+                    </Text>
+                )}
+            </View>
             <View style={styles.buttons}>
                 <Button style={styles.button} mode='flat' onPress={onCancel}>
                     Cancel

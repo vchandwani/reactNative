@@ -9,17 +9,14 @@ const DateComponent = ({ label, invalid, style, textInputConfig }) => {
         textInputConfig.value ? new Date(textInputConfig.value) : new Date()
     );
     const [mode, setMode] = useState('date');
-    const [show, setShow] = useState(false);
+    const [show, setShow] = useState(true);
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate;
         setShow(false);
         setDate(currentDate);
     };
     const showMode = (currentMode) => {
-        if (Platform.OS === 'android') {
-            setShow(false);
-            // for iOS, add a button that closes the picker
-        }
+        setShow(true);
         setMode(currentMode);
     };
 
@@ -34,11 +31,6 @@ const DateComponent = ({ label, invalid, style, textInputConfig }) => {
                 onPress={showDatepicker}
                 title={label}
             />
-            {date && (
-                <Text style={[styles.rowInput, styles.input]}>
-                    Date: {date.toDateString()}
-                </Text>
-            )}
             {show && (
                 <DateTimePicker
                     style={styles.rowInput}
@@ -48,6 +40,13 @@ const DateComponent = ({ label, invalid, style, textInputConfig }) => {
                     is24Hour={true}
                     onChange={onChange}
                 />
+            )}
+            {date && (
+                <View style={{ height: 40 }}>
+                    <Text style={[styles.rowInput, styles.input]}>
+                        Date: {date.toDateString()}
+                    </Text>
+                </View>
             )}
         </View>
     );

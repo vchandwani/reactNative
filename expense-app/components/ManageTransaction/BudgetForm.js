@@ -84,9 +84,9 @@ function BudgetForm({
         !inputs.category.isValid;
 
     return (
-        <View style={styles.flex}>
+        <View style={(styles.rowItem, { marginTop: 40 })}>
             {budgetInfo && <Text style={styles.header}>{budgetInfo.name}</Text>}
-            <View style={[styles.form, styles.flex]}>
+            <View>
                 <View style={styles.fieldContainer}>
                     <Input
                         style={styles.flex}

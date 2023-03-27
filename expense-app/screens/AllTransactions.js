@@ -7,6 +7,7 @@ import MonthYearSelector from '../components/UI/MonthYearSelector';
 import {
     getMonthAndYear,
     getMonthsArray,
+    getRecurringTransactionDate,
     getYearsArray,
     objectToArray,
 } from '../util/data';
@@ -104,6 +105,10 @@ function AllTransactions() {
             if (!transactions?.[year]?.[month]) {
                 // No Entries, enter recurring entries for the month selected
                 // Recurring transaction for the month and year if entries not present, newTransactionHandler called
+                const dateFormMonthYear = getRecurringTransactionDate(
+                    month,
+                    year
+                );
 
                 currentBudgetRecurringCategories?.map((budgetCatg) => {
                     // check entry present
@@ -112,7 +117,7 @@ function AllTransactions() {
                         budgetId: budgetCtx.selectedBudgetId,
                         category: budgetCatg.name,
                         type: budgetCatg.category,
-                        date: date,
+                        date: dateFormMonthYear,
                         description:
                             budgetCatg.name +
                             ' ' +

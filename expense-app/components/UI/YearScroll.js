@@ -16,10 +16,10 @@ function YearScroll({ onYearChange, index, years }) {
     };
 
     return (
-        <View style={styles.rootContainer}>
+        <View style={(styles.rootContainer, { minHeight: 50 })}>
             <View style={[styles.form, styles.flex]}>
                 <View style={styles.fieldContainer}>
-                    <View pointerEvents={!years[index - 1] && 'none'}>
+                    <View pointerEvents={years[index - 1] ? 'auto' : 'none'}>
                         <MaterialIcons
                             style={styles.textBase}
                             name='navigate-before'
@@ -29,7 +29,7 @@ function YearScroll({ onYearChange, index, years }) {
                         />
                     </View>
                     <Text style={styles.title}>{year}</Text>
-                    <View pointerEvents={!years[index + 1] && 'none'}>
+                    <View pointerEvents={years[index + 1] ? 'auto' : 'none'}>
                         <MaterialIcons
                             name='navigate-next'
                             style={styles.textBase}

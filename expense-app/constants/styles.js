@@ -128,9 +128,8 @@ export const styles = StyleSheet.create({
         backgroundColor: GlobalStyles.colors.primary800,
     },
     yearlyContainer: {
-        flex: 1,
-        paddingTop: 24,
-        paddingBottom: 0,
+        flexDirection: 'column',
+        flexWrap: 'nowrap',
         backgroundColor: GlobalStyles.colors.primary700,
     },
     infoText: {
@@ -183,7 +182,7 @@ export const styles = StyleSheet.create({
         width: '100%',
     },
     child: {
-        backgroundColor: GlobalStyles.colors.gray500,
+        backgroundColor: GlobalStyles.colors.primary800,
         padding: 16,
     },
     green: { color: GlobalStyles.colors.green10 },
@@ -222,7 +221,7 @@ export const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 8,
+        padding: 12,
         color: GlobalStyles.colors.font,
     },
     budgetSelect: {

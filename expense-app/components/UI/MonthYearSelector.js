@@ -1,5 +1,5 @@
 import { styles } from '../../constants/styles';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import Select from '../ManageTransaction/Select';
 
 function MonthYearSelector({

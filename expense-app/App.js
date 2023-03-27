@@ -20,7 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingOverlay from './components/UI/LoadingOverlay';
 import { Provider } from '@react-native-material/core';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { useWindowDimensions, View, Text } from 'react-native';
+import { useWindowDimensions, View, Text, ScrollView } from 'react-native';
 const Stack = createNativeStackNavigator();
 
 export function TransactionsOverview({ navigation }) {
@@ -35,27 +35,27 @@ export function TransactionsOverview({ navigation }) {
 
     const renderScene = SceneMap({
         first: () => (
-            <View style={[styles.budgetInfo]}>
+            <ScrollView>
                 <Text style={styles.headerTitle}>All Transactions</Text>
                 <AllTransactions />
-            </View>
+            </ScrollView>
         ),
         second: () => (
-            <View style={[styles.budgetInfo]}>
+            <ScrollView>
                 <Text style={styles.headerTitle}>Monthly Overview</Text>
                 <MonthlyOverview />
-            </View>
+            </ScrollView>
         ),
         third: () => (
-            <View style={[styles.budgetInfo]}>
+            <ScrollView>
                 <Text style={styles.headerTitle}>Annual Overview</Text>
                 <AnnualOverview />
-            </View>
+            </ScrollView>
         ),
     });
 
     return (
-        <View style={styles.container}>
+        <View style={styles.rootContainer}>
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={renderScene}

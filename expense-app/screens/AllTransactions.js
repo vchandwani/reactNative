@@ -12,7 +12,7 @@ import {
 } from '../util/data';
 import { newTransactionHandler } from './ManageTransaction';
 import Accordian from '../components/UI/Accordian';
-import { ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { EXPENSE, INCOME } from '../util/constants';
 import { styles } from '../constants/styles';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
@@ -89,7 +89,7 @@ function AllTransactions() {
 
             // make monthly entries from base entries
             if (entries && !monthlyEntries?.[year]?.[month]) {
-                objectToArray(entries).map((budgetEntryData) => {
+                objectToArray(entries)?.map((budgetEntryData) => {
                     budgetEntryData.id = null;
                     newBudgetMonthlyEntry(
                         budgetCtx.selectedBudgetId,
@@ -105,7 +105,7 @@ function AllTransactions() {
                 // No Entries, enter recurring entries for the month selected
                 // Recurring transaction for the month and year if entries not present, newTransactionHandler called
 
-                currentBudgetRecurringCategories.map((budgetCatg) => {
+                currentBudgetRecurringCategories?.map((budgetCatg) => {
                     // check entry present
                     const data = {
                         amount: budgetCatg.amount,
@@ -200,7 +200,7 @@ function AllTransactions() {
         return <LoadingOverlay />;
     }
     return (
-        <ScrollView style={styles.container}>
+        <SafeAreaView style={styles.rootContainer}>
             <Accordian
                 title={'Month Year Selector'}
                 data={
@@ -242,7 +242,7 @@ function AllTransactions() {
                 }
                 open={true}
             />
-        </ScrollView>
+        </SafeAreaView>
     );
 }
 

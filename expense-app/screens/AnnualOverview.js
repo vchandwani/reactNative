@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { BudgetsContext } from '../store/budgets-context';
 import { getMonthsArray, getYearsArray, objectToArray } from '../util/data';
-import { ScrollView, View, Dimensions } from 'react-native';
+import { SafeAreaView, View, Dimensions } from 'react-native';
 import { styles } from '../constants/styles';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import YearScroll from '../components/UI/YearScroll';
@@ -50,6 +50,7 @@ function AnnualOverview() {
         setYearlyData([]);
         setYearIndex(yearsArray.length - 1);
     }, [yearsArray.length]);
+
     useEffect(() => {
         diffAmount.current = [];
         chartLabels.current = [];
@@ -123,22 +124,25 @@ function AnnualOverview() {
     const onYearChange = (val) => {
         totalSpentAmount = 0;
         totalIncomeAmount = 0;
-
+        setYearlyData([]);
         setYearIndex((oldVal) => oldVal + val);
     };
 
     if (isSubmitting) {
         return <LoadingOverlay />;
     }
-    console.log(chartData);
+
     return (
-        <ScrollView style={styles.yearlyContainer}>
-            <YearScroll
-                onYearChange={onYearChange}
-                index={yearIndex}
-                years={yearsArray}
-            />
-            <View style={[styles.form, styles.flex]}>
+        <SafeAreaView style={styles.yearlyContainer}>
+            <View style={{ height: 50, margin: 4 }}>
+                <YearScroll
+                    onYearChange={onYearChange}
+                    index={yearIndex}
+                    years={yearsArray}
+                    style={[styles.form]}
+                />
+            </View>
+            <View style={[styles.form]}>
                 <LineChart
                     data={chartData}
                     width={screenWidth}
@@ -147,82 +151,90 @@ function AnnualOverview() {
                 />
             </View>
             {yearlyData && (
-                <DataTable style={styles.container}>
-                    <DataTable.Header style={styles.tableHeader}>
-                        <DataTable.Title>
-                            <Text style={styles.amount}>Month</Text>
-                        </DataTable.Title>
-                        <DataTable.Title style={styles.amount}>
-                            <Text style={styles.amount}>Income</Text>
-                        </DataTable.Title>
-                        <DataTable.Title style={styles.amount}>
-                            <Text style={styles.amount}>Spent</Text>
-                        </DataTable.Title>
-                    </DataTable.Header>
-                    {yearlyData.map((monthlyData, i) => {
-                        totalIncomeAmount += monthlyData.income;
-                        totalSpentAmount += monthlyData.expense;
-                        diffAmount.current.push(
-                            monthlyData.income - monthlyData.expense
-                        );
-                        chartLabels.current.push(monthlyData.name);
+                <View style={[styles.form, styles.flex]}>
+                    <DataTable
+                        style={
+                            (styles.container,
+                            styles.flex,
+                            { paddingBottom: 12 })
+                        }
+                    >
+                        <DataTable.Header style={styles.tableHeader}>
+                            <DataTable.Title>
+                                <Text style={styles.amount}>Month</Text>
+                            </DataTable.Title>
+                            <DataTable.Title style={styles.amount}>
+                                <Text style={styles.amount}>Income</Text>
+                            </DataTable.Title>
+                            <DataTable.Title style={styles.amount}>
+                                <Text style={styles.amount}>Spent</Text>
+                            </DataTable.Title>
+                        </DataTable.Header>
+                        {yearlyData.map((monthlyData, i) => {
+                            totalIncomeAmount += monthlyData.income;
+                            totalSpentAmount += monthlyData.expense;
+                            diffAmount.current.push(
+                                monthlyData.income - monthlyData.expense
+                            );
+                            chartLabels.current.push(monthlyData.name);
 
-                        return (
-                            <DataTable.Row
-                                style={styles.amount}
-                                key={monthlyData + i}
-                            >
-                                <DataTable.Cell>
-                                    <Text style={styles.amount}>
-                                        {monthlyData.name}
-                                    </Text>
-                                </DataTable.Cell>
-                                <DataTable.Cell>
-                                    <Text style={styles.amount}>
-                                        $ {monthlyData.income.toFixed(2)}
-                                    </Text>
-                                </DataTable.Cell>
-                                <DataTable.Cell>
-                                    <Text
-                                        style={[
-                                            styles.amount,
-                                            styles.red,
-                                            monthlyData.expense >
-                                                monthlyData.income &&
-                                                styles.redBackground,
-                                        ]}
-                                    >
-                                        $ {monthlyData.expense.toFixed(2)}
-                                    </Text>
-                                </DataTable.Cell>
-                            </DataTable.Row>
-                        );
-                    })}
-                    <DataTable.Header style={styles.tableHeader}>
-                        <DataTable.Title>
-                            <Text style={styles.amount}>Total</Text>
-                        </DataTable.Title>
-                        <DataTable.Title>
-                            <Text style={[styles.amount, styles.green]}>
-                                $ {totalIncomeAmount.toFixed(2)}
-                            </Text>
-                        </DataTable.Title>
-                        <DataTable.Title>
-                            <Text
-                                style={[
-                                    styles.amount,
-                                    styles.red,
-                                    totalSpentAmount > totalIncomeAmount &&
-                                        styles.redBackground,
-                                ]}
-                            >
-                                $ {totalSpentAmount.toFixed(2)}
-                            </Text>
-                        </DataTable.Title>
-                    </DataTable.Header>
-                </DataTable>
+                            return (
+                                <DataTable.Row
+                                    style={styles.amount}
+                                    key={monthlyData + i}
+                                >
+                                    <DataTable.Cell>
+                                        <Text style={styles.amount}>
+                                            {monthlyData.name}
+                                        </Text>
+                                    </DataTable.Cell>
+                                    <DataTable.Cell>
+                                        <Text style={styles.amount}>
+                                            $ {monthlyData.income.toFixed(2)}
+                                        </Text>
+                                    </DataTable.Cell>
+                                    <DataTable.Cell>
+                                        <Text
+                                            style={[
+                                                styles.amount,
+                                                styles.red,
+                                                monthlyData.expense >
+                                                    monthlyData.income &&
+                                                    styles.redBackground,
+                                            ]}
+                                        >
+                                            $ {monthlyData.expense.toFixed(2)}
+                                        </Text>
+                                    </DataTable.Cell>
+                                </DataTable.Row>
+                            );
+                        })}
+                        <DataTable.Header style={styles.tableHeader}>
+                            <DataTable.Title>
+                                <Text style={styles.amount}>Total</Text>
+                            </DataTable.Title>
+                            <DataTable.Title>
+                                <Text style={[styles.amount, styles.green]}>
+                                    $ {totalIncomeAmount.toFixed(2)}
+                                </Text>
+                            </DataTable.Title>
+                            <DataTable.Title>
+                                <Text
+                                    style={[
+                                        styles.amount,
+                                        styles.red,
+                                        totalSpentAmount > totalIncomeAmount &&
+                                            styles.redBackground,
+                                    ]}
+                                >
+                                    $ {totalSpentAmount.toFixed(2)}
+                                </Text>
+                            </DataTable.Title>
+                        </DataTable.Header>
+                    </DataTable>
+                </View>
             )}
-        </ScrollView>
+        </SafeAreaView>
     );
 }
 

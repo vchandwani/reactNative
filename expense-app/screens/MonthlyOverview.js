@@ -98,7 +98,7 @@ function MonthlyOverview() {
         return <LoadingOverlay />;
     }
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.rootContainer}>
             <Accordian
                 title={'Month Year Selector'}
                 data={

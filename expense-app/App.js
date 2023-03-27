@@ -1,8 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
 
 import ManageTransaction from './screens/ManageTransaction';
 import AllTransactions from './screens/AllTransactions';
@@ -12,7 +10,7 @@ import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 
-import { GlobalStyles } from './constants/styles';
+import { GlobalStyles, styles } from './constants/styles';
 
 import BudgetsContextProvider, {
     BudgetsContext,
@@ -21,57 +19,59 @@ import { useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingOverlay from './components/UI/LoadingOverlay';
 import { Provider } from '@react-native-material/core';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { useWindowDimensions, View, Text, ScrollView } from 'react-native';
 const Stack = createNativeStackNavigator();
-const BottomTabs = createBottomTabNavigator();
 
 export function TransactionsOverview({ navigation }) {
+    const layout = useWindowDimensions();
+
+    const [index, setIndex] = useState(0);
+    const [routes] = useState([
+        { key: 'first', title: 'All Transactions' },
+        { key: 'second', title: 'Monthly Overview' },
+        { key: 'third', title: 'Annual Overview' },
+    ]);
+
+    const renderScene = SceneMap({
+        first: () => (
+            <ScrollView>
+                <Text style={styles.headerTitle}>All Transactions</Text>
+                <AllTransactions />
+            </ScrollView>
+        ),
+        second: () => (
+            <ScrollView>
+                <Text style={styles.headerTitle}>Monthly Overview</Text>
+                <MonthlyOverview />
+            </ScrollView>
+        ),
+        third: () => (
+            <ScrollView>
+                <Text style={styles.headerTitle}>Annual Overview</Text>
+                <AnnualOverview />
+            </ScrollView>
+        ),
+    });
+
     return (
-        <BottomTabs.Navigator
-            screenOptions={({ navigation }) => ({
-                headerStyle: {
-                    backgroundColor: GlobalStyles.colors.primary500,
-                },
-                headerTintColor: 'white',
-                tabBarStyle: {
-                    backgroundColor: GlobalStyles.colors.primary500,
-                },
-                tabBarActiveTintColor: GlobalStyles.colors.accent500,
-            })}
-        >
-            <BottomTabs.Screen
-                name='AllTransactions'
-                component={AllTransactions}
-                options={{
-                    title: 'All Transactions',
-                    tabBarLabel: 'All Transactions',
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name='calendar' size={size} color={color} />
-                    ),
-                }}
+        <View style={styles.rootContainer}>
+            <TabView
+                navigationState={{ index, routes }}
+                renderScene={renderScene}
+                onIndexChange={setIndex}
+                initialLayout={{ width: layout.width }}
+                renderTabBar={(props) => (
+                    <TabBar
+                        {...props}
+                        style={{
+                            backgroundColor: GlobalStyles.colors.primary50,
+                            color: GlobalStyles.colors.font,
+                        }}
+                    />
+                )}
             />
-            <BottomTabs.Screen
-                name='MonthlyOverview'
-                component={MonthlyOverview}
-                options={{
-                    title: 'Monthly Overview',
-                    tabBarLabel: 'Monthly Overview',
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name='cash-sharp' size={size} color={color} />
-                    ),
-                }}
-            />
-            <BottomTabs.Screen
-                name='AnnualOverview'
-                component={AnnualOverview}
-                options={{
-                    title: 'Annual Overview',
-                    tabBarLabel: 'Annual Overview',
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name='cash-sharp' size={size} color={color} />
-                    ),
-                }}
-            />
-        </BottomTabs.Navigator>
+        </View>
     );
 }
 

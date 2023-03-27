@@ -27,8 +27,10 @@ export const formatBudgetData = async (data, email) => {
 
 export const objectToArray = (data) => {
     const dataArray = [];
-    for (let prop of Object.keys(data)) {
-        dataArray.push({ ...data[prop], id: prop });
+    if (data) {
+        for (let prop of Object.keys(data)) {
+            dataArray.push({ ...data[prop], id: prop });
+        }
     }
     return dataArray;
 };
@@ -89,4 +91,7 @@ export const getMonthAndYear = (date) => {
     const dateVal = new Date(date);
     const d = moment(dateVal);
     return { month: d.format('MMM'), year: d.year() };
+};
+export const getRecurringTransactionDate = (month, year) => {
+    return new Date(year + '/' + month + '/02').toISOString();
 };

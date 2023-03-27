@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
-import { GlobalStyles } from '../../constants/styles';
+import { View, Text, Pressable } from 'react-native';
+import { styles } from '../../constants/styles';
 
 import Button from '../UI/Button';
 import Input from './Input';
@@ -81,7 +81,7 @@ function AuthForm({
                     </View>
                 </Pressable>
             )}
-            <View>
+            <View style={styles.width100}>
                 <Input
                     label='Email Address'
                     onUpdateValue={updateInputValueHandler.bind(this, 'email')}
@@ -123,13 +123,13 @@ function AuthForm({
                         isInvalid={passwordsDontMatch}
                     />
                 )}
-                <View style={styles.buttons}>
+                <View style={styles.buttonMargin}>
                     <Button onPress={submitHandler}>
                         {isLogin ? 'Log In' : 'Sign Up'}
                     </Button>
                 </View>
                 {isLogin && (
-                    <View style={styles.buttons}>
+                    <View style={styles.buttonMargin}>
                         <Button
                             style={styles.resetButton}
                             mode={'flat'}
@@ -145,29 +145,3 @@ function AuthForm({
 }
 
 export default AuthForm;
-
-const styles = StyleSheet.create({
-    resetButton: {
-        backgroundColor: GlobalStyles.colors.primary100,
-    },
-    buttons: {
-        marginTop: 12,
-    },
-    errorLabel: {
-        color: GlobalStyles.colors.red100,
-        marginBottom: 4,
-        textAlign: 'center',
-        fontWeight: 'bold',
-    },
-    notificationLabel: {
-        color: GlobalStyles.colors.font,
-        backgroundColor: GlobalStyles.colors.green700,
-        marginBottom: 4,
-        textAlign: 'center',
-        fontWeight: 'bold',
-        minHeight: '20px',
-        height: 'auto',
-        borderRadius: '10px',
-        justifyContent: 'center',
-    },
-});

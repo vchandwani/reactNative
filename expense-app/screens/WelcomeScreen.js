@@ -2,14 +2,16 @@ import axios from 'axios';
 import { useContext, useEffect, useState, useLayoutEffect } from 'react';
 
 import {
-    StyleSheet,
     Text,
     View,
     useWindowDimensions,
     Pressable,
+    SafeAreaView,
+    Animated,
+    ScrollView,
 } from 'react-native';
 import { BudgetsContext } from '../store/budgets-context';
-import { GlobalStyles } from '../constants/styles';
+import { GlobalStyles, styles } from '../constants/styles';
 import BudgetForm from '../components/ManageTransaction/BudgetForm';
 import {
     storeBudgetEntry,
@@ -63,22 +65,54 @@ function BudgetData({ route, navigation }) {
         }, 4000);
     }, [notification]);
 
+    let AnimatedHeaderValue = new Animated.Value(0);
+    const HEADER_MAX_HEIGHT = 150;
+    const HEADER_MIN_HEIGHT = 50;
+    const animatedHeaderBackgroundColor = AnimatedHeaderValue.interpolate({
+        inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+        outputRange: ['transparent', 'transparent'],
+        extrapolate: 'clamp',
+    });
+
+    const animateHeaderHeight = AnimatedHeaderValue.interpolate({
+        inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+        outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+        extrapolate: 'clamp',
+    });
+
     const renderScene = SceneMap({
         first: () => (
-            <View style={[styles.budgetInfo]}>
+            <ScrollView
+                style={styles.budgetInfo}
+                scrollEventThrottle={16}
+                onScoll={Animated.event(
+                    [
+                        {
+                            nativeEvent: {
+                                contentOffset: {
+                                    y: AnimatedHeaderValue,
+                                },
+                            },
+                        },
+                    ],
+                    { useNativeDriver: false }
+                )}
+            >
                 {budgetInfo && (
-                    <>
-                        <Text style={styles.title}>{budgetInfo.name}</Text>
+                    <View style={styles.height100}>
+                        <Text style={styles.headerTitle}>
+                            {budgetInfo.name}
+                        </Text>
                         <BudgetOutput
                             budgetEntries={budgetInfo.entries}
                             fallbackText='No data available'
                         />
-                    </>
+                    </View>
                 )}
-            </View>
+            </ScrollView>
         ),
         second: () => (
-            <View style={[styles.budgetInfo]}>
+            <View style={styles.budgetInfo}>
                 <BudgetForm
                     submitButtonLabel={isEditing ? 'Update' : 'Add'}
                     onSubmit={confirmHandler}
@@ -263,27 +297,38 @@ function BudgetData({ route, navigation }) {
     }
 
     return (
-        <View style={styles.rootContainer}>
-            <Text style={styles.description}>{fetchedMessage}</Text>
-            {notification && (
-                <Pressable onPress={() => setNotification(null)}>
-                    <View>
-                        <Text style={styles.notificationLabel}>
-                            {notification}
-                        </Text>
-                    </View>
-                </Pressable>
-            )}
-            <Select
-                label='Select Budget'
-                textInputConfig={{
-                    value: selectedBudgetId,
-                }}
-                onChange={changeBudget.bind(this)}
-                data={budgetOptions}
-            />
+        <SafeAreaView style={styles.rootContainer}>
+            <Animated.View
+                style={
+                    (styles.rootContainer,
+                    {
+                        height: animateHeaderHeight,
+                        backgroundColor: animatedHeaderBackgroundColor,
+                    })
+                }
+            >
+                <Text style={styles.description}>{fetchedMessage}</Text>
+                {notification && (
+                    <Pressable onPress={() => setNotification(null)}>
+                        <View>
+                            <Text style={styles.notificationLabel}>
+                                {notification}
+                            </Text>
+                        </View>
+                    </Pressable>
+                )}
+                <Select
+                    style={styles.budgetSelect}
+                    label='Select Budget'
+                    textInputConfig={{
+                        value: selectedBudgetId,
+                    }}
+                    onChange={changeBudget.bind(this)}
+                    data={budgetOptions}
+                />
+            </Animated.View>
 
-            <View style={styles.container}>
+            <View style={[styles.rootContainer]}>
                 <TabView
                     navigationState={{ index, routes }}
                     renderScene={renderScene}
@@ -293,14 +338,14 @@ function BudgetData({ route, navigation }) {
                         <TabBar
                             {...props}
                             style={{
-                                backgroundColor: GlobalStyles.colors.primary50,
+                                backgroundColor: GlobalStyles.colors.primary800,
                                 color: GlobalStyles.colors.font,
                             }}
                         />
                     )}
                 />
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 function WelcomeScreen({ route, navigation }) {
@@ -388,50 +433,3 @@ function WelcomeScreen({ route, navigation }) {
 }
 
 export default WelcomeScreen;
-
-const styles = StyleSheet.create({
-    rootContainer: {
-        flex: 1,
-        backgroundColor: GlobalStyles.colors.primary800,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 8,
-        color: GlobalStyles.colors.font,
-    },
-    description: {
-        fontSize: 16,
-        marginBottom: 8,
-        color: GlobalStyles.colors.font,
-        textAlign: 'center',
-    },
-    container: {
-        flex: 1,
-        backgroundColor: GlobalStyles.colors.primary800,
-    },
-    budgetInfo: {
-        backgroundColor: GlobalStyles.colors.primary800,
-        flex: 1,
-        padding: 24,
-        backgroundColor: GlobalStyles.colors.primary800,
-    },
-    notificationLabel: {
-        color: GlobalStyles.colors.green700,
-        backgroundColor: GlobalStyles.colors.green50,
-        marginBottom: 4,
-        textAlign: 'center',
-        fontWeight: 'bold',
-        minHeight: '20px',
-        height: 'auto',
-        borderRadius: '10px',
-        justifyContent: 'center',
-    },
-    deleteContainer: {
-        marginTop: 16,
-        paddingTop: 8,
-        borderTopWidth: 2,
-        borderTopColor: GlobalStyles.colors.primary200,
-        alignItems: 'center',
-    },
-});

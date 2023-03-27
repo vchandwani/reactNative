@@ -1,19 +1,9 @@
-import { FlatList } from 'react-native';
-
 import BudgetItem from './BudgetItem';
 
-function renderBudgetItem(itemData) {
-    return <BudgetItem {...itemData.item} />;
-}
-
 function BudgetList({ budgetEntries }) {
-    return (
-        <FlatList
-            data={budgetEntries}
-            renderItem={renderBudgetItem}
-            keyExtractor={(item) => item.id}
-        />
-    );
+    return budgetEntries.map((entry, i) => {
+        return <BudgetItem {...entry} key={entry.id} />;
+    });
 }
 
 export default BudgetList;

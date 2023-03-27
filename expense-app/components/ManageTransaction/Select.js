@@ -18,21 +18,17 @@ function Select({ label, invalid, style, textInputConfig, onChange, data }) {
 
             <Picker
                 {...textInputConfig}
-                selectedValue={textInputConfig.value}
+                selectedValue={textInputConfig?.value?.toString()}
                 style={styles.input}
                 onValueChange={(itemValue, itemIndex) => onChange(itemValue)}
             >
-                <Picker.Item
-                    label={'Select a Value'}
-                    value={''}
-                    key={'defaultVal'}
-                />
+                <Picker.Item label='Select a Value' value={''} />
                 {data.map((val) => {
                     return (
                         <Picker.Item
-                            label={val.label}
-                            value={val.id}
-                            key={val.id}
+                            label={val.label.toString()}
+                            value={val.id.toString()}
+                            key={val.id.toString()}
                         />
                     );
                 })}

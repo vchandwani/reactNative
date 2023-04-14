@@ -176,9 +176,9 @@ function TransactionForm({
                     label='Date'
                     invalid={!inputs.date.isValid}
                     textInputConfig={{
-                        onChangedate: dateChangedHandler.bind(this, 'date'),
                         value: inputs.date.value,
                     }}
+                    onDateChange={dateChangedHandler.bind(this, 'date')}
                 />
             </View>
             <View>

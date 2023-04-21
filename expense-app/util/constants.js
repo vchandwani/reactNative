@@ -9,4 +9,4 @@ export const INCOME = 'Income';
 export const INCREMENT = 'INCREMENT';
 export const DECREMENT = 'DECREMENT';
 
-export const STARTYEAR = 2010;
+export const STARTYEAR = 2023;

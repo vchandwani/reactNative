@@ -29,8 +29,8 @@ export function TransactionsOverview({ navigation }) {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'first', title: 'All Transactions' },
-    // { key: 'second', title: 'Monthly Overview' },
-    // { key: 'third', title: 'Annual Overview' },
+    { key: 'second', title: 'Monthly Overview' },
+    { key: 'third', title: 'Annual Overview' },
   ]);
 
   const renderScene = SceneMap({
@@ -40,18 +40,18 @@ export function TransactionsOverview({ navigation }) {
         <AllTransactions />
       </ScrollView>
     ),
-    // second: () => (
-    //   <ScrollView>
-    //     <Text style={styles.headerTitle}>Monthly Overview</Text>
-    //     <MonthlyOverview />
-    //   </ScrollView>
-    // ),
-    // third: () => (
-    //   <ScrollView>
-    //     <Text style={styles.headerTitle}>Annual Overview</Text>
-    //     <AnnualOverview />
-    //   </ScrollView>
-    // ),
+    second: () => (
+      <ScrollView>
+        <Text style={styles.headerTitle}>Monthly Overview</Text>
+        <MonthlyOverview />
+      </ScrollView>
+    ),
+    third: () => (
+      <ScrollView>
+        <Text style={styles.headerTitle}>Annual Overview</Text>
+        <AnnualOverview />
+      </ScrollView>
+    ),
   });
 
   useLayoutEffect(() => {

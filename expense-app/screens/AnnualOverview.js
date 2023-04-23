@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { BudgetsContext } from '../store/budgets-context';
 import { getMonthsArray, getYearsArray, objectToArray } from '../util/data';
 import { SafeAreaView, View, Dimensions } from 'react-native';
-import { styles } from '../constants/styles';
+import { styles, GlobalStyles } from '../constants/styles';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import YearScroll from '../components/UI/YearScroll';
 import { EXPENSE, INCOME } from '../util/constants';
@@ -21,18 +21,23 @@ function AnnualOverview() {
   let totalIncomeAmount = 0;
   let monthsArray = [];
   const budgetCtx = useContext(BudgetsContext);
-  const screenWidth = Dimensions.get('window').width;
 
   const yearsArray = getYearsArray().reverse();
   const chartConfig = {
-    backgroundGradientFrom: '#1E2923',
-    backgroundGradientFromOpacity: 0,
-    backgroundGradientTo: '#08130D',
-    backgroundGradientToOpacity: 0.5,
-    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-    strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5,
-    useShadowColorFromDataset: false, // optional
+    backgroundColor: GlobalStyles.colors.green10,
+    backgroundGradientFrom: GlobalStyles.colors.green700,
+    backgroundGradientTo: GlobalStyles.colors.green700,
+    decimalPlaces: 2, // optional, defaults to 2dp
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    style: {
+      borderRadius: 16,
+    },
+    propsForDots: {
+      r: '6',
+      strokeWidth: '2',
+      stroke: '#ffa726',
+    },
   };
 
   const [chartData, setChartData] = useState({
@@ -98,6 +103,7 @@ function AnnualOverview() {
   }, [yearIndex]);
 
   useEffect(() => {
+    setIsSubmitting(true);
     setChartData({
       ...chartData,
       labels: [...chartLabels.current],
@@ -108,6 +114,7 @@ function AnnualOverview() {
         },
       ],
     });
+    setIsSubmitting(false);
   }, [diffAmount.current, chartLabels.current]);
 
   const onYearChange = (val) => {
@@ -133,44 +140,14 @@ function AnnualOverview() {
       </View>
       <View style={[styles.form]}>
         <View>
-          <Text>Bezier Line Chart</Text>
           <LineChart
-            data={{
-              labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-              datasets: [
-                {
-                  data: [
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                  ],
-                },
-              ],
-            }}
-            width={Dimensions.get('window').width} // from react-native
+            data={chartData}
+            width={Dimensions.get('window').width}
             height={220}
             yAxisLabel='$'
             yAxisSuffix='k'
-            yAxisInterval={1} // optional, defaults to 1
-            chartConfig={{
-              backgroundColor: '#e26a00',
-              backgroundGradientFrom: '#fb8c00',
-              backgroundGradientTo: '#ffa726',
-              decimalPlaces: 2, // optional, defaults to 2dp
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              style: {
-                borderRadius: 16,
-              },
-              propsForDots: {
-                r: '6',
-                strokeWidth: '2',
-                stroke: '#ffa726',
-              },
-            }}
+            yAxisInterval={1}
+            chartConfig={chartConfig}
             bezier
             style={{
               marginVertical: 8,

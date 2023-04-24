@@ -43,7 +43,7 @@ function CategoryItem({
         let category = null;
         if (txs.amount) {
             amount = (
-                <Text style={[styles.amount, styles.blackTextBase]}>
+                <Text style={[styles.amount, styles.textBase]}>
                     $ {txs.amount}
                 </Text>
             );
@@ -51,22 +51,22 @@ function CategoryItem({
         if (txs?.type) {
             type =
                 txs.type === EXPENSE ? (
-                    <Text style={[styles.blackTextBase]}>spent</Text>
+                    <Text style={[styles.textBase]}>spent</Text>
                 ) : (
                     txs.type === INCOME && (
-                        <Text style={[styles.blackTextBase]}>incurred</Text>
+                        <Text style={[styles.textBase]}>incurred</Text>
                     )
                 );
         }
         if (txs.category) {
             category = (
-                <Text style={[styles.amount, styles.blackTextBase]}>
+                <Text style={[styles.amount, styles.textBase]}>
                     {' on ' + txs.category}
                 </Text>
             );
         }
         const date = (
-            <Text style={styles.blackTextBase}>
+            <Text style={styles.textBase}>
                 {getFormattedDate(new Date(txs.date))}
             </Text>
         );

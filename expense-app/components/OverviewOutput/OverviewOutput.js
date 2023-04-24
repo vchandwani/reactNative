@@ -36,7 +36,7 @@ function OverviewOutput({ categoryWiseData, isFocused, period, fallbackText }) {
                 periodName={period}
             />
 
-            {overviewExpenseSummary && overviewExpenseSummary}
+            {overviewExpenseSummary}
             {!overviewExpenseSummary && content}
         </View>
     );

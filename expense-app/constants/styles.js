@@ -73,6 +73,9 @@ export const styles = StyleSheet.create({
         shadowOffset: { width: 1, height: 1 },
         shadowOpacity: 0.4,
     },
+    blackTextBase: {
+        color: GlobalStyles.colors.gray700,
+    },
     textBase: {
         color: GlobalStyles.colors.font,
     },
@@ -276,7 +279,7 @@ export const styles = StyleSheet.create({
         minWidth: 120,
         marginHorizontal: 8,
     },
-    errorContainer: {
+    rowContainer: {
         flexDirection: 'row',
         marginBottom: 2,
         width: '100%',

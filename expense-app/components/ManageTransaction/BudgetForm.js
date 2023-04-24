@@ -102,7 +102,7 @@ function BudgetForm({
                     />
                 </View>
                 {!inputs.name.isValid && (
-                    <View style={styles.errorContainer}>
+                    <View style={styles.rowContainer}>
                         <Text style={styles.errorText}>Please enter value</Text>
                     </View>
                 )}
@@ -122,7 +122,7 @@ function BudgetForm({
                     />
                 </View>
                 {!inputs.amount.isValid && (
-                    <View style={styles.errorContainer}>
+                    <View style={styles.rowContainer}>
                         <Text style={styles.errorText}>Please enter value</Text>
                     </View>
                 )}
@@ -139,7 +139,7 @@ function BudgetForm({
                     />
                 </View>
                 {!inputs.category.isValid && (
-                    <View style={styles.errorContainer}>
+                    <View style={styles.rowContainer}>
                         <Text style={styles.errorText}>
                             Please select value
                         </Text>
@@ -157,7 +157,7 @@ function BudgetForm({
                     />
                 </View>
                 {!inputs.recurring.isValid && (
-                    <View style={styles.errorContainer}>
+                    <View style={styles.rowContainer}>
                         <Text style={styles.errorText}>
                             Please select value
                         </Text>

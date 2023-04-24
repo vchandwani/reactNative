@@ -1,16 +1,19 @@
-import { Pressable, Text, View, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {
+    Pressable,
+    Text,
+    View,
+    ScrollView,
+    useWindowDimensions,
+} from 'react-native';
 import {
     Dialog,
     DialogHeader,
     DialogContent,
-    DialogActions,
     Divider,
 } from '@react-native-material/core';
 
 import { styles } from '../../constants/styles';
 import { useState } from 'react';
-import Button from '../UI/Button';
 import { EXPENSE } from '../../util/constants';
 import { getFormattedDate } from '../../util/date';
 
@@ -21,8 +24,8 @@ function CategoryItem({
     targetAmount,
     categoryTransactions,
 }) {
-    const navigation = useNavigation();
     const [visible, setVisible] = useState(false);
+    const layout = useWindowDimensions();
 
     const toggleDialog = () => {
         setVisible(!visible);
@@ -35,26 +38,54 @@ function CategoryItem({
     };
 
     const description = (txs, i) => {
-        const type =
-            txs.type === EXPENSE ? 'spent' : txs.type === INCOME && 'incurred';
-        const amount = <Text style={styles.amount}>$ {txs.amount}</Text>;
-        const category = <Text style={styles.amount}> {txs.category}</Text>;
+        let amount = null;
+        let type = null;
+        let category = null;
+        if (txs.amount) {
+            amount = (
+                <Text style={[styles.amount, styles.blackTextBase]}>
+                    $ {txs.amount}
+                </Text>
+            );
+        }
+        if (txs?.type) {
+            type =
+                txs.type === EXPENSE ? (
+                    <Text style={[styles.blackTextBase]}>spent</Text>
+                ) : (
+                    txs.type === INCOME && (
+                        <Text style={[styles.blackTextBase]}>incurred</Text>
+                    )
+                );
+        }
+        if (txs.category) {
+            category = (
+                <Text style={[styles.amount, styles.blackTextBase]}>
+                    {' on ' + txs.category}
+                </Text>
+            );
+        }
         const date = (
-            <Text style={styles.amount}>
+            <Text style={styles.blackTextBase}>
                 {getFormattedDate(new Date(txs.date))}
             </Text>
         );
-
         return (
-            <View key={i + txs.category + txs.date}>
-                <Text style={styles.textBase}>
-                    {amount} {type} on {category}
-                </Text>
-                <Text style={styles.textBase}>
-                    {txs.description} {date}
-                </Text>
-                <Text style={styles.textBase}>{txs.email}</Text>
-                <Divider style={styles.divider} />
+            <View onStartShouldSetResponder={() => true} key={txs.id}>
+                <View style={styles.rowContainer}>
+                    <Text>
+                        {amount} {type} {category}
+                    </Text>
+                </View>
+                {txs && txs.description && (
+                    <Text style={styles.blackTextBase}>
+                        {txs.description} {date}
+                    </Text>
+                )}
+                {txs && txs.email && (
+                    <Text style={styles.blackTextBase}>{txs.email}</Text>
+                )}
+                <Divider />
             </View>
         );
     };
@@ -65,23 +96,21 @@ function CategoryItem({
             onPress={categoryPressHandler}
             style={({ pressed }) => pressed && styles.pressed}
         >
-            <Dialog visible={visible} onDismiss={toggleDialog} maxWidth={false}>
+            <Dialog
+                visible={visible}
+                onDismiss={toggleDialog}
+                maxWidth={false}
+                style={{ padding: '10px' }}
+            >
                 <DialogHeader title='Transactions' />
-                <ScrollView>
-                    <DialogContent>
-                        {categoryTransactions.map((txs, i) => {
-                            return description(txs, i);
-                        })}
-                    </DialogContent>
-                </ScrollView>
-                <DialogActions>
-                    <Button onPress={toggleDialog} mode='flat'>
-                        Cancel
-                    </Button>
-                    <Button onPress={toggleDialog} mode='flat'>
-                        Ok
-                    </Button>
-                </DialogActions>
+                <DialogContent>
+                    <ScrollView style={{ maxHeight: layout.width }}>
+                        {categoryTransactions &&
+                            categoryTransactions.map((txs, i) => {
+                                return description(txs, i);
+                            })}
+                    </ScrollView>
+                </DialogContent>
             </Dialog>
             <View style={styles.rowItem}>
                 <View style={styles.rowInfoContainer}>

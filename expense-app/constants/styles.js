@@ -199,14 +199,14 @@ export const styles = StyleSheet.create({
         color: GlobalStyles.colors.green10,
         backgroundColor: GlobalStyles.colors.green700,
         minWidth: '6rem',
-        textAlign: 'end',
+        textAlign: 'left',
         flex: 0,
     },
     redBackground: {
         color: GlobalStyles.colors.red10,
         backgroundColor: GlobalStyles.colors.red500,
         minWidth: '6rem',
-        textAlign: 'end',
+        textAlign: 'left',
         flex: 0,
     },
     tableHeader: {

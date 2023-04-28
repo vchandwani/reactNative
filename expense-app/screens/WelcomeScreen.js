@@ -1,17 +1,10 @@
 import axios from 'axios';
-import {
-  useContext,
-  useEffect,
-  useState,
-  useLayoutEffect,
-  useRef,
-} from 'react';
+import { useContext, useEffect, useState, useLayoutEffect } from 'react';
 
 import {
   Text,
   View,
   useWindowDimensions,
-  Pressable,
   SafeAreaView,
   Animated,
   ScrollView,

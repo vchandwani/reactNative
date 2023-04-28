@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { useContext, useEffect, useState, useLayoutEffect } from 'react';
+import {
+  useContext,
+  useEffect,
+  useState,
+  useLayoutEffect,
+  useRef,
+} from 'react';
 
 import {
   Text,
@@ -23,11 +29,12 @@ import { formatBudgetData, getBudgetCategories } from '../util/data';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import Select from '../components/ManageTransaction/Select';
+import Select from '../components/UI/Select';
 import BudgetOutput from '../components/BudgetOutput/BudgetOutput';
 import IconButton from '../components/UI/IconButton';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
 
 const BottomTabs = createBottomTabNavigator();
 
@@ -36,7 +43,6 @@ function BudgetData({ route, navigation }) {
   const [budgets, setBudgets] = useState([]);
   const [budgetInfo, setBudgetInfo] = useState({});
   const [budgetOptions, setBudgetOptions] = useState([]);
-  const [notification, setNotification] = useState(null);
 
   const budgetCtx = useContext(BudgetsContext);
   const token = budgetCtx.token;
@@ -58,11 +64,6 @@ function BudgetData({ route, navigation }) {
     { key: 'first', title: 'Budget Info' },
     { key: 'second', title: 'Budget Entries' },
   ]);
-  useEffect(() => {
-    setTimeout(() => {
-      notification && setNotification(null);
-    }, 4000);
-  }, [notification]);
 
   let AnimatedHeaderValue = new Animated.Value(0);
   const HEADER_MAX_HEIGHT = 150;
@@ -257,14 +258,17 @@ function BudgetData({ route, navigation }) {
         );
         budgetCtx.addBudgetEntry({ ...entryData, id: id }, selectedBudgetId);
       }
+      setIsSubmitting(false);
+
       navigation.navigate('WelcomeScreen', {
         index: 0,
       });
       setIndex(0);
-      setIsSubmitting(false);
-      setNotification(
-        'Entry successfully '.concat(+isEditing ? 'Updated' : 'Added')
-      );
+
+      showMessage({
+        message: 'Entry successfully '.concat(+isEditing ? 'Updated' : 'Added'),
+        type: 'success',
+      });
     } catch (error) {
       if (error.response.status === 401) {
         budgetCtx.logout();
@@ -297,13 +301,7 @@ function BudgetData({ route, navigation }) {
         }
       >
         <Text style={styles.description}>{fetchedMessage}</Text>
-        {notification && (
-          <Pressable onPress={() => setNotification(null)}>
-            <View>
-              <Text style={styles.notificationLabel}>{notification}</Text>
-            </View>
-          </Pressable>
-        )}
+
         <Select
           style={styles.budgetSelect}
           label='Select Budget'
@@ -332,6 +330,7 @@ function BudgetData({ route, navigation }) {
           )}
         />
       </View>
+      <FlashMessage position='top' />
     </SafeAreaView>
   );
 }

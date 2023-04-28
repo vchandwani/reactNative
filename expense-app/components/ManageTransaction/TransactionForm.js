@@ -8,13 +8,13 @@ import {
   ScrollView,
 } from 'react-native';
 
-import Input from './Input';
-import DateComponent from './Date';
+import Input from '../UI/Input';
+import DateComponent from '../UI/Date';
 import Button from '../UI/Button';
 import { getFormattedDate } from '../../util/date';
 import { styles } from '../../constants/styles';
 import { BudgetsContext } from '../../store/budgets-context';
-import Select from './Select';
+import Select from '../UI/Select';
 import { categoryDropdown } from '../../util/data';
 import { EXPENSETYPE } from '../../util/constants';
 
@@ -65,13 +65,12 @@ function TransactionForm({
   });
 
   function inputChangedHandler(inputIdentifier, enteredValue) {
-    setInputs((curInputs) => {
-      return {
-        ...curInputs,
-        [inputIdentifier]: { value: enteredValue, isValid: true },
-      };
+    setInputs({
+      ...inputs,
+      [inputIdentifier]: { value: enteredValue, isValid: true },
     });
   }
+
   function dateChangedHandler(dateIdentifier, enteredValue) {
     setInputs((curInputs) => {
       return {
@@ -148,6 +147,7 @@ function TransactionForm({
           <View style={styles.inner}>
             <Text style={styles.title}>Your Transaction</Text>
             <Input
+              style={styles.flex}
               label='Amount'
               invalid={!inputs.amount.isValid}
               textInputConfig={{
@@ -188,8 +188,6 @@ function TransactionForm({
               style={{ marginBottom: 20 }}
               textInputConfig={{
                 multiline: true,
-                // autoCapitalize: 'none'
-                // autoCorrect: false // default is true
                 onChangeText: inputChangedHandler.bind(this, 'description'),
                 value: inputs.description.value,
               }}

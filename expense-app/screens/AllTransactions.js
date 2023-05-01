@@ -88,55 +88,59 @@ function AllTransactions() {
                     (el) => el.id === budgetCtx.selectedBudgetId
                 );
 
-            // make monthly entries from base entries
-            if (entries && !monthlyEntries?.[year]?.[month]) {
-                objectToArray(entries)?.map((budgetEntryData) => {
-                    budgetEntryData.id = null;
-                    newBudgetMonthlyEntry(
-                        budgetCtx.selectedBudgetId,
-                        year,
-                        month,
-                        budgetEntryData,
-                        budgetCtx.token,
-                        budgetCtx
-                    );
-                });
-            }
-            if (!transactions?.[year]?.[month]) {
-                // No Entries, enter recurring entries for the month selected
-                // Recurring transaction for the month and year if entries not present, newTransactionHandler called
-                const dateFormMonthYear = getRecurringTransactionDate(
-                    month,
-                    year
-                );
-
-                currentBudgetRecurringCategories?.map((budgetCatg) => {
-                    // check entry present
-                    const data = {
-                        amount: budgetCatg.amount,
-                        budgetId: budgetCtx.selectedBudgetId,
-                        category: budgetCatg.name,
-                        type: budgetCatg.category,
-                        date: dateFormMonthYear,
-                        description:
-                            budgetCatg.name +
-                            ' ' +
-                            dataMonthYear.month +
-                            ' ' +
-                            dataMonthYear.year +
-                            ' entry',
-                        email: budgetCtx.email,
-                    };
-                    newTransactionHandler(
-                        budgetCtx.selectedBudgetId,
-                        budgetCtx.token,
-                        data,
-                        month,
-                        year,
-                        budgetCtx
-                    );
-                });
-            }
+                (async () => {
+                     // make monthly entries from base entries
+                     setIsSubmitting(true)
+                    if (entries && !monthlyEntries?.[year]?.[month]) {
+                        objectToArray(entries)?.map((budgetEntryData) => {
+                            budgetEntryData.id = null;
+                            newBudgetMonthlyEntry(
+                                budgetCtx.selectedBudgetId,
+                                year,
+                                month,
+                                budgetEntryData,
+                                budgetCtx.token,
+                                budgetCtx
+                            );
+                        });
+                    }
+                    if (!transactions?.[year]?.[month]) {
+                        // No Entries, enter recurring entries for the month selected
+                        // Recurring transaction for the month and year if entries not present, newTransactionHandler called
+                        const dateFormMonthYear = getRecurringTransactionDate(
+                            month,
+                            year
+                        );
+        
+                        currentBudgetRecurringCategories?.map((budgetCatg) => {
+                            // check entry present
+                            const data = {
+                                amount: budgetCatg.amount,
+                                budgetId: budgetCtx.selectedBudgetId,
+                                category: budgetCatg.name,
+                                type: budgetCatg.category,
+                                date: dateFormMonthYear,
+                                description:
+                                    budgetCatg.name +
+                                    ' ' +
+                                    dataMonthYear.month +
+                                    ' ' +
+                                    dataMonthYear.year +
+                                    ' entry',
+                                email: budgetCtx.email,
+                            };
+                            newTransactionHandler(
+                                budgetCtx.selectedBudgetId,
+                                budgetCtx.token,
+                                data,
+                                month,
+                                year,
+                                budgetCtx
+                            );
+                        });
+                    }
+                    setIsSubmitting(false)
+                  })();
         }
     }, [
         transactionIncomeEntries.length,

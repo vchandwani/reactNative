@@ -84,26 +84,37 @@ function AllTransactions() {
       const { entries, monthlyEntries, transactions } =
         budgetCtx?.budgets?.find((el) => el.id === budgetCtx.selectedBudgetId);
 
-      (async () => {
+      async function monthlyEntriesInsert() {
         setIsSubmitting(true);
 
         // make monthly entries from base entries
         if (entries && !monthlyEntries?.[year]?.[month]) {
           objectToArray(entries)?.map((budgetEntryData) => {
             budgetEntryData.id = null;
-            newBudgetMonthlyEntry(
-              budgetCtx.selectedBudgetId,
-              year,
-              month,
-              budgetEntryData,
-              budgetCtx.token,
-              budgetCtx
-            );
+            async function enterData() {
+              const id = await storeBudgetMonthlyEntry(
+                budgetCtx.selectedBudgetId,
+                year,
+                month,
+                budgetEntryData,
+                'auth=' + budgetCtx.token
+              );
+              budgetCtx.addBudgetMonthlyEntry(
+                id,
+                { ...budgetEntryData, id: id },
+                budgetCtx.selectedBudgetId,
+                month,
+                year
+              );
+            }
+            enterData();
           });
         }
         setIsSubmitting(false);
-      })();
-      (async () => {
+      }
+      monthlyEntriesInsert();
+
+      const monthlyTransactionsInsert = async () => {
         setIsSubmitting(true);
 
         // make monthly entries from base entries
@@ -129,18 +140,22 @@ function AllTransactions() {
                 ' entry',
               email: budgetCtx.email,
             };
-            newTransactionHandler(
-              budgetCtx.selectedBudgetId,
-              budgetCtx.token,
-              data,
-              month,
-              year,
-              budgetCtx
-            );
+            async function enterTransaction() {
+              await newTransactionHandler(
+                budgetCtx.selectedBudgetId,
+                budgetCtx.token,
+                data,
+                month,
+                year,
+                budgetCtx
+              );
+            }
+            enterTransaction();
           });
         }
         setIsSubmitting(false);
-      })();
+      };
+      monthlyTransactionsInsert();
     }
   }, [
     transactionIncomeEntries.length,

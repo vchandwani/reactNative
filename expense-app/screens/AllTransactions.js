@@ -18,6 +18,7 @@ import { EXPENSE, INCOME } from '../util/constants';
 import { styles } from '../constants/styles';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import { storeBudgetMonthlyEntry } from '../util/http';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
 
 async function newBudgetMonthlyEntry(budgetId, year, month, data, token, ctx) {
   const id = await storeBudgetMonthlyEntry(
@@ -52,6 +53,66 @@ function AllTransactions() {
       return btgCat?.recurring;
     });
 
+  async function monthlyEntriesInsert(budgetEntryData) {
+    try {
+      // make monthly entries from base entries
+      budgetEntryData.id = null;
+      const id = await storeBudgetMonthlyEntry(
+        budgetCtx.selectedBudgetId,
+        year,
+        month,
+        budgetEntryData,
+        'auth=' + budgetCtx.token
+      );
+      budgetCtx.addBudgetMonthlyEntry(
+        id,
+        { ...budgetEntryData, id: id },
+        budgetCtx.selectedBudgetId,
+        month,
+        year
+      );
+    } catch (error) {
+      showMessage({
+        message: 'Something went wrong',
+        type: 'error',
+      });
+    }
+  }
+
+  async function monthlyTransactionsInsert(budgetCatg, dateFormMonthYear) {
+    try {
+      // check entry present
+      const data = {
+        amount: budgetCatg.amount,
+        budgetId: budgetCtx.selectedBudgetId,
+        category: budgetCatg.name,
+        type: budgetCatg.category,
+        date: dateFormMonthYear,
+        description:
+          budgetCatg.name +
+          ' ' +
+          dataMonthYear.month +
+          ' ' +
+          dataMonthYear.year +
+          ' entry',
+        email: budgetCtx.email,
+      };
+      await newTransactionHandler(
+        budgetCtx.selectedBudgetId,
+        budgetCtx.token,
+        data,
+        month,
+        year,
+        budgetCtx
+      );
+    } catch (error) {
+      showMessage({
+        message: 'Something went wrong',
+        type: 'error',
+      });
+    }
+  }
+
   useEffect(() => {
     setMonth(dataMonthYear.month);
     setYear(dataMonthYear.year);
@@ -85,72 +146,23 @@ function AllTransactions() {
         budgetCtx?.budgets?.find((el) => el.id === budgetCtx.selectedBudgetId);
       setIsSubmitting(true);
 
-      async function monthlyEntriesInsert() {
-        // make monthly entries from base entries
-        if (entries && !monthlyEntries?.[year]?.[month]) {
-          objectToArray(entries)?.map((budgetEntryData) => {
-            budgetEntryData.id = null;
-            async function enterData() {
-              const id = await storeBudgetMonthlyEntry(
-                budgetCtx.selectedBudgetId,
-                year,
-                month,
-                budgetEntryData,
-                'auth=' + budgetCtx.token
-              );
-              budgetCtx.addBudgetMonthlyEntry(
-                id,
-                { ...budgetEntryData, id: id },
-                budgetCtx.selectedBudgetId,
-                month,
-                year
-              );
-            }
-            enterData();
-          });
-        }
+      // make monthly entries from base entries
+      if (entries && !monthlyEntries?.[year]?.[month]) {
+        objectToArray(entries)?.map((budgetEntryData) => {
+          monthlyEntriesInsert(budgetEntryData);
+        });
+      }
+      // make monthly entries from base entries
+      if (!transactions?.[year]?.[month]) {
+        // No Entries, enter recurring entries for the month selected
+        // Recurring transaction for the month and year if entries not present, newTransactionHandler called
+        const dateFormMonthYear = getRecurringTransactionDate(month, year);
+
+        currentBudgetRecurringCategories?.map((budgetCatg) => {
+          monthlyTransactionsInsert(budgetCatg, dateFormMonthYear);
+        });
       }
 
-      async function monthlyTransactionsInsert() {
-        // make monthly entries from base entries
-        if (!transactions?.[year]?.[month]) {
-          // No Entries, enter recurring entries for the month selected
-          // Recurring transaction for the month and year if entries not present, newTransactionHandler called
-          const dateFormMonthYear = getRecurringTransactionDate(month, year);
-
-          currentBudgetRecurringCategories?.map((budgetCatg) => {
-            // check entry present
-            const data = {
-              amount: budgetCatg.amount,
-              budgetId: budgetCtx.selectedBudgetId,
-              category: budgetCatg.name,
-              type: budgetCatg.category,
-              date: dateFormMonthYear,
-              description:
-                budgetCatg.name +
-                ' ' +
-                dataMonthYear.month +
-                ' ' +
-                dataMonthYear.year +
-                ' entry',
-              email: budgetCtx.email,
-            };
-            async function enterTransaction() {
-              await newTransactionHandler(
-                budgetCtx.selectedBudgetId,
-                budgetCtx.token,
-                data,
-                month,
-                year,
-                budgetCtx
-              );
-            }
-            enterTransaction();
-          });
-        }
-      }
-      monthlyEntriesInsert();
-      monthlyTransactionsInsert();
       setIsSubmitting(false);
     }
   }, [
@@ -217,6 +229,8 @@ function AllTransactions() {
   }
   return (
     <SafeAreaView style={styles.rootContainer}>
+      <FlashMessage position='top' />
+
       <Accordian
         title={'Month Year Selector'}
         data={

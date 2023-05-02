@@ -83,10 +83,9 @@ function AllTransactions() {
     ) {
       const { entries, monthlyEntries, transactions } =
         budgetCtx?.budgets?.find((el) => el.id === budgetCtx.selectedBudgetId);
+      setIsSubmitting(true);
 
       async function monthlyEntriesInsert() {
-        setIsSubmitting(true);
-
         // make monthly entries from base entries
         if (entries && !monthlyEntries?.[year]?.[month]) {
           objectToArray(entries)?.map((budgetEntryData) => {
@@ -110,13 +109,9 @@ function AllTransactions() {
             enterData();
           });
         }
-        setIsSubmitting(false);
       }
-      monthlyEntriesInsert();
 
-      const monthlyTransactionsInsert = async () => {
-        setIsSubmitting(true);
-
+      async function monthlyTransactionsInsert() {
         // make monthly entries from base entries
         if (!transactions?.[year]?.[month]) {
           // No Entries, enter recurring entries for the month selected
@@ -153,9 +148,10 @@ function AllTransactions() {
             enterTransaction();
           });
         }
-        setIsSubmitting(false);
-      };
+      }
+      monthlyEntriesInsert();
       monthlyTransactionsInsert();
+      setIsSubmitting(false);
     }
   }, [
     transactionIncomeEntries.length,

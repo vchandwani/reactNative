@@ -5,6 +5,7 @@ import TransactionsOutput from '../components/TransactionsOutput/TransactionsOut
 import { BudgetsContext } from '../store/budgets-context';
 import MonthYearSelector from '../components/UI/MonthYearSelector';
 import {
+  formatBudgetData,
   getMonthAndYear,
   getMonthsArray,
   getRecurringTransactionDate,
@@ -17,8 +18,13 @@ import { SafeAreaView } from 'react-native';
 import { EXPENSE, INCOME } from '../util/constants';
 import { styles } from '../constants/styles';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
-import { storeBudgetMonthlyEntry } from '../util/http';
+import {
+  BACKEND_URL,
+  fetchBudget,
+  storeBudgetMonthlyEntry,
+} from '../util/http';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
+import axios from 'axios';
 
 function AllTransactions() {
   const budgetCtx = useContext(BudgetsContext);
@@ -42,30 +48,67 @@ function AllTransactions() {
       return btgCat?.recurring;
     });
 
-  async function monthlyEntriesInsert(budgetEntryData) {
-    try {
+  function monthlyEntryCall(entries) {
+    let endpoints = [];
+
+    entries?.map((budgetEntryData) => {
       // make monthly entries from base entries
       budgetEntryData.id = null;
-      const id = await storeBudgetMonthlyEntry(
-        budgetCtx.selectedBudgetId,
-        year,
-        month,
-        budgetEntryData,
-        'auth=' + budgetCtx.token
+
+      endpoints.push(
+        axios.post(
+          BACKEND_URL +
+            `budget/${budgetCtx.selectedBudgetId}/monthlyEntries/${year}/${month}.json?` +
+            'auth=' +
+            budgetCtx.token,
+          budgetEntryData
+        )
       );
-      budgetCtx.addBudgetMonthlyEntry(
-        id,
-        { ...budgetEntryData, id: id },
-        budgetCtx.selectedBudgetId,
-        month,
-        year
-      );
-    } catch (error) {
-      showMessage({
-        message: 'Something went wrong',
-        type: 'error',
+    });
+    axios
+      .all(endpoints)
+      .then((responses) => {
+        let processedData = [];
+        responses.forEach((res, i) => {
+          if (res.status === 200) {
+            processedData.push({ ...entries[i], id: res.data.name });
+          } else {
+            showMessage({
+              message: 'Something went wrong',
+              type: 'error',
+            });
+          }
+
+          if (processedData.length === responses.length) {
+            processEntryResponse(processedData);
+          }
+        });
+      })
+      .catch((error) => {
+        showMessage({
+          message: 'Something went wrong',
+          type: 'error',
+        });
       });
-    }
+  }
+
+  async function processEntryResponse(processedData) {
+    const budgetsData = await fetchBudget(
+      'auth=' + budgetCtx.token,
+      budgetCtx.email
+    );
+    const formattedData = await formatBudgetData(budgetsData, budgetCtx.email);
+
+    budgetCtx.setBudgets(formattedData);
+  }
+
+  function transactionEntryCall(
+    currentBudgetRecurringCategories,
+    dateFormMonthYear
+  ) {
+    currentBudgetRecurringCategories?.map((budgetCatg) => {
+      monthlyTransactionsInsert(budgetCatg, dateFormMonthYear);
+    });
   }
 
   async function monthlyTransactionsInsert(budgetCatg, dateFormMonthYear) {
@@ -133,23 +176,12 @@ function AllTransactions() {
     ) {
       const { entries, monthlyEntries, transactions } =
         budgetCtx?.budgets?.find((el) => el.id === budgetCtx.selectedBudgetId);
-
       // make monthly entries from base entries
 
       if (entries && !monthlyEntries?.[year]?.[month]) {
         setIsSubmitting(true);
-
-        async function monthlyEntryCall() {
-          await Promise.allSettled(
-            objectToArray(entries)?.map((budgetEntryData) => {
-              monthlyEntriesInsert(budgetEntryData);
-            })
-          );
-        }
-        setTimeout(() => {
-          monthlyEntryCall();
-          setIsSubmitting(false);
-        }, 1000);
+        monthlyEntryCall(objectToArray(entries));
+        setIsSubmitting(false);
       }
       // make monthly entries from base entries
       if (!transactions?.[year]?.[month]) {
@@ -158,17 +190,11 @@ function AllTransactions() {
         const dateFormMonthYear = getRecurringTransactionDate(month, year);
         setIsSubmitting(true);
 
-        async function transactionEntryCall() {
-          await Promise.allSettled(
-            currentBudgetRecurringCategories?.map((budgetCatg) => {
-              monthlyTransactionsInsert(budgetCatg, dateFormMonthYear);
-            })
-          );
-        }
-        setTimeout(() => {
-          transactionEntryCall();
-          setIsSubmitting(false);
-        }, 1000);
+        transactionEntryCall(
+          currentBudgetRecurringCategories,
+          dateFormMonthYear
+        );
+        setIsSubmitting(false);
       }
     }
   }, [

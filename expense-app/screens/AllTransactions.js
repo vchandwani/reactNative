@@ -20,17 +20,6 @@ import LoadingOverlay from '../components/UI/LoadingOverlay';
 import { storeBudgetMonthlyEntry } from '../util/http';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
 
-async function newBudgetMonthlyEntry(budgetId, year, month, data, token, ctx) {
-  const id = await storeBudgetMonthlyEntry(
-    budgetId,
-    year,
-    month,
-    data,
-    'auth=' + token
-  );
-  ctx.addBudgetMonthlyEntry(id, { ...data, id: id }, budgetId, month, year);
-}
-
 function AllTransactions() {
   const budgetCtx = useContext(BudgetsContext);
 
@@ -147,10 +136,16 @@ function AllTransactions() {
       setIsSubmitting(true);
 
       // make monthly entries from base entries
+
       if (entries && !monthlyEntries?.[year]?.[month]) {
-        objectToArray(entries)?.map((budgetEntryData) => {
-          monthlyEntriesInsert(budgetEntryData);
-        });
+        async function monthlyEntryCall() {
+          await Promise.allSettled(
+            objectToArray(entries)?.map((budgetEntryData) => {
+              monthlyEntriesInsert(budgetEntryData);
+            })
+          );
+        }
+        monthlyEntryCall();
       }
       // make monthly entries from base entries
       if (!transactions?.[year]?.[month]) {
@@ -158,9 +153,14 @@ function AllTransactions() {
         // Recurring transaction for the month and year if entries not present, newTransactionHandler called
         const dateFormMonthYear = getRecurringTransactionDate(month, year);
 
-        currentBudgetRecurringCategories?.map((budgetCatg) => {
-          monthlyTransactionsInsert(budgetCatg, dateFormMonthYear);
-        });
+        async function transactionEntryCall() {
+          await Promise.allSettled(
+            currentBudgetRecurringCategories?.map((budgetCatg) => {
+              monthlyTransactionsInsert(budgetCatg, dateFormMonthYear);
+            })
+          );
+        }
+        transactionEntryCall();
       }
 
       setIsSubmitting(false);

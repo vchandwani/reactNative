@@ -133,11 +133,12 @@ function AllTransactions() {
     ) {
       const { entries, monthlyEntries, transactions } =
         budgetCtx?.budgets?.find((el) => el.id === budgetCtx.selectedBudgetId);
-      setIsSubmitting(true);
 
       // make monthly entries from base entries
 
       if (entries && !monthlyEntries?.[year]?.[month]) {
+        setIsSubmitting(true);
+
         async function monthlyEntryCall() {
           await Promise.allSettled(
             objectToArray(entries)?.map((budgetEntryData) => {
@@ -145,13 +146,17 @@ function AllTransactions() {
             })
           );
         }
-        monthlyEntryCall();
+        setTimeout(() => {
+          monthlyEntryCall();
+        }, 1000);
+        setIsSubmitting(false);
       }
       // make monthly entries from base entries
       if (!transactions?.[year]?.[month]) {
         // No Entries, enter recurring entries for the month selected
         // Recurring transaction for the month and year if entries not present, newTransactionHandler called
         const dateFormMonthYear = getRecurringTransactionDate(month, year);
+        setIsSubmitting(true);
 
         async function transactionEntryCall() {
           await Promise.allSettled(
@@ -160,10 +165,11 @@ function AllTransactions() {
             })
           );
         }
-        transactionEntryCall();
+        setTimeout(() => {
+          transactionEntryCall();
+        }, 1000);
+        setIsSubmitting(false);
       }
-
-      setIsSubmitting(false);
     }
   }, [
     transactionIncomeEntries.length,

@@ -148,8 +148,8 @@ function AllTransactions() {
         }
         setTimeout(() => {
           monthlyEntryCall();
+          setIsSubmitting(false);
         }, 1000);
-        setIsSubmitting(false);
       }
       // make monthly entries from base entries
       if (!transactions?.[year]?.[month]) {
@@ -167,8 +167,8 @@ function AllTransactions() {
         }
         setTimeout(() => {
           transactionEntryCall();
+          setIsSubmitting(false);
         }, 1000);
-        setIsSubmitting(false);
       }
     }
   }, [

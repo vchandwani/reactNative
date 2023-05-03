@@ -48,10 +48,10 @@ function AllTransactions() {
       return btgCat?.recurring;
     });
 
-  function monthlyEntryCall(entries) {
+  async function monthlyEntryCall(entries) {
     let endpoints = [];
 
-    entries?.map((budgetEntryData) => {
+    await entries?.map((budgetEntryData) => {
       // make monthly entries from base entries
       budgetEntryData.id = null;
 
@@ -102,11 +102,11 @@ function AllTransactions() {
     budgetCtx.setBudgets(formattedData);
   }
 
-  function transactionEntryCall(
+  async function transactionEntryCall(
     currentBudgetRecurringCategories,
     dateFormMonthYear
   ) {
-    currentBudgetRecurringCategories?.map((budgetCatg) => {
+    await currentBudgetRecurringCategories?.map((budgetCatg) => {
       monthlyTransactionsInsert(budgetCatg, dateFormMonthYear);
     });
   }

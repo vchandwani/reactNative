@@ -170,20 +170,19 @@ function AllTransactions() {
 
   const processRecurringEntries = () => {
     // make monthly entries from base entries
-    if (formattedEntries && !monthlyEntries?.[year]?.[month]) {
-      setIsSubmitting(true);
-      monthlyEntryCall(formattedEntries);
-      setIsSubmitting(false);
-    }
-
-    // make monthly entries from base entries
     if (!transactions?.[year]?.[month]) {
       // No Entries, enter recurring entries for the month selected
       // Recurring transaction for the month and year if entries not present, newTransactionHandler called
       const dateFormMonthYear = getRecurringTransactionDate(month, year);
       setIsSubmitting(true);
-
       transactionEntryCall(currentBudgetRecurringCategories, dateFormMonthYear);
+      setIsSubmitting(false);
+    }
+
+    // make monthly entries from base entries
+    if (formattedEntries && !monthlyEntries?.[year]?.[month]) {
+      setIsSubmitting(true);
+      monthlyEntryCall(formattedEntries);
       setIsSubmitting(false);
     }
   };

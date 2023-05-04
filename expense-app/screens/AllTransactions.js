@@ -65,7 +65,7 @@ function AllTransactions() {
         )
       );
     });
-    Promise.allSettled(endpoints)
+    Promise.all(endpoints)
       .then((result) => {
         if (entries.length === result.length) {
           dataProcessed();
@@ -117,7 +117,7 @@ function AllTransactions() {
       );
     });
 
-    Promise.allSettled(endpoints)
+    Promise.all(endpoints)
       .then((result) => {
         if (currentBudgetRecurringCategories.length === result.length) {
           dataProcessed();
@@ -176,7 +176,7 @@ function AllTransactions() {
     // make monthly entries from base entries
     alert('transactions?.[year]?.[month]');
     alert(transactions?.[year]?.[month]);
-    if (!transactions?.[year]?.[month]) {
+    if (transactions?.[year]?.[month] === undefined) {
       alert('Transaction not present');
       // No Entries, enter recurring entries for the month selected
       // Recurring transaction for the month and year if entries not present, newTransactionHandler called
@@ -185,9 +185,11 @@ function AllTransactions() {
     }
 
     // make monthly entries from base entries
+    alert('formattedEntries');
+    alert(formattedEntries);
     alert('monthlyEntries?.[year]?.[month]');
     alert(monthlyEntries?.[year]?.[month]);
-    if (formattedEntries && !monthlyEntries?.[year]?.[month]) {
+    if (formattedEntries && monthlyEntries?.[year]?.[month] === undefined) {
       alert(formattedEntries);
       alert('Monthly not present');
 

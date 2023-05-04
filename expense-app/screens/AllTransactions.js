@@ -40,7 +40,8 @@ function AllTransactions() {
   const { entries, monthlyEntries, transactions } = budgetCtx?.budgets?.find(
     (el) => el.id === budgetCtx.selectedBudgetId
   );
-  let formattedEntries = objectToArray(entries);
+
+  const formattedEntries = objectToArray(entries);
 
   const currentBudgetRecurringCategories =
     budgetCtx.currentBudgetCategories?.filter((btgCat) => {
@@ -172,25 +173,25 @@ function AllTransactions() {
   };
 
   const processRecurringEntries = () => {
-    alert('Check');
     // make monthly entries from base entries
+    alert('transactions?.[year]?.[month]');
+    alert(transactions?.[year]?.[month]);
     if (!transactions?.[year]?.[month]) {
       alert('Transaction not present');
       // No Entries, enter recurring entries for the month selected
       // Recurring transaction for the month and year if entries not present, newTransactionHandler called
       const dateFormMonthYear = getRecurringTransactionDate(month, year);
-      setIsSubmitting(true);
       transactionEntryCall(currentBudgetRecurringCategories, dateFormMonthYear);
-      setIsSubmitting(false);
     }
 
     // make monthly entries from base entries
+    alert('monthlyEntries?.[year]?.[month]');
+    alert(monthlyEntries?.[year]?.[month]);
     if (formattedEntries && !monthlyEntries?.[year]?.[month]) {
+      alert(formattedEntries);
       alert('Monthly not present');
 
-      setIsSubmitting(true);
       monthlyEntryCall(formattedEntries);
-      setIsSubmitting(false);
     }
   };
 

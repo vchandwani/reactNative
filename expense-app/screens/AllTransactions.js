@@ -12,7 +12,6 @@ import {
   getYearsArray,
   objectToArray,
 } from '../util/data';
-import { newTransactionHandler } from './ManageTransaction';
 import Accordian from '../components/UI/Accordian';
 import { SafeAreaView } from 'react-native';
 import { EXPENSE, INCOME } from '../util/constants';
@@ -88,14 +87,8 @@ function AllTransactions() {
     currentBudgetRecurringCategories,
     dateFormMonthYear
   ) {
+    let endpoints = [];
     await currentBudgetRecurringCategories?.map((budgetCatg) => {
-      monthlyTransactionsInsert(budgetCatg, dateFormMonthYear);
-    });
-  }
-
-  async function monthlyTransactionsInsert(budgetCatg, dateFormMonthYear) {
-    try {
-      // check entry present
       const data = {
         amount: budgetCatg.amount,
         budgetId: budgetCtx.selectedBudgetId,
@@ -111,20 +104,30 @@ function AllTransactions() {
           ' entry',
         email: budgetCtx.email,
       };
-      await newTransactionHandler(
-        budgetCtx.selectedBudgetId,
-        budgetCtx.token,
-        data,
-        month,
-        year,
-        budgetCtx
+      endpoints.push(
+        // check entry present
+        axios.post(
+          BACKEND_URL +
+            `budget/${budgetCtx.selectedBudgetId}/transactions/${year}/${month}.json?` +
+            'auth=' +
+            budgetCtx.token,
+          data
+        )
       );
-    } catch (error) {
-      showMessage({
-        message: 'Something went wrong',
-        type: 'error',
+    });
+
+    Promise.allSettled(endpoints)
+      .then((result) => {
+        if (currentBudgetRecurringCategories.length === result.length) {
+          dataProcessed();
+        }
+      })
+      .catch((err) => {
+        showMessage({
+          message: 'Something went wrong',
+          type: 'error',
+        });
       });
-    }
   }
 
   useEffect(() => {

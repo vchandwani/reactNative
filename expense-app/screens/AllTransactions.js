@@ -172,8 +172,10 @@ function AllTransactions() {
   };
 
   const processRecurringEntries = () => {
+    alert('Check');
     // make monthly entries from base entries
     if (!transactions?.[year]?.[month]) {
+      alert('Transaction not present');
       // No Entries, enter recurring entries for the month selected
       // Recurring transaction for the month and year if entries not present, newTransactionHandler called
       const dateFormMonthYear = getRecurringTransactionDate(month, year);
@@ -184,6 +186,8 @@ function AllTransactions() {
 
     // make monthly entries from base entries
     if (formattedEntries && !monthlyEntries?.[year]?.[month]) {
+      alert('Monthly not present');
+
       setIsSubmitting(true);
       monthlyEntryCall(formattedEntries);
       setIsSubmitting(false);

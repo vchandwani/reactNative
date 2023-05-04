@@ -43,6 +43,10 @@ function AllTransactions() {
   const [isSubmitting, setIsSubmitting] = useState(true);
   const date = new Date().toISOString();
   const dataMonthYear = getMonthAndYear(date);
+  const { entries, monthlyEntries, transactions } = budgetCtx?.budgets?.find(
+    (el) => el.id === budgetCtx.selectedBudgetId
+  );
+  let formattedEntries = objectToArray(entries);
 
   const currentBudgetRecurringCategories =
     budgetCtx.currentBudgetCategories?.filter((btgCat) => {
@@ -157,15 +161,13 @@ function AllTransactions() {
       transactionIncomeEntries.length === 0 &&
       transactionExpenseEntries.length === 0
     ) {
-      const { entries, monthlyEntries, transactions } =
-        budgetCtx?.budgets?.find((el) => el.id === budgetCtx.selectedBudgetId);
       // make monthly entries from base entries
 
-      if (entries && !monthlyEntries?.[year]?.[month]) {
-        setIsSubmitting(true);
-        monthlyEntryCall(objectToArray(entries));
-        setIsSubmitting(false);
-      }
+      //   if (entries && !monthlyEntries?.[year]?.[month]) {
+      //     setIsSubmitting(true);
+      //     monthlyEntryCall(formattedEntries);
+      //     setIsSubmitting(false);
+      //   }
       // make monthly entries from base entries
       if (!transactions?.[year]?.[month]) {
         // No Entries, enter recurring entries for the month selected

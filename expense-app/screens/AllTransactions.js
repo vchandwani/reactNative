@@ -6,7 +6,6 @@ import { BudgetsContext } from '../store/budgets-context';
 import MonthYearSelector from '../components/UI/MonthYearSelector';
 import {
   fetchBudgetCall,
-  formatBudgetData,
   getMonthAndYear,
   getMonthsArray,
   getRecurringTransactionDate,
@@ -19,11 +18,7 @@ import { SafeAreaView } from 'react-native';
 import { EXPENSE, INCOME } from '../util/constants';
 import { styles } from '../constants/styles';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
-import {
-  BACKEND_URL,
-  fetchBudget,
-  storeBudgetMonthlyEntry,
-} from '../util/http';
+import { BACKEND_URL } from '../util/http';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
 import axios from 'axios';
 
@@ -153,41 +148,6 @@ function AllTransactions() {
     }
   }, [month, year, isFocused, budgetCtx.budgets]);
 
-  useEffect(() => {
-    if (
-      month &&
-      year &&
-      !isSubmitting &&
-      transactionIncomeEntries.length === 0 &&
-      transactionExpenseEntries.length === 0
-    ) {
-      // make monthly entries from base entries
-
-      //   if (entries && !monthlyEntries?.[year]?.[month]) {
-      //     setIsSubmitting(true);
-      //     monthlyEntryCall(formattedEntries);
-      //     setIsSubmitting(false);
-      //   }
-      // make monthly entries from base entries
-      if (!transactions?.[year]?.[month]) {
-        // No Entries, enter recurring entries for the month selected
-        // Recurring transaction for the month and year if entries not present, newTransactionHandler called
-        const dateFormMonthYear = getRecurringTransactionDate(month, year);
-        setIsSubmitting(true);
-
-        transactionEntryCall(
-          currentBudgetRecurringCategories,
-          dateFormMonthYear
-        );
-        setIsSubmitting(false);
-      }
-    }
-  }, [
-    transactionIncomeEntries.length,
-    transactionExpenseEntries.length,
-    isSubmitting,
-  ]);
-
   const monthSelect = (month) => {
     if (month) {
       setMonth(month);
@@ -199,17 +159,36 @@ function AllTransactions() {
     }
   };
 
-  const transactionsArray = () => {
+  const transactionsArray = async () => {
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      formatTransactions(
-        budgetCtx.getTransactions(budgetCtx.selectedBudgetId, month, year)
-      );
-    }, 100);
+    await formatTransactions(
+      budgetCtx.getTransactions(budgetCtx.selectedBudgetId, month, year)
+    );
+    processRecurringEntries();
   };
 
-  const formatTransactions = (data) => {
+  const processRecurringEntries = () => {
+    // make monthly entries from base entries
+    if (formattedEntries && !monthlyEntries?.[year]?.[month]) {
+      setIsSubmitting(true);
+      monthlyEntryCall(formattedEntries);
+      setIsSubmitting(false);
+    }
+
+    // make monthly entries from base entries
+    if (!transactions?.[year]?.[month]) {
+      // No Entries, enter recurring entries for the month selected
+      // Recurring transaction for the month and year if entries not present, newTransactionHandler called
+      const dateFormMonthYear = getRecurringTransactionDate(month, year);
+      setIsSubmitting(true);
+
+      transactionEntryCall(currentBudgetRecurringCategories, dateFormMonthYear);
+      setIsSubmitting(false);
+    }
+  };
+
+  const formatTransactions = async (data) => {
     let incomeExp = [];
     let expenseExp = [];
 

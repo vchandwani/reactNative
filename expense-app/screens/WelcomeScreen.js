@@ -15,10 +15,9 @@ import BudgetForm from '../components/ManageTransaction/BudgetForm';
 import {
   storeBudgetEntry,
   updateBudgetEntry,
-  fetchBudget,
   deleteBudgetEntry,
 } from '../util/http';
-import { formatBudgetData, getBudgetCategories } from '../util/data';
+import { fetchBudgetCall, getBudgetCategories } from '../util/data';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import ErrorOverlay from '../components/UI/ErrorOverlay';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -188,11 +187,7 @@ function BudgetData({ route, navigation }) {
   async function fetchBudgets() {
     setIsSubmitting(true);
     try {
-      const budgetsData = await fetchBudget('auth=' + token, budgetCtx.email);
-      const formattedData = await formatBudgetData(
-        budgetsData,
-        budgetCtx.email
-      );
+      const formattedData = await fetchBudgetCall(budgetCtx);
       setBudgets(formattedData);
     } catch (error) {
       if (error.response.status === 401) {

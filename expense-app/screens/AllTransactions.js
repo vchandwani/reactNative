@@ -5,6 +5,7 @@ import TransactionsOutput from '../components/TransactionsOutput/TransactionsOut
 import { BudgetsContext } from '../store/budgets-context';
 import MonthYearSelector from '../components/UI/MonthYearSelector';
 import {
+  fetchBudgetCall,
   formatBudgetData,
   getMonthAndYear,
   getMonthsArray,
@@ -65,26 +66,13 @@ function AllTransactions() {
         )
       );
     });
-    axios
-      .all(endpoints)
-      .then((responses) => {
-        let processedData = [];
-        responses.forEach((res, i) => {
-          if (res.status === 200) {
-            processedData.push({ ...entries[i], id: res.data.name });
-          } else {
-            showMessage({
-              message: 'Something went wrong',
-              type: 'error',
-            });
-          }
-
-          if (processedData.length === responses.length) {
-            processEntryResponse(processedData);
-          }
-        });
+    Promise.allSettled(endpoints)
+      .then((result) => {
+        if (entries.length === result.length) {
+          dataProcessed();
+        }
       })
-      .catch((error) => {
+      .catch((err) => {
         showMessage({
           message: 'Something went wrong',
           type: 'error',
@@ -92,13 +80,8 @@ function AllTransactions() {
       });
   }
 
-  async function processEntryResponse(processedData) {
-    const budgetsData = await fetchBudget(
-      'auth=' + budgetCtx.token,
-      budgetCtx.email
-    );
-    const formattedData = await formatBudgetData(budgetsData, budgetCtx.email);
-
+  async function dataProcessed() {
+    const formattedData = await fetchBudgetCall(budgetCtx);
     budgetCtx.setBudgets(formattedData);
   }
 
@@ -164,7 +147,7 @@ function AllTransactions() {
       // call the function
       transactionsArray();
     }
-  }, [month, year, isFocused]);
+  }, [month, year, isFocused, budgetCtx.budgets]);
 
   useEffect(() => {
     if (

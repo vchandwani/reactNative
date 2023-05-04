@@ -16,13 +16,6 @@ export const BudgetsContext = createContext({
     budgetId
   ) => {},
 
-  setBudgetMonthlyEntry: (
-    id,
-    { name, amount, category, recurring },
-    budgetId,
-    month,
-    year
-  ) => {},
   getBudgetMonthlyEntries: (budgetId, month, year) => {},
 
   addTransaction: (
@@ -76,9 +69,8 @@ function budgetsReducer(state, action) {
       if (!state[budgetIndex]['monthlyEntries'][action.year][action.month]) {
         state[budgetIndex]['monthlyEntries'][action.year][action.month] = {};
       }
-      state[budgetIndex]['monthlyEntries'][action.year][action.month][
-        action.payload.id
-      ] = action.payload.data;
+      state[budgetIndex]['monthlyEntries'][action.year][action.month] =
+        action.payload.data;
       return state;
 
     case 'ADDTRANSACTION':
@@ -170,15 +162,6 @@ function BudgetsContextProvider({ children }) {
     return monthlyEntriesData ? monthlyEntriesData : [];
   }
 
-  function setBudgetMonthlyEntry(id, budgetMonthlyData, budgetId, month, year) {
-    dispatch({
-      type: 'ADDBUDGETMONTHLYENTRY',
-      payload: { id: id, data: budgetMonthlyData },
-      budgetId: budgetId,
-      month: month,
-      year: year,
-    });
-  }
   function addTransaction(id, transactionData, budgetId, month, year) {
     dispatch({
       type: 'ADDTRANSACTION',
@@ -232,7 +215,6 @@ function BudgetsContextProvider({ children }) {
     updateBudgetEntry: updateBudgetEntry,
 
     getBudgetMonthlyEntries: getBudgetMonthlyEntries,
-    setBudgetMonthlyEntry: setBudgetMonthlyEntry,
 
     token: authToken,
     email: email,

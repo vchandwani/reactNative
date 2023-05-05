@@ -191,10 +191,13 @@ function BudgetData({ route, navigation }) {
   }, [budgetInfo]);
 
   useEffect(() => {
-    if (budgetCtx.selectedBudgetId) {
-      const { entries, monthlyEntries } = budgetCtx?.budgets?.find(
-        (el) => el.id === budgetCtx.selectedBudgetId
-      );
+    if (
+      budgetCtx.selectedBudgetId &&
+      budgetCtx.currentBudgetCategories &&
+      budgetCtx.currentBudgetCategories.length > 0
+    ) {
+      const { entries, monthlyEntries, transactions } =
+        budgetCtx?.budgets?.find((el) => el.id === budgetCtx.selectedBudgetId);
 
       if (
         monthlyEntries[dataMonthYear.year][dataMonthYear.month] === undefined
@@ -203,18 +206,7 @@ function BudgetData({ route, navigation }) {
           processRecurringMonthlyEntries(entries);
         }, 1000);
       }
-    }
-  }, [budgetCtx.selectedBudgetId]);
 
-  useEffect(() => {
-    if (
-      budgetCtx.currentBudgetCategories.length > 0 &&
-      budgetCtx?.budgets &&
-      budgetCtx?.selectedBudgetId
-    ) {
-      const { transactions } = budgetCtx?.budgets?.find(
-        (el) => el.id === budgetCtx.selectedBudgetId
-      );
       const currentBudgetRecurringCategories =
         budgetCtx.currentBudgetCategories?.filter((btgCat) => {
           return btgCat?.recurring;
@@ -232,11 +224,7 @@ function BudgetData({ route, navigation }) {
         }, 3000);
       }
     }
-  }, [
-    budgetCtx?.budgets,
-    budgetCtx.selectedBudgetId,
-    budgetCtx.currentBudgetCategories,
-  ]);
+  }, [budgetCtx.selectedBudgetId, budgetCtx.currentBudgetCategories]);
 
   const changeBudget = (id) => {
     budgetCtx.setSelectedBudgetId(id);
@@ -267,7 +255,10 @@ function BudgetData({ route, navigation }) {
         axios.spread((...res) => {
           // output of req.
           if (res.length === formattedEntries.length) {
-            fetchBudgets();
+            showMessage({
+              message: 'Entries added',
+              type: 'success',
+            });
           }
         })
       )
@@ -282,6 +273,10 @@ function BudgetData({ route, navigation }) {
     recurringEntries,
     dateFormMonthYear
   ) {
+    const { entries, monthlyEntries, transactions } = budgetCtx?.budgets?.find(
+      (el) => el.id === budgetCtx.selectedBudgetId
+    );
+
     let endpoints = [];
     await recurringEntries?.map((budgetCatg) => {
       const data = {
@@ -316,6 +311,10 @@ function BudgetData({ route, navigation }) {
         axios.spread((...res) => {
           // output of req.
           if (res.length === recurringEntries.length) {
+            showMessage({
+              message: 'Transactions added',
+              type: 'success',
+            });
             fetchBudgets();
           }
         })

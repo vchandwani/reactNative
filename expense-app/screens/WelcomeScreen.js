@@ -254,14 +254,18 @@ function BudgetData({ route, navigation }) {
     });
     Promise.allSettled(endpoints)
       .then((result) => {
-        if (formattedEntries.length === result.length) {
-          showMessage({
-            message: 'Monthly entries added',
-            type: 'info',
-          });
-          // refresh data
-          fetchBudgets();
-        }
+        setIsSubmitting(true);
+        setTimeout(() => {
+          if (formattedEntries.length === result.length) {
+            showMessage({
+              message: 'Monthly entries added',
+              type: 'info',
+            });
+            // refresh data
+            fetchBudgets();
+            setIsSubmitting(false);
+          }
+        }, 1000);
       })
       .catch((err) => {
         showMessage({
@@ -305,14 +309,18 @@ function BudgetData({ route, navigation }) {
 
     Promise.allSettled(endpoints)
       .then((result) => {
-        if (recurringEntries.length === result.length) {
-          showMessage({
-            message: 'Monthly trnsactions entries added',
-            type: 'info',
-          });
-          // refresh data
-          fetchBudgets();
-        }
+        setIsSubmitting(true);
+        setTimeout(() => {
+          if (recurringEntries.length === result.length) {
+            showMessage({
+              message: 'Monthly trnsactions entries added',
+              type: 'info',
+            });
+            // refresh data
+            fetchBudgets();
+            setIsSubmitting(false);
+          }
+        }, 1000);
       })
       .catch((err) => {
         showMessage({

@@ -221,10 +221,10 @@ function BudgetData({ route, navigation }) {
           dataMonthYear.year
         );
 
-        // processRecurringTransactionsEntries(
-        //   currentBudgetRecurringCategories,
-        //   dateFormMonthYear
-        // );
+        processRecurringTransactionsEntries(
+          currentBudgetRecurringCategories,
+          dateFormMonthYear
+        );
       }
     }
   }, [budgetCtx.currentBudgetCategories]);
@@ -252,34 +252,20 @@ function BudgetData({ route, navigation }) {
         )
       );
     });
-    return Promise.allSettled(
-      endpoints.map((promise) =>
-        promise
-          .then((value) => console.log(value))
-          .catch((reason) =>
-            showMessage({
-              message: 'Something went wrong',
-              type: 'error',
-            })
-          )
-      )
-    );
 
-    Promise.allSettled(endpoints)
-      .then((result) => {
-        setIsSubmitting(true);
-        setTimeout(() => {
-          if (formattedEntries.length === result.length) {
+    Promise.all(endpoints)
+      .then(
+        axios.spread((...res) => {
+          // output of req.
+          if (res.length === formattedEntries.length) {
+            fetchBudgets();
             showMessage({
               message: 'Monthly entries added',
-              type: 'info',
+              type: 'success',
             });
-            // refresh data
-            fetchBudgets();
-            setIsSubmitting(false);
           }
-        }, 1000);
-      })
+        })
+      )
       .catch((err) => {
         showMessage({
           message: 'Something went wrong',
@@ -320,21 +306,19 @@ function BudgetData({ route, navigation }) {
       );
     });
 
-    Promise.allSettled(endpoints)
-      .then((result) => {
-        setIsSubmitting(true);
-        setTimeout(() => {
-          if (recurringEntries.length === result.length) {
+    Promise.all(endpoints)
+      .then(
+        axios.spread((...res) => {
+          // output of req.
+          if (res.length === recurringEntries.length) {
+            fetchBudgets();
             showMessage({
               message: 'Monthly trnsactions entries added',
               type: 'info',
             });
-            // refresh data
-            fetchBudgets();
-            setIsSubmitting(false);
           }
-        }, 1000);
-      })
+        })
+      )
       .catch((err) => {
         showMessage({
           message: 'Something went wrong',
@@ -344,6 +328,7 @@ function BudgetData({ route, navigation }) {
   }
 
   async function fetchBudgets() {
+    alert('fetching');
     setIsSubmitting(true);
     try {
       const formattedData = await fetchBudgetCall(budgetCtx);

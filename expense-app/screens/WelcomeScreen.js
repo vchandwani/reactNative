@@ -207,7 +207,11 @@ function BudgetData({ route, navigation }) {
   }, [budgetCtx.selectedBudgetId]);
 
   useEffect(() => {
-    if (budgetCtx.currentBudgetCategories) {
+    if (
+      budgetCtx.currentBudgetCategories.length > 0 &&
+      budgetCtx?.budgets &&
+      budgetCtx?.selectedBudgetId
+    ) {
       const { transactions } = budgetCtx?.budgets?.find(
         (el) => el.id === budgetCtx.selectedBudgetId
       );
@@ -228,7 +232,11 @@ function BudgetData({ route, navigation }) {
         }, 3000);
       }
     }
-  }, [budgetCtx.currentBudgetCategories]);
+  }, [
+    budgetCtx?.budgets,
+    budgetCtx.selectedBudgetId,
+    budgetCtx.currentBudgetCategories,
+  ]);
 
   const changeBudget = (id) => {
     budgetCtx.setSelectedBudgetId(id);

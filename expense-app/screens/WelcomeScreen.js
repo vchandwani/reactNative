@@ -258,7 +258,8 @@ function BudgetData({ route, navigation }) {
         axios.spread((...res) => {
           // output of req.
           if (res.length === formattedEntries.length) {
-            fetchBudgets();
+            // fetchBudgets();
+            alert('Done');
             showMessage({
               message: 'Monthly entries added',
               type: 'success',
@@ -311,7 +312,8 @@ function BudgetData({ route, navigation }) {
         axios.spread((...res) => {
           // output of req.
           if (res.length === recurringEntries.length) {
-            fetchBudgets();
+            // fetchBudgets();
+            alert('Done1');
             showMessage({
               message: 'Monthly trnsactions entries added',
               type: 'info',

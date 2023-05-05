@@ -252,7 +252,7 @@ function BudgetData({ route, navigation }) {
         )
       );
     });
-    Promise.all(endpoints)
+    Promise.allSettled(endpoints)
       .then((result) => {
         if (formattedEntries.length === result.length) {
           showMessage({
@@ -303,7 +303,7 @@ function BudgetData({ route, navigation }) {
       );
     });
 
-    Promise.all(endpoints)
+    Promise.allSettled(endpoints)
       .then((result) => {
         if (recurringEntries.length === result.length) {
           showMessage({

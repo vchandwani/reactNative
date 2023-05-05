@@ -199,7 +199,9 @@ function BudgetData({ route, navigation }) {
       if (
         monthlyEntries[dataMonthYear.year][dataMonthYear.month] === undefined
       ) {
-        processRecurringMonthlyEntries(entries);
+        setTimeout(() => {
+          processRecurringMonthlyEntries(entries);
+        }, 1000);
       }
     }
   }, [budgetCtx.selectedBudgetId]);
@@ -220,11 +222,12 @@ function BudgetData({ route, navigation }) {
           dataMonthYear.month,
           dataMonthYear.year
         );
-
-        processRecurringTransactionsEntries(
-          currentBudgetRecurringCategories,
-          dateFormMonthYear
-        );
+        setTimeout(() => {
+          processRecurringTransactionsEntries(
+            currentBudgetRecurringCategories,
+            dateFormMonthYear
+          );
+        }, 3000);
       }
     }
   }, [budgetCtx.currentBudgetCategories]);
@@ -258,12 +261,7 @@ function BudgetData({ route, navigation }) {
         axios.spread((...res) => {
           // output of req.
           if (res.length === formattedEntries.length) {
-            // fetchBudgets();
-            alert('Done');
-            showMessage({
-              message: 'Monthly entries added',
-              type: 'success',
-            });
+            fetchBudgets();
           }
         })
       )
@@ -312,12 +310,7 @@ function BudgetData({ route, navigation }) {
         axios.spread((...res) => {
           // output of req.
           if (res.length === recurringEntries.length) {
-            // fetchBudgets();
-            alert('Done1');
-            showMessage({
-              message: 'Monthly trnsactions entries added',
-              type: 'info',
-            });
+            fetchBudgets();
           }
         })
       )
@@ -330,7 +323,6 @@ function BudgetData({ route, navigation }) {
   }
 
   async function fetchBudgets() {
-    alert('fetching');
     setIsSubmitting(true);
     try {
       const formattedData = await fetchBudgetCall(budgetCtx);
@@ -420,7 +412,7 @@ function BudgetData({ route, navigation }) {
     return <ErrorOverlay message={error} onConfirm={errorHandler} />;
   }
   if (isSubmitting) {
-    return <LoadingOverlay />;
+    return <LoadingOverlay message='Refreshing' />;
   }
 
   return (

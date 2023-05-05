@@ -207,29 +207,27 @@ function BudgetData({ route, navigation }) {
   }, [budgetCtx.selectedBudgetId]);
 
   useEffect(() => {
-    if (budgetCtx.selectedBudgetId) {
-      const { transactions } = budgetCtx?.budgets?.find(
-        (el) => el.id === budgetCtx.selectedBudgetId
-      );
-
-      const currentBudgetRecurringCategories =
-        budgetCtx.currentBudgetCategories?.filter((btgCat) => {
-          return btgCat?.recurring;
-        });
-
-      if (transactions[dataMonthYear.year][dataMonthYear.month] === undefined) {
-        const dateFormMonthYear = getRecurringTransactionDate(
-          dataMonthYear.month,
-          dataMonthYear.year
-        );
-        setTimeout(() => {
-          processRecurringTransactionsEntries(
-            currentBudgetRecurringCategories,
-            dateFormMonthYear
-          );
-        }, 3000);
-      }
-    }
+    // if (budgetCtx.selectedBudgetId) {
+    //   const { transactions } = budgetCtx?.budgets?.find(
+    //     (el) => el.id === budgetCtx.selectedBudgetId
+    //   );
+    //   const currentBudgetRecurringCategories =
+    //     budgetCtx.currentBudgetCategories?.filter((btgCat) => {
+    //       return btgCat?.recurring;
+    //     });
+    //   if (transactions[dataMonthYear.year][dataMonthYear.month] === undefined) {
+    //     const dateFormMonthYear = getRecurringTransactionDate(
+    //       dataMonthYear.month,
+    //       dataMonthYear.year
+    //     );
+    //     setTimeout(() => {
+    //       processRecurringTransactionsEntries(
+    //         currentBudgetRecurringCategories,
+    //         dateFormMonthYear
+    //       );
+    //     }, 3000);
+    //   }
+    // }
   }, [budgetCtx.currentBudgetCategories]);
 
   const changeBudget = (id) => {

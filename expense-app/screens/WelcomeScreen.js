@@ -221,10 +221,10 @@ function BudgetData({ route, navigation }) {
           dataMonthYear.year
         );
 
-        processRecurringTransactionsEntries(
-          currentBudgetRecurringCategories,
-          dateFormMonthYear
-        );
+        // processRecurringTransactionsEntries(
+        //   currentBudgetRecurringCategories,
+        //   dateFormMonthYear
+        // );
       }
     }
   }, [budgetCtx.currentBudgetCategories]);
@@ -252,6 +252,19 @@ function BudgetData({ route, navigation }) {
         )
       );
     });
+    return Promise.allSettled(
+      endpoints.map((promise) =>
+        promise
+          .then((value) => console.log(value))
+          .catch((reason) =>
+            showMessage({
+              message: 'Something went wrong',
+              type: 'error',
+            })
+          )
+      )
+    );
+
     Promise.allSettled(endpoints)
       .then((result) => {
         setIsSubmitting(true);

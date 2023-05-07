@@ -9,6 +9,14 @@ export const BudgetsContext = createContext({
   selectedBudgetId: '',
   setSelectedBudgetId: (id) => {},
   addBudgetEntry: ({ name, amount, category, recurring }, budgetId) => {},
+  addMonthlyEntry: (
+    id,
+    { name, amount, category, recurring },
+    budgetId,
+    month,
+    year
+  ) => {},
+
   deleteBudgetEntry: (id, budgetId) => {},
   updateBudgetEntry: (
     id,
@@ -69,8 +77,9 @@ function budgetsReducer(state, action) {
       if (!state[budgetIndex]['monthlyEntries'][action.year][action.month]) {
         state[budgetIndex]['monthlyEntries'][action.year][action.month] = {};
       }
-      state[budgetIndex]['monthlyEntries'][action.year][action.month] =
-        action.payload.data;
+      state[budgetIndex]['monthlyEntries'][action.year][action.month][
+        action.payload.id
+      ] = action.payload.data;
       return state;
 
     case 'ADDTRANSACTION':
@@ -132,6 +141,16 @@ function BudgetsContextProvider({ children }) {
 
   function addBudgetEntry(budgetData, budgetId) {
     dispatch({ type: 'ADDENTRY', payload: budgetData, budgetId: budgetId });
+  }
+
+  function addMonthlyEntry(data, budgetId) {
+    dispatch({
+      type: 'ADDBUDGETMONTHLYENTRY',
+      payload: { id: id, data: data },
+      budgetId: budgetId,
+      month: month,
+      year: year,
+    });
   }
 
   function setBudgets(budgets) {
@@ -213,6 +232,8 @@ function BudgetsContextProvider({ children }) {
     addBudgetEntry: addBudgetEntry,
     deleteBudgetEntry: deleteBudgetEntry,
     updateBudgetEntry: updateBudgetEntry,
+
+    addMonthlyEntry: addMonthlyEntry,
 
     getBudgetMonthlyEntries: getBudgetMonthlyEntries,
 

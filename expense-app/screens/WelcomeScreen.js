@@ -17,6 +17,7 @@ import {
   updateBudgetEntry,
   deleteBudgetEntry,
   BACKEND_URL,
+  storeBudgetMonthlyEntry,
 } from '../util/http';
 import {
   fetchBudgetCall,
@@ -199,30 +200,32 @@ function BudgetData({ route, navigation }) {
       const { entries, monthlyEntries, transactions } =
         budgetCtx?.budgets?.find((el) => el.id === budgetCtx.selectedBudgetId);
 
+      const formattedEntries = objectToArray(entries);
+
       if (
         monthlyEntries[dataMonthYear.year][dataMonthYear.month] === undefined
       ) {
-        setTimeout(() => {
-          processRecurringMonthlyEntries(entries);
-        }, 1000);
+        formattedEntries.map((entry) => {
+          processRecurringMonthlyEntries(entry, budgetCtx, dataMonthYear);
+        }, 100);
       }
 
-      const currentBudgetRecurringCategories =
-        budgetCtx.currentBudgetCategories?.filter((btgCat) => {
-          return btgCat?.recurring;
-        });
-      if (transactions[dataMonthYear.year][dataMonthYear.month] === undefined) {
-        const dateFormMonthYear = getRecurringTransactionDate(
-          dataMonthYear.month,
-          dataMonthYear.year
-        );
-        setTimeout(() => {
-          processRecurringTransactionsEntries(
-            currentBudgetRecurringCategories,
-            dateFormMonthYear
-          );
-        }, 3000);
-      }
+      // const currentBudgetRecurringCategories =
+      //   budgetCtx.currentBudgetCategories?.filter((btgCat) => {
+      //     return btgCat?.recurring;
+      //   });
+      // if (transactions[dataMonthYear.year][dataMonthYear.month] === undefined) {
+      //   const dateFormMonthYear = getRecurringTransactionDate(
+      //     dataMonthYear.month,
+      //     dataMonthYear.year
+      //   );
+      //   setTimeout(() => {
+      //     processRecurringTransactionsEntries(
+      //       currentBudgetRecurringCategories,
+      //       dateFormMonthYear
+      //     );
+      //   }, 3000);
+      // }
     }
   }, [budgetCtx.selectedBudgetId, budgetCtx.currentBudgetCategories]);
 
@@ -230,53 +233,29 @@ function BudgetData({ route, navigation }) {
     budgetCtx.setSelectedBudgetId(id);
   };
 
-  async function processRecurringMonthlyEntries(entries) {
-    const formattedEntries = objectToArray(entries);
-
-    let endpoints = [];
-
-    await formattedEntries?.map((budgetEntryData) => {
-      // make monthly entries from base entries
-      budgetEntryData.id = null;
-
-      endpoints.push(
-        axios.post(
-          BACKEND_URL +
-            `budget/${budgetCtx.selectedBudgetId}/monthlyEntries/${dataMonthYear.year}/${dataMonthYear.month}.json?` +
-            'auth=' +
-            budgetCtx.token,
-          budgetEntryData
-        )
-      );
-    });
-
-    Promise.all(endpoints)
-      .then(
-        axios.spread((...res) => {
-          // output of req.
-          if (res.length === formattedEntries.length) {
-            showMessage({
-              message: 'Entries added',
-              type: 'success',
-            });
-          }
-        })
-      )
-      .catch((err) => {
-        showMessage({
-          message: 'Something went wrong',
-          type: 'error',
-        });
-      });
+  async function processRecurringMonthlyEntries(entry, ctx, monthYear) {
+    // make monthly entries from base entriesentry
+    entry.id = null;
+    const id = await storeBudgetMonthlyEntry(
+      ctx.selectedBudgetId,
+      monthYear.year,
+      monthYear.month,
+      entry,
+      'auth=' + ctx.token
+    );
+    ctx.addMonthlyEntry(
+      id,
+      { ...entry, id: id },
+      ctx.selectedBudgetId,
+      monthYear.month,
+      monthYear.year
+    );
   }
+
   async function processRecurringTransactionsEntries(
     recurringEntries,
     dateFormMonthYear
   ) {
-    const { entries, monthlyEntries, transactions } = budgetCtx?.budgets?.find(
-      (el) => el.id === budgetCtx.selectedBudgetId
-    );
-
     let endpoints = [];
     await recurringEntries?.map((budgetCatg) => {
       const data = {

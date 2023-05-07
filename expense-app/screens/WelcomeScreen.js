@@ -17,6 +17,7 @@ import {
   updateBudgetEntry,
   deleteBudgetEntry,
   storeBudgetMonthlyEntry,
+  storeTransaction,
 } from '../util/http';
 import {
   fetchBudgetCall,
@@ -34,7 +35,6 @@ import IconButton from '../components/UI/IconButton';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
-import { newTransactionHandler } from './ManageTransaction';
 
 const BottomTabs = createBottomTabNavigator();
 
@@ -236,7 +236,7 @@ function BudgetData({ route, navigation }) {
             email: budgetCtx.email,
           };
           setTimeout(() => {
-            newTransactionHandler(
+            transactionEntry(
               budgetCtx.selectedBudgetId,
               'auth=' + budgetCtx.token,
               data,
@@ -271,6 +271,24 @@ function BudgetData({ route, navigation }) {
       monthYear.month,
       monthYear.year
     );
+  }
+
+  async function transactionEntry(
+    budgetId,
+    tokenVal,
+    finalData,
+    month,
+    year,
+    ctx
+  ) {
+    const id = await storeTransaction(
+      budgetId,
+      finalData,
+      'auth=' + tokenVal,
+      month,
+      year
+    );
+    ctx.addTransaction(id, { ...finalData, id: id }, budgetId, month, year);
   }
 
   async function fetchBudgets() {

@@ -16,7 +16,6 @@ import {
   storeBudgetEntry,
   updateBudgetEntry,
   deleteBudgetEntry,
-  BACKEND_URL,
   storeBudgetMonthlyEntry,
 } from '../util/http';
 import {
@@ -35,6 +34,7 @@ import IconButton from '../components/UI/IconButton';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
+import { newTransactionHandler } from './ManageTransaction';
 
 const BottomTabs = createBottomTabNavigator();
 
@@ -210,22 +210,43 @@ function BudgetData({ route, navigation }) {
         }, 100);
       }
 
-      // const currentBudgetRecurringCategories =
-      //   budgetCtx.currentBudgetCategories?.filter((btgCat) => {
-      //     return btgCat?.recurring;
-      //   });
-      // if (transactions[dataMonthYear.year][dataMonthYear.month] === undefined) {
-      //   const dateFormMonthYear = getRecurringTransactionDate(
-      //     dataMonthYear.month,
-      //     dataMonthYear.year
-      //   );
-      //   setTimeout(() => {
-      //     processRecurringTransactionsEntries(
-      //       currentBudgetRecurringCategories,
-      //       dateFormMonthYear
-      //     );
-      //   }, 3000);
-      // }
+      const currentBudgetRecurringCategories =
+        budgetCtx.currentBudgetCategories?.filter((btgCat) => {
+          return btgCat?.recurring;
+        });
+      if (transactions[dataMonthYear.year][dataMonthYear.month] === undefined) {
+        const dateFormMonthYear = getRecurringTransactionDate(
+          dataMonthYear.month,
+          dataMonthYear.year
+        );
+        currentBudgetRecurringCategories.map((budgetCatg) => {
+          const data = {
+            amount: budgetCatg.amount,
+            budgetId: budgetCtx.selectedBudgetId,
+            category: budgetCatg.name,
+            type: budgetCatg.category,
+            date: dateFormMonthYear,
+            description:
+              budgetCatg.name +
+              ' ' +
+              dataMonthYear.month +
+              ' ' +
+              dataMonthYear.year +
+              ' entry',
+            email: budgetCtx.email,
+          };
+          setTimeout(() => {
+            newTransactionHandler(
+              budgetCtx.selectedBudgetId,
+              'auth=' + budgetCtx.token,
+              data,
+              dateFormMonthYear.month,
+              dateFormMonthYear.year,
+              budgetCtx
+            );
+          }, 100);
+        });
+      }
     }
   }, [budgetCtx.selectedBudgetId, budgetCtx.currentBudgetCategories]);
 
@@ -250,60 +271,6 @@ function BudgetData({ route, navigation }) {
       monthYear.month,
       monthYear.year
     );
-  }
-
-  async function processRecurringTransactionsEntries(
-    recurringEntries,
-    dateFormMonthYear
-  ) {
-    let endpoints = [];
-    await recurringEntries?.map((budgetCatg) => {
-      const data = {
-        amount: budgetCatg.amount,
-        budgetId: budgetCtx.selectedBudgetId,
-        category: budgetCatg.name,
-        type: budgetCatg.category,
-        date: dateFormMonthYear,
-        description:
-          budgetCatg.name +
-          ' ' +
-          dataMonthYear.month +
-          ' ' +
-          dataMonthYear.year +
-          ' entry',
-        email: budgetCtx.email,
-      };
-      endpoints.push(
-        // check entry present
-        axios.post(
-          BACKEND_URL +
-            `budget/${budgetCtx.selectedBudgetId}/transactions/${dataMonthYear.year}/${dataMonthYear.month}.json?` +
-            'auth=' +
-            budgetCtx.token,
-          data
-        )
-      );
-    });
-
-    Promise.all(endpoints)
-      .then(
-        axios.spread((...res) => {
-          // output of req.
-          if (res.length === recurringEntries.length) {
-            showMessage({
-              message: 'Transactions added',
-              type: 'success',
-            });
-            fetchBudgets();
-          }
-        })
-      )
-      .catch((err) => {
-        showMessage({
-          message: 'Something went wrong',
-          type: 'error',
-        });
-      });
   }
 
   async function fetchBudgets() {

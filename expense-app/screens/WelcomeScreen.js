@@ -236,14 +236,15 @@ function BudgetData({ route, navigation }) {
             email: budgetCtx.email,
           };
           setTimeout(() => {
-            transactionEntry(
-              budgetCtx.selectedBudgetId,
-              'auth=' + budgetCtx.token,
-              data,
-              dateFormMonthYear.month,
-              dateFormMonthYear.year,
-              budgetCtx
-            );
+            alert('entry');
+            // transactionEntry(
+            //   budgetCtx.selectedBudgetId,
+            //   'auth=' + budgetCtx.token,
+            //   data,
+            //   dateFormMonthYear.month,
+            //   dateFormMonthYear.year,
+            //   budgetCtx
+            // );
           }, 100);
         });
       }

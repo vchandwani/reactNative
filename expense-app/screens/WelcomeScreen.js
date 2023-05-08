@@ -231,10 +231,6 @@ function BudgetData({ route, navigation }) {
             }
           }
         });
-        setIsSubmitting(true);
-        setTimeout(() => {
-          setIsSubmitting(false);
-        }, 2000);
       }
     }
   }, [
@@ -301,6 +297,7 @@ function BudgetData({ route, navigation }) {
     //   monthYear.month,
     //   monthYear.year
     // );
+    return id;
   }
 
   async function transactionEntry(

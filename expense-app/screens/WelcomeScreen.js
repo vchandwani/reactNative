@@ -202,7 +202,9 @@ function BudgetData({ route, navigation }) {
     if (
       budgetCtx.selectedBudgetId &&
       budgetCtx.currentBudgetCategories &&
-      budgetCtx.currentBudgetCategories.length > 0
+      budgetCtx.currentBudgetCategories.length > 0 &&
+      budgets.length > 0 &&
+      budgetInfo
     ) {
       const { entries, monthlyEntries } = budgetInfo;
 
@@ -225,7 +227,12 @@ function BudgetData({ route, navigation }) {
         setIsSubmitting(false);
       }
     }
-  }, [budgetCtx.selectedBudgetId, budgetCtx.currentBudgetCategories]);
+  }, [
+    budgets,
+    budgetInfo,
+    budgetCtx.selectedBudgetId,
+    budgetCtx.currentBudgetCategories,
+  ]);
 
   useEffect(() => {
     const { transactions } = budgetInfo;

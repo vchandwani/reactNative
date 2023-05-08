@@ -215,7 +215,6 @@ function BudgetData({ route, navigation }) {
       ) {
         let processedMonthlyEntries = 0;
         formattedEntries.map((entry) => {
-          setIsSubmitting(true);
           setTimeout(() => {
             processRecurringMonthlyEntries(entry, budgetCtx, dataMonthYear);
             processedMonthlyEntries++;
@@ -224,7 +223,10 @@ function BudgetData({ route, navigation }) {
             }
           }, 100);
         });
-        setIsSubmitting(false);
+        setIsSubmitting(true);
+        setTimeout(() => {
+          setIsSubmitting(false);
+        }, 2000);
       }
     }
   }, [
@@ -246,7 +248,6 @@ function BudgetData({ route, navigation }) {
         dataMonthYear.year
       );
       currentBudgetRecurringCategories.map((budgetCatg) => {
-        setIsSubmitting(true);
         const data = {
           amount: budgetCatg.amount,
           budgetId: budgetCtx.selectedBudgetId,
@@ -262,18 +263,15 @@ function BudgetData({ route, navigation }) {
             ' entry',
           email: budgetCtx.email,
         };
-        setTimeout(() => {
-          transactionEntry(
-            budgetCtx.selectedBudgetId,
-            budgetCtx.token,
-            data,
-            dataMonthYear.month,
-            dataMonthYear.year,
-            budgetCtx
-          );
-        }, 100);
+        transactionEntry(
+          budgetCtx.selectedBudgetId,
+          budgetCtx.token,
+          data,
+          dataMonthYear.month,
+          dataMonthYear.year,
+          budgetCtx
+        );
       });
-      setIsSubmitting(false);
     }
   }, [processMonthlyTransactions]);
 
@@ -290,13 +288,13 @@ function BudgetData({ route, navigation }) {
       entry,
       'auth=' + ctx.token
     );
-    ctx.addMonthlyEntry(
-      id,
-      { ...entry, id: id },
-      ctx.selectedBudgetId,
-      monthYear.month,
-      monthYear.year
-    );
+    // ctx.addMonthlyEntry(
+    //   id,
+    //   { ...entry, id: id },
+    //   ctx.selectedBudgetId,
+    //   monthYear.month,
+    //   monthYear.year
+    // );
   }
 
   async function transactionEntry(
@@ -314,7 +312,7 @@ function BudgetData({ route, navigation }) {
       month,
       year
     );
-    ctx.addTransaction(id, { ...finalData, id: id }, budgetId, month, year);
+    // ctx.addTransaction(id, { ...finalData, id: id }, budgetId, month, year);
   }
 
   async function fetchBudgets() {

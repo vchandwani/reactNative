@@ -55,6 +55,10 @@ function BudgetData({ route, navigation }) {
 
   const date = new Date().toISOString();
   const dataMonthYear = getMonthAndYear(date);
+  const dateFormMonthYear = getRecurringTransactionDate(
+    dataMonthYear.month,
+    dataMonthYear.year
+  );
 
   const editedEntriesId = route.params?.entriesId;
 
@@ -223,7 +227,7 @@ function BudgetData({ route, navigation }) {
           if (resp) {
             processedMonthlyEntries++;
             if (processedMonthlyEntries === formattedEntries.length) {
-              // setProcessMonthlyTransactions(true);
+              setProcessMonthlyTransactions(true);
             }
           }
         });
@@ -247,35 +251,33 @@ function BudgetData({ route, navigation }) {
       processMonthlyTransactions &&
       transactions[dataMonthYear.year][dataMonthYear.month] === undefined
     ) {
-      const dateFormMonthYear = getRecurringTransactionDate(
-        dataMonthYear.month,
-        dataMonthYear.year
-      );
-      currentBudgetRecurringCategories.map((budgetCatg) => {
-        const data = {
-          amount: budgetCatg.amount,
-          budgetId: budgetCtx.selectedBudgetId,
-          category: budgetCatg.name,
-          type: budgetCatg.category,
-          date: dateFormMonthYear,
-          description:
-            budgetCatg.name +
-            ' ' +
-            dataMonthYear.month +
-            ' ' +
-            dataMonthYear.year +
-            ' entry',
-          email: budgetCtx.email,
-        };
-        transactionEntry(
-          budgetCtx.selectedBudgetId,
-          budgetCtx.token,
-          data,
-          dataMonthYear.month,
-          dataMonthYear.year,
-          budgetCtx
-        );
-      });
+      alert('here');
+
+      // currentBudgetRecurringCategories.map((budgetCatg) => {
+      //   const data = {
+      //     amount: budgetCatg.amount,
+      //     budgetId: budgetCtx.selectedBudgetId,
+      //     category: budgetCatg.name,
+      //     type: budgetCatg.category,
+      //     date: dateFormMonthYear,
+      //     description:
+      //       budgetCatg.name +
+      //       ' ' +
+      //       dataMonthYear.month +
+      //       ' ' +
+      //       dataMonthYear.year +
+      //       ' entry',
+      //     email: budgetCtx.email,
+      //   };
+      //   transactionEntry(
+      //     budgetCtx.selectedBudgetId,
+      //     budgetCtx.token,
+      //     data,
+      //     dataMonthYear.month,
+      //     dataMonthYear.year,
+      //     budgetCtx
+      //   );
+      // });
     }
   }, [processMonthlyTransactions]);
 

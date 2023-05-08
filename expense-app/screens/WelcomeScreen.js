@@ -214,14 +214,18 @@ function BudgetData({ route, navigation }) {
         monthlyEntries[dataMonthYear.year][dataMonthYear.month] === undefined
       ) {
         let processedMonthlyEntries = 0;
-        formattedEntries.map((entry) => {
-          setTimeout(() => {
-            processRecurringMonthlyEntries(entry, budgetCtx, dataMonthYear);
+        formattedEntries.map(async (entry) => {
+          const resp = await processRecurringMonthlyEntries(
+            entry,
+            budgetCtx,
+            dataMonthYear
+          );
+          if (resp) {
             processedMonthlyEntries++;
             if (processedMonthlyEntries === formattedEntries.length) {
-              setProcessMonthlyTransactions(true);
+              // setProcessMonthlyTransactions(true);
             }
-          }, 100);
+          }
         });
         setIsSubmitting(true);
         setTimeout(() => {

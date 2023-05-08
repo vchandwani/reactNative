@@ -50,6 +50,8 @@ function BudgetData({ route, navigation }) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState();
+  const [processMonthlyTransactions, setProcessMonthlyTransactions] =
+    useState(false);
 
   const date = new Date().toISOString();
   const dataMonthYear = getMonthAndYear(date);
@@ -60,6 +62,11 @@ function BudgetData({ route, navigation }) {
   const selectedEntry = editedEntriesId
     ? budgetInfo?.entries[editedEntriesId]
     : null;
+
+  const currentBudgetRecurringCategories =
+    budgetCtx.currentBudgetCategories?.filter((btgCat) => {
+      return btgCat?.recurring;
+    });
   const layout = useWindowDimensions();
 
   const [index, setIndex] = useState(0);
@@ -197,59 +204,65 @@ function BudgetData({ route, navigation }) {
       budgetCtx.currentBudgetCategories &&
       budgetCtx.currentBudgetCategories.length > 0
     ) {
-      const { entries, monthlyEntries, transactions } =
-        budgetCtx?.budgets?.find((el) => el.id === budgetCtx.selectedBudgetId);
+      const { entries, monthlyEntries } = budgetInfo;
 
       const formattedEntries = objectToArray(entries);
 
       if (
         monthlyEntries[dataMonthYear.year][dataMonthYear.month] === undefined
       ) {
+        let processedMonthlyEntries = 0;
         formattedEntries.map((entry) => {
           processRecurringMonthlyEntries(entry, budgetCtx, dataMonthYear);
+          processedMonthlyEntries++;
+          if (processedMonthlyEntries === formattedEntries.length) {
+            setProcessMonthlyTransactions(true);
+          }
         }, 100);
-      }
-
-      const currentBudgetRecurringCategories =
-        budgetCtx.currentBudgetCategories?.filter((btgCat) => {
-          return btgCat?.recurring;
-        });
-      if (transactions[dataMonthYear.year][dataMonthYear.month] === undefined) {
-        const dateFormMonthYear = getRecurringTransactionDate(
-          dataMonthYear.month,
-          dataMonthYear.year
-        );
-        currentBudgetRecurringCategories.map((budgetCatg) => {
-          const data = {
-            amount: budgetCatg.amount,
-            budgetId: budgetCtx.selectedBudgetId,
-            category: budgetCatg.name,
-            type: budgetCatg.category,
-            date: dateFormMonthYear,
-            description:
-              budgetCatg.name +
-              ' ' +
-              dataMonthYear.month +
-              ' ' +
-              dataMonthYear.year +
-              ' entry',
-            email: budgetCtx.email,
-          };
-          setTimeout(() => {
-            alert('entry');
-            // transactionEntry(
-            //   budgetCtx.selectedBudgetId,
-            //   'auth=' + budgetCtx.token,
-            //   data,
-            //   dateFormMonthYear.month,
-            //   dateFormMonthYear.year,
-            //   budgetCtx
-            // );
-          }, 100);
-        });
       }
     }
   }, [budgetCtx.selectedBudgetId, budgetCtx.currentBudgetCategories]);
+
+  useEffect(() => {
+    const { transactions, monthlyEntries } = budgetInfo;
+
+    if (
+      processMonthlyTransactions &&
+      transactions[dataMonthYear.year][dataMonthYear.month] === undefined
+    ) {
+      const dateFormMonthYear = getRecurringTransactionDate(
+        dataMonthYear.month,
+        dataMonthYear.year
+      );
+      currentBudgetRecurringCategories.map((budgetCatg) => {
+        const data = {
+          amount: budgetCatg.amount,
+          budgetId: budgetCtx.selectedBudgetId,
+          category: budgetCatg.name,
+          type: budgetCatg.category,
+          date: dateFormMonthYear,
+          description:
+            budgetCatg.name +
+            ' ' +
+            dataMonthYear.month +
+            ' ' +
+            dataMonthYear.year +
+            ' entry',
+          email: budgetCtx.email,
+        };
+        setTimeout(() => {
+          transactionEntry(
+            budgetCtx.selectedBudgetId,
+            budgetCtx.token,
+            data,
+            dataMonthYear.month,
+            dataMonthYear.year,
+            budgetCtx
+          );
+        }, 100);
+      });
+    }
+  }, [processMonthlyTransactions]);
 
   const changeBudget = (id) => {
     budgetCtx.setSelectedBudgetId(id);
@@ -257,7 +270,6 @@ function BudgetData({ route, navigation }) {
 
   async function processRecurringMonthlyEntries(entry, ctx, monthYear) {
     // make monthly entries from base entriesentry
-    entry.id = null;
     const id = await storeBudgetMonthlyEntry(
       ctx.selectedBudgetId,
       monthYear.year,

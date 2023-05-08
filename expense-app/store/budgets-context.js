@@ -143,7 +143,7 @@ function BudgetsContextProvider({ children }) {
     dispatch({ type: 'ADDENTRY', payload: budgetData, budgetId: budgetId });
   }
 
-  function addMonthlyEntry(data, budgetId) {
+  function addMonthlyEntry(id, data, budgetId, month, year) {
     dispatch({
       type: 'ADDBUDGETMONTHLYENTRY',
       payload: { id: id, data: data },

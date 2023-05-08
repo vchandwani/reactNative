@@ -213,18 +213,22 @@ function BudgetData({ route, navigation }) {
       ) {
         let processedMonthlyEntries = 0;
         formattedEntries.map((entry) => {
-          processRecurringMonthlyEntries(entry, budgetCtx, dataMonthYear);
-          processedMonthlyEntries++;
-          if (processedMonthlyEntries === formattedEntries.length) {
-            setProcessMonthlyTransactions(true);
-          }
-        }, 100);
+          setIsSubmitting(true);
+          setTimeout(() => {
+            processRecurringMonthlyEntries(entry, budgetCtx, dataMonthYear);
+            processedMonthlyEntries++;
+            if (processedMonthlyEntries === formattedEntries.length) {
+              setProcessMonthlyTransactions(true);
+            }
+          }, 100);
+        });
+        setIsSubmitting(false);
       }
     }
   }, [budgetCtx.selectedBudgetId, budgetCtx.currentBudgetCategories]);
 
   useEffect(() => {
-    const { transactions, monthlyEntries } = budgetInfo;
+    const { transactions } = budgetInfo;
 
     if (
       processMonthlyTransactions &&
@@ -235,6 +239,7 @@ function BudgetData({ route, navigation }) {
         dataMonthYear.year
       );
       currentBudgetRecurringCategories.map((budgetCatg) => {
+        setIsSubmitting(true);
         const data = {
           amount: budgetCatg.amount,
           budgetId: budgetCtx.selectedBudgetId,
@@ -261,6 +266,7 @@ function BudgetData({ route, navigation }) {
           );
         }, 100);
       });
+      setIsSubmitting(false);
     }
   }, [processMonthlyTransactions]);
 

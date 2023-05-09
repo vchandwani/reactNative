@@ -85,14 +85,14 @@ export const categoryDropdown = (options) => {
   return categoriesArray;
 };
 
-export const getMonthAndYear = (date) => {
+export const getMonthAndYear = () => {
   const moment = require('moment');
-  const dateVal = new Date(date);
+  const dateVal = new Date();
   const d = moment(dateVal);
-  return { month: d.format('MMM'), year: d.year() };
+  return { monthNumber: d.month() + 1, month: d.format('MMM'), year: d.year() };
 };
 export const getRecurringTransactionDate = (month, year) => {
-  return new Date(year + '/' + month + '/02').toISOString();
+  return new Date(`${year}/${month}/02`).toISOString();
 };
 
 export async function fetchBudgetCall(budgetCtx) {

@@ -85,6 +85,6 @@ export async function storeBudgetMonthlyEntry(
       auth,
     entryData
   );
-  const id = response.data.name;
+  const id = response.data.name ? response.data.name : null;
   return id;
 }

@@ -50,13 +50,13 @@ function BudgetData({ route, navigation }) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState();
+  const [processMonthlyEntries, setProcessMonthlyEntries] = useState(false);
   const [processMonthlyTransactions, setProcessMonthlyTransactions] =
     useState(false);
 
-  const date = new Date().toISOString();
-  const dataMonthYear = getMonthAndYear(date);
+  const dataMonthYear = getMonthAndYear();
   const dateFormMonthYear = getRecurringTransactionDate(
-    dataMonthYear.month,
+    dataMonthYear.monthNumber,
     dataMonthYear.year
   );
 
@@ -203,23 +203,31 @@ function BudgetData({ route, navigation }) {
   }, [budgetInfo]);
 
   useEffect(() => {
-    if (
-      budgetCtx.selectedBudgetId &&
-      budgetCtx.currentBudgetCategories &&
-      budgetCtx.currentBudgetCategories.length > 0 &&
-      budgets.length > 0 &&
-      budgetInfo
-    ) {
-      const { entries, monthlyEntries } = budgetInfo;
+    if (budgetInfo) {
+      setProcessMonthlyEntries(false);
+      const { monthlyEntries } = budgetInfo;
+      if (monthlyEntries) {
+        if (
+          monthlyEntries[dataMonthYear.year][dataMonthYear.month] === undefined
+        ) {
+          setProcessMonthlyEntries(true);
+        }
+      }
+    }
+  }, [budgetInfo]);
+
+  useEffect(() => {
+    if (processMonthlyEntries) {
+      setProcessMonthlyTransactions(false);
+
+      const { entries } = budgetInfo;
 
       const formattedEntries = objectToArray(entries);
 
-      if (
-        monthlyEntries[dataMonthYear.year][dataMonthYear.month] === undefined
-      ) {
-        let processedMonthlyEntries = 0;
-        formattedEntries.map(async (entry) => {
-          const resp = await processRecurringMonthlyEntries(
+      let processedMonthlyEntries = 0;
+      if (processMonthlyEntries)
+        formattedEntries.map((entry) => {
+          const resp = processRecurringMonthlyEntries(
             entry,
             budgetCtx,
             dataMonthYear
@@ -231,14 +239,8 @@ function BudgetData({ route, navigation }) {
             }
           }
         });
-      }
     }
-  }, [
-    budgets,
-    budgetInfo,
-    budgetCtx.selectedBudgetId,
-    budgetCtx.currentBudgetCategories,
-  ]);
+  }, [processMonthlyEntries]);
 
   useEffect(() => {
     const { transactions } = budgetInfo;
@@ -247,33 +249,31 @@ function BudgetData({ route, navigation }) {
       processMonthlyTransactions &&
       transactions[dataMonthYear.year][dataMonthYear.month] === undefined
     ) {
-      alert('here');
-
-      // currentBudgetRecurringCategories.map((budgetCatg) => {
-      //   const data = {
-      //     amount: budgetCatg.amount,
-      //     budgetId: budgetCtx.selectedBudgetId,
-      //     category: budgetCatg.name,
-      //     type: budgetCatg.category,
-      //     date: dateFormMonthYear,
-      //     description:
-      //       budgetCatg.name +
-      //       ' ' +
-      //       dataMonthYear.month +
-      //       ' ' +
-      //       dataMonthYear.year +
-      //       ' entry',
-      //     email: budgetCtx.email,
-      //   };
-      //   transactionEntry(
-      //     budgetCtx.selectedBudgetId,
-      //     budgetCtx.token,
-      //     data,
-      //     dataMonthYear.month,
-      //     dataMonthYear.year,
-      //     budgetCtx
-      //   );
-      // });
+      currentBudgetRecurringCategories.map((budgetCatg) => {
+        const data = {
+          amount: budgetCatg.amount,
+          budgetId: budgetCtx.selectedBudgetId,
+          category: budgetCatg.name,
+          type: budgetCatg.category,
+          date: dateFormMonthYear,
+          description:
+            budgetCatg.name +
+            ' ' +
+            dataMonthYear.month +
+            ' ' +
+            dataMonthYear.year +
+            ' entry',
+          email: budgetCtx.email,
+        };
+        transactionEntry(
+          budgetCtx.selectedBudgetId,
+          budgetCtx.token,
+          data,
+          dataMonthYear.month,
+          dataMonthYear.year,
+          budgetCtx
+        );
+      });
     }
   }, [processMonthlyTransactions]);
 
@@ -290,13 +290,16 @@ function BudgetData({ route, navigation }) {
       entry,
       'auth=' + ctx.token
     );
-    // ctx.addMonthlyEntry(
-    //   id,
-    //   { ...entry, id: id },
-    //   ctx.selectedBudgetId,
-    //   monthYear.month,
-    //   monthYear.year
-    // );
+    if (id) {
+      ctx.addMonthlyEntry(
+        id,
+        { ...entry, id: id },
+        ctx.selectedBudgetId,
+        monthYear.month,
+        monthYear.year
+      );
+    }
+
     return id;
   }
 
@@ -315,7 +318,9 @@ function BudgetData({ route, navigation }) {
       month,
       year
     );
-    // ctx.addTransaction(id, { ...finalData, id: id }, budgetId, month, year);
+    if (id) {
+      ctx.addTransaction(id, { ...finalData, id: id }, budgetId, month, year);
+    }
   }
 
   async function fetchBudgets() {

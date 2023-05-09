@@ -11,8 +11,9 @@ import {
   DialogContent,
   Divider,
 } from '@react-native-material/core';
+import { ProgressBar, MD3Colors } from 'react-native-paper';
 
-import { styles } from '../../constants/styles';
+import { GlobalStyles, styles } from '../../constants/styles';
 import { useState } from 'react';
 import { EXPENSE } from '../../util/constants';
 import { getFormattedDate } from '../../util/date';
@@ -112,39 +113,49 @@ function CategoryItem({
             {name} - {category}
           </Text>
         </View>
+        <ProgressBar
+          progress={remainingAmount.toFixed(2) / targetAmount.toFixed(2)}
+          color={
+            remainingAmount > 0
+              ? GlobalStyles.colors.green50
+              : GlobalStyles.colors.red100
+          }
+        />
         <View style={[styles.item, styles.leanItem]}>
-          <View style={styles.infoContainer}>
-            <Text style={styles.textBase}>Available</Text>
+          <View>
+            <View style={styles.infoContainer}>
+              <Text style={styles.textBase}>Available</Text>
+            </View>
+            <View style={styles.amountContainer}>
+              <Text style={[styles.green, styles.bold]}>
+                {targetAmount.toFixed(2)}
+              </Text>
+            </View>
           </View>
-          <View style={styles.amountContainer}>
-            <Text style={[styles.green, styles.bold]}>
-              {targetAmount.toFixed(2)}
-            </Text>
+          <View>
+            <View style={styles.infoContainer}>
+              <Text style={styles.textBase}>Spent</Text>
+            </View>
+            <View style={styles.amountContainer}>
+              <Text style={[styles.red, styles.bold]}>
+                {spentAmount.toFixed(2)}
+              </Text>
+            </View>
           </View>
-        </View>
-        <View style={[styles.item, styles.leanItem]}>
-          <View style={styles.infoContainer}>
-            <Text style={styles.textBase}>Spent</Text>
-          </View>
-          <View style={styles.amountContainer}>
-            <Text style={[styles.red, styles.bold]}>
-              {spentAmount.toFixed(2)}
-            </Text>
-          </View>
-        </View>
-        <View style={[styles.item, styles.leanItem]}>
-          <View style={styles.infoContainer}>
-            <Text style={styles.textBase}>Remaining</Text>
-          </View>
-          <View style={styles.amountContainer}>
-            <Text
-              style={[
-                remainingAmount > 0 ? styles.green : styles.red,
-                styles.bold,
-              ]}
-            >
-              {remainingAmount.toFixed(2)}
-            </Text>
+          <View>
+            <View style={styles.infoContainer}>
+              <Text style={styles.textBase}>Remaining</Text>
+            </View>
+            <View style={styles.amountContainer}>
+              <Text
+                style={[
+                  remainingAmount > 0 ? styles.green : styles.red,
+                  styles.bold,
+                ]}
+              >
+                {remainingAmount.toFixed(2)}
+              </Text>
+            </View>
           </View>
         </View>
       </View>

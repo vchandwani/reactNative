@@ -1,19 +1,36 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 
 import { BudgetsContext } from '../store/budgets-context';
 import { getMonthsArray, getYearsArray, objectToArray } from '../util/data';
-import { SafeAreaView, View, Dimensions } from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  Dimensions,
+  FlatList,
+  Animated,
+  ScrollView,
+} from 'react-native';
 import { styles, GlobalStyles } from '../constants/styles';
 import LoadingOverlay from '../components/UI/LoadingOverlay';
 import YearScroll from '../components/UI/YearScroll';
 import { EXPENSE, INCOME } from '../util/constants';
 import { DataTable, Text } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
+import Carousel from '../components/UI/Carousel';
 
 function AnnualOverview() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [yearIndex, setYearIndex] = useState(0);
   const [yearlyData, setYearlyData] = useState([]);
+  const [categoryWiseData, setCategoryWiseData] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const scrollX = useRef(new Animated.Value(0).current);
+
+  const slideRef = useRef(null);
+  const viewableItemsChanged = useRef(({ viewableItems }) => {
+    setCurrentIndex(viewableItems[0].index);
+  }).current;
 
   let totalSpentAmount = 0;
   let totalIncomeAmount = 0;
@@ -43,14 +60,19 @@ function AnnualOverview() {
 
   useEffect(() => {
     setYearlyData([]);
+    setCategoryWiseData(null);
     setYearIndex(yearsArray.length - 1);
   }, [yearsArray.length]);
 
   useEffect(() => {
     setChartLabel([]);
     setChartDataset([]);
+    setCategoryWiseData(null);
+
     const labelsArray = [];
     const dataSetArray = [];
+    let annualCategoryTransactions = [];
+
     const { monthlyEntries, transactions } = budgetCtx?.budgets?.find(
       (el) => el.id === budgetCtx.selectedBudgetId
     );
@@ -59,17 +81,47 @@ function AnnualOverview() {
     setIsSubmitting(true);
     monthsArray.map((mnth) => {
       if (monthlyEntries?.[yearsArray[yearIndex]]?.[mnth]) {
+        objectToArray(monthlyEntries?.[yearsArray[yearIndex]]?.[mnth]).map(
+          (monthlyEntry) => {
+            let spentAmount = 0;
+            let categoryTransactions = [];
+            if (transactions?.[yearsArray[yearIndex]]?.[mnth]) {
+              categoryTransactions = objectToArray(
+                transactions?.[yearsArray[yearIndex]]?.[mnth]
+              )?.filter((val) => {
+                return val.category === monthlyEntry.name;
+              });
+
+              if (categoryTransactions) {
+                spentAmount += categoryTransactions?.reduce(
+                  (sum, { amount }) => sum + amount,
+                  0
+                );
+              }
+              const findIndex = annualCategoryTransactions.findIndex(
+                (el) => el.name === monthlyEntry.name
+              );
+              if (findIndex === -1) {
+                annualCategoryTransactions.push({
+                  name: monthlyEntry.name,
+                  targetAmount: monthlyEntry.amount ? monthlyEntry.amount : 0,
+                  spentAmount: spentAmount ? spentAmount : 0,
+                });
+              } else {
+                annualCategoryTransactions[findIndex]['targetAmount'] +=
+                  monthlyEntry.amount;
+
+                annualCategoryTransactions[findIndex]['spentAmount'] +=
+                  spentAmount;
+              }
+            }
+          }
+        );
+      }
+
+      if (monthlyEntries?.[yearsArray[yearIndex]]?.[mnth]) {
         let income = 0;
         let expense = 0;
-
-        if (objectToArray(monthlyEntries?.[yearsArray[yearIndex]]?.[mnth])) {
-          const incomeData = objectToArray(
-            monthlyEntries?.[yearsArray[yearIndex]]?.[mnth]
-          )?.filter((tx) => {
-            return tx.category === INCOME;
-          });
-          income = incomeData?.reduce((sum, { amount }) => sum + amount, 0);
-        }
 
         if (objectToArray(transactions?.[yearsArray[yearIndex]]?.[mnth])) {
           const expData = objectToArray(
@@ -77,7 +129,13 @@ function AnnualOverview() {
           )?.filter((tx) => {
             return tx.type === EXPENSE;
           });
+          const incomeData = objectToArray(
+            transactions?.[yearsArray[yearIndex]]?.[mnth]
+          )?.filter((tx) => {
+            return tx.type === INCOME;
+          });
           expense = expData?.reduce((sum, { amount }) => sum + amount, 0);
+          income = incomeData?.reduce((sum, { amount }) => sum + amount, 0);
         }
         setYearlyData((old) => [
           ...old,
@@ -91,6 +149,7 @@ function AnnualOverview() {
         dataSetArray.push(income - expense);
       }
     });
+    setCategoryWiseData(annualCategoryTransactions);
     setChartLabel(labelsArray);
     setChartDataset(dataSetArray);
     setIsSubmitting(false);
@@ -100,6 +159,7 @@ function AnnualOverview() {
     totalSpentAmount = 0;
     totalIncomeAmount = 0;
     setYearlyData([]);
+    setCategoryWiseData(null);
     setYearIndex((oldVal) => oldVal + val);
   };
 
@@ -117,7 +177,7 @@ function AnnualOverview() {
           style={[styles.form]}
         />
       </View>
-      <View style={[styles.form, styles.flex]}>
+      <View style={[styles.form]}>
         {chartLabel &&
           chartLabel.length > 0 &&
           chartDataset &&
@@ -148,9 +208,8 @@ function AnnualOverview() {
             </View>
           )}
       </View>
-
-      {yearlyData && (
-        <View style={[styles.form, styles.flex]}>
+      <View style={[styles.form]}>
+        {yearlyData && (
           <DataTable
             style={(styles.container, styles.flex, { paddingBottom: 12 })}
           >
@@ -217,8 +276,30 @@ function AnnualOverview() {
               </DataTable.Title>
             </DataTable.Header>
           </DataTable>
-        </View>
-      )}
+        )}
+      </View>
+      <View>
+        {categoryWiseData && (
+          <View style={styles.categoryContainer}>
+            <FlatList
+              data={categoryWiseData}
+              renderItem={({ item }) => <Carousel item={item} />}
+              horizontal
+              showsHorizontalScrollIndicator={true}
+              pagingEnabled
+              bounces={false}
+              keyExtractor={(item, index) => index.toString()}
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                { useNativeDriver: false }
+              )}
+              scrollEventThrottle={32}
+              onViewableItemsChanged={viewableItemsChanged}
+              ref={slideRef}
+            />
+          </View>
+        )}
+      </View>
     </SafeAreaView>
   );
 }

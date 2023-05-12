@@ -1,4 +1,6 @@
-import { StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 export const GlobalStyles = {
   colors: {
@@ -23,6 +25,7 @@ export const GlobalStyles = {
     green700: '#043002',
     red10: '#EBD5DA',
     red100: '#9e777e',
+    red200: '#ab3737',
     red500: '#990b25',
     font: '#FAFCF8',
     fontSecondary: '#DCDCDC',
@@ -40,8 +43,9 @@ export const styles = StyleSheet.create({
 
   form: {
     marginTop: 10,
+    marginBottom: 10,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   item: {
     padding: 12,
@@ -134,6 +138,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'column',
     flexWrap: 'nowrap',
     backgroundColor: GlobalStyles.colors.primary700,
+    flex: 1,
   },
   infoText: {
     color: GlobalStyles.colors.font,
@@ -195,9 +200,21 @@ export const styles = StyleSheet.create({
   bold: {
     fontWeight: 'bold',
   },
+  greenBackgroundLight: {
+    backgroundColor: GlobalStyles.colors.green100,
+    minWidth: '6rem',
+    textAlign: 'left',
+    flex: 0,
+  },
   greenBackground: {
     color: GlobalStyles.colors.green10,
     backgroundColor: GlobalStyles.colors.green700,
+    minWidth: '6rem',
+    textAlign: 'left',
+    flex: 0,
+  },
+  redBackgroundLight: {
+    backgroundColor: GlobalStyles.colors.red200,
     minWidth: '6rem',
     textAlign: 'left',
     flex: 0,
@@ -336,5 +353,23 @@ export const styles = StyleSheet.create({
   },
   height100: {
     height: '100%',
+  },
+
+  categoryContainer: {
+    marginBottom: 4,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    height: 'auto',
+    borderRadius: '10px',
+    alignItems: 'center',
+    gap: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    minHeight: '100px',
+    width: '100%',
+  },
+  centerAligned: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

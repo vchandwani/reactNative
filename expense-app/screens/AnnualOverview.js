@@ -32,10 +32,6 @@ function AnnualOverview() {
     setCurrentIndex(viewableItems[0].index);
   }).current;
 
-  const viewConfig = useRef({
-    viewAreaCoveragePercentageThreshold: 50,
-  }).current;
-
   let totalSpentAmount = 0;
   let totalIncomeAmount = 0;
   let monthsArray = [];
@@ -154,8 +150,6 @@ function AnnualOverview() {
       }
     });
     setCategoryWiseData(annualCategoryTransactions);
-    console.log('annualCategoryTransactions');
-    console.log(annualCategoryTransactions);
     setChartLabel(labelsArray);
     setChartDataset(dataSetArray);
     setIsSubmitting(false);
@@ -301,7 +295,6 @@ function AnnualOverview() {
               )}
               scrollEventThrottle={32}
               onViewableItemsChanged={viewableItemsChanged}
-              viewabilityConfig={viewConfig}
               ref={slideRef}
             />
           </View>

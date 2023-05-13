@@ -202,7 +202,6 @@ export const styles = StyleSheet.create({
   },
   greenBackgroundLight: {
     backgroundColor: GlobalStyles.colors.green100,
-    minWidth: '6rem',
     textAlign: 'left',
     flex: 0,
   },
@@ -215,7 +214,6 @@ export const styles = StyleSheet.create({
   },
   redBackgroundLight: {
     backgroundColor: GlobalStyles.colors.red200,
-    minWidth: '6rem',
     textAlign: 'left',
     flex: 0,
   },
@@ -365,7 +363,6 @@ export const styles = StyleSheet.create({
     gap: 4,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    minHeight: '100px',
     width: '100%',
   },
   centerAligned: {

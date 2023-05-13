@@ -281,7 +281,7 @@ function AnnualOverview() {
       <View>
         {categoryWiseData && (
           <View style={styles.categoryContainer}>
-            {/* <FlatList
+            <FlatList
               data={categoryWiseData}
               renderItem={({ item }) => <Carousel item={item} />}
               horizontal
@@ -296,7 +296,7 @@ function AnnualOverview() {
               scrollEventThrottle={32}
               onViewableItemsChanged={viewableItemsChanged}
               ref={slideRef}
-              /> */}
+            />
           </View>
         )}
       </View>

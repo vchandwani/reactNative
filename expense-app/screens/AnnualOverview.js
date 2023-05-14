@@ -23,13 +23,14 @@ function AnnualOverview() {
   const [yearIndex, setYearIndex] = useState(0);
   const [yearlyData, setYearlyData] = useState([]);
   const [categoryWiseData, setCategoryWiseData] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentIndex = useRef(0);
 
-  const scrollX = useRef(new Animated.Value(0).current);
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
   const slideRef = useRef(null);
   const viewableItemsChanged = useRef(({ viewableItems }) => {
-    setCurrentIndex(viewableItems[0].index);
+    currentIndex.current = viewableItems[0].index;
   }).current;
 
   let totalSpentAmount = 0;
@@ -281,7 +282,7 @@ function AnnualOverview() {
       <View>
         {categoryWiseData && (
           <View style={styles.categoryContainer}>
-            <FlatList
+            <AnimatedFlatList
               data={categoryWiseData}
               renderItem={({ item }) => <Carousel item={item} />}
               horizontal

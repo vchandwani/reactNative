@@ -11,7 +11,7 @@ import {
   DialogContent,
   Divider,
 } from '@react-native-material/core';
-import { ProgressBar, MD3Colors } from 'react-native-paper';
+import { ProgressBar } from 'react-native-paper';
 
 import { GlobalStyles, styles } from '../../constants/styles';
 import { useState } from 'react';
@@ -113,14 +113,16 @@ function CategoryItem({
             {name} - {category}
           </Text>
         </View>
-        <ProgressBar
-          progress={remainingAmount.toFixed(2) / targetAmount.toFixed(2)}
-          color={
-            remainingAmount > 0
-              ? GlobalStyles.colors.green50
-              : GlobalStyles.colors.red100
-          }
-        />
+        {remainingAmount > 0 && targetAmount > 0 && (
+          <ProgressBar
+            progress={remainingAmount.toFixed(2) / targetAmount.toFixed(2)}
+            color={
+              remainingAmount > 0
+                ? GlobalStyles.colors.green50
+                : GlobalStyles.colors.red100
+            }
+          />
+        )}
         <View style={[styles.item, styles.leanItem]}>
           <View>
             <View style={styles.infoContainer}>

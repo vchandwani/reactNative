@@ -260,7 +260,7 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     minHeight: '20px',
     height: 'auto',
-    borderRadius: '10px',
+    borderRadius: 10,
     justifyContent: 'center',
   },
   deleteContainer: {
@@ -358,12 +358,13 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
     height: 'auto',
-    borderRadius: '10px',
+    borderRadius: 10,
     alignItems: 'center',
     gap: 4,
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
+    minHeight: 60,
   },
   centerAligned: {
     alignItems: 'center',

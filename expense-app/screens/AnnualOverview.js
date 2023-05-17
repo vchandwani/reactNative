@@ -23,15 +23,19 @@ function AnnualOverview() {
   const [yearIndex, setYearIndex] = useState(0);
   const [yearlyData, setYearlyData] = useState([]);
   const [categoryWiseData, setCategoryWiseData] = useState(null);
-  const currentIndex = useRef(0);
 
   const scrollX = useRef(new Animated.Value(0)).current;
   const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
   const slideRef = useRef(null);
-  const viewableItemsChanged = useRef(({ viewableItems }) => {
-    currentIndex.current = viewableItems[0].index;
-  }).current;
+
+  // 1. Define a function outside the component:
+  const onViewableItemsChanged = (info) => {
+    // console.log(info);
+  };
+
+  // 2. create a reference to the function (above)
+  const viewabilityConfigCallbackPairs = useRef([{ onViewableItemsChanged }]);
 
   let totalSpentAmount = 0;
   let totalIncomeAmount = 0;
@@ -295,7 +299,9 @@ function AnnualOverview() {
                 { useNativeDriver: false }
               )}
               scrollEventThrottle={32}
-              onViewableItemsChanged={viewableItemsChanged}
+              viewabilityConfigCallbackPairs={
+                viewabilityConfigCallbackPairs.current
+              }
               ref={slideRef}
             />
           </View>
